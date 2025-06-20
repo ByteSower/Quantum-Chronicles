@@ -2,13 +2,14 @@ import React from 'react';
 
 export interface LogEntry {
   message: string;
-  type: 'good' | 'bad' | 'info';
+  type: 'good' | 'bad' | 'info' | 'neutral';
 }
 
 const colorMap = {
   good: 'text-green-500',
   bad: 'text-red-500',
   info: 'text-gray-400',
+  neutral: 'text-blue-400',
 };
 
 const LogArea: React.FC<{ logs: LogEntry[] }> = ({ logs }) => (

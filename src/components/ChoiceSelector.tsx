@@ -11,7 +11,7 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({ choices, onSelect }) =>
     {choices.map((choice, idx) => (
       <button
         key={idx}
-        className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md px-4 py-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full max-w-md text-lg font-semibold"
+        className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg shadow-lg px-6 py-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-50 w-full max-w-md text-lg font-semibold transform hover:scale-105"
         onClick={() => onSelect(choice)}
         tabIndex={0}
       >
