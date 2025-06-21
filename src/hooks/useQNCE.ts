@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { trackStoryEvent } from '../utils/analytics';
 import type { BranchNode } from '../components/VisualBranchTracker';
 
 // QNCE Data Models
@@ -1293,6 +1294,13 @@ export const useQNCE = (): QNCEReturn => {
     const choice = availableChoices[choiceIndex];
     if (!choice) return;
 
+    // Track the choice made
+    trackStoryEvent.choice(
+      choice.nextNodeId,
+      choice.text,
+      choice.variableEffects || {}
+    );
+
     // Handle immediate consequences
     if (choice.consequences?.immediate) {
       setRecentActions(prev => [choice.consequences!.immediate!, ...prev.slice(0, 4)]);
@@ -1344,6 +1352,11 @@ export const useQNCE = (): QNCEReturn => {
         return dc;
       })
     );
+
+    // Track story progression to new node
+    const newDepth = history.length + 1;
+    const storyPath = [...history, choice.nextNodeId].join(' -> ');
+    trackStoryEvent.progress(choice.nextNodeId, storyPath, newDepth);
 
     setCurrentNodeId(choice.nextNodeId);
     setHistory(prev => [...prev, choice.nextNodeId]);

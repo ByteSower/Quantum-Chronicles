@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import AboutQNCEModal from '../AboutQNCEModal';
+import { analytics, trackUIEvent } from '../../utils/analytics';
 
 interface VariableDashboardProps {
   curiosity: number;
@@ -96,6 +97,20 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
 
     if (hasChanges) {
       setAnimations(newAnimations);
+      
+      // Track variable state changes
+      const fieldStrength = Math.sqrt(
+        Math.pow(curiosity, 2) + 
+        Math.pow(coherence, 2) + 
+        Math.pow(disruption, 2) + 
+        Math.pow(synchrony, 2)
+      );
+      
+      analytics.trackVariableState(
+        { curiosity, coherence, disruption, synchrony },
+        fieldStrength,
+        'dashboard_update'
+      );
       
       // Clear animations after duration
       setTimeout(() => {
@@ -226,7 +241,10 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
             <h3 className="text-sm font-bold text-gray-200">Quantum State</h3>
           </div>
           <button
-            onClick={() => setShowAboutQNCE(true)}
+            onClick={() => {
+              setShowAboutQNCE(true);
+              trackUIEvent.help('variable_dashboard', 'learn_more_button');
+            }}
             className="text-xs text-indigo-400 hover:text-indigo-300 underline"
           >
             Learn More

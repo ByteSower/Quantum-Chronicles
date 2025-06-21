@@ -4,6 +4,8 @@ import StoryFlow from './components/StoryFlow';
 import AboutModal from './components/AboutModal';
 import SettingsModal from './components/SettingsModal';
 import AboutQNCEModal from './components/AboutQNCEModal';
+import AnalyticsDebugPanel from './components/AnalyticsDebugPanel';
+import { analytics, trackUIEvent } from './utils/analytics';
 import { APP_VERSION } from './version';
 import type { StartingPoint } from './components/StartScreen';
 import './index.css';
@@ -28,11 +30,17 @@ function App() {
   const handleSelectStart = (startingPoint: StartingPoint) => {
     setSelectedStartingPoint(startingPoint);
     setAppState('story');
+    
+    // Track session start
+    analytics.startSession(startingPoint.id);
   };
 
   const handleReturnToStart = () => {
     setAppState('start');
     setSelectedStartingPoint(null);
+    
+    // Track return to start
+    trackUIEvent.feature('navigation', 'return_to_start');
   };
 
   if (appState === 'start') {
@@ -124,14 +132,21 @@ function App() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowAboutQNCE(true)}
+              onClick={() => {
+                setShowAboutQNCE(true);
+                trackUIEvent.help('about_qnce', 'header_button');
+              }}
               className="px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium bg-purple-600 text-white hover:bg-purple-700"
               title="Learn about QNCE"
             >
               Help
             </button>
             <button
-              onClick={() => setDevMode(prev => !prev)}
+              onClick={() => {
+                const newDevMode = !devMode;
+                setDevMode(newDevMode);
+                trackUIEvent.feature('developer_mode', newDevMode ? 'enabled' : 'disabled');
+              }}
               className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium ${
                 devMode 
                   ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
@@ -176,6 +191,9 @@ function App() {
         settings={settings}
         onUpdateSettings={setSettings}
       />
+      
+      {/* Analytics Debug Panel (Development Only) */}
+      <AnalyticsDebugPanel />
     </div>
     </>
   );
