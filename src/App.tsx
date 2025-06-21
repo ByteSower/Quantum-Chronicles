@@ -1,12 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import StartScreen from './components/StartScreen';
 import StoryFlow from './components/StoryFlow';
 import AboutModal from './components/AboutModal';
 import SettingsModal from './components/SettingsModal';
 import AboutQNCEModal from './components/AboutQNCEModal';
-import AnalyticsDebugPanel from './components/AnalyticsDebugPanel';
 import { analytics, trackUIEvent } from './utils/analytics';
-import { APP_VERSION } from './version';
 import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
@@ -27,12 +25,17 @@ function App() {
     animationSpeed: 'normal' as 'slow' | 'normal' | 'fast'
   });
 
+  // Initialize analytics and send app start event
+  useEffect(() => {
+    trackUIEvent.feature('app', 'initialized');
+  }, []);
+
   const handleSelectStart = (startingPoint: StartingPoint) => {
     setSelectedStartingPoint(startingPoint);
     setAppState('story');
     
     // Track session start
-    analytics.startSession(startingPoint.id);
+    analytics.trackEvent('session_start', 'engagement', startingPoint.id);
   };
 
   const handleReturnToStart = () => {
@@ -134,7 +137,7 @@ function App() {
             <button
               onClick={() => {
                 setShowAboutQNCE(true);
-                trackUIEvent.help('about_qnce', 'header_button');
+                trackUIEvent.help('about_qnce');
               }}
               className="px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium bg-purple-600 text-white hover:bg-purple-700"
               title="Learn about QNCE"
@@ -171,10 +174,10 @@ function App() {
         />
       </div>
       
-      {/* Footer with version */}
+      {/* Footer */}
       <footer className="mt-8 mb-4 text-center">
         <p className="text-xs text-slate-500">
-          Quantum Chronicles v{APP_VERSION}
+          Quantum Chronicles
         </p>
       </footer>
       <AboutModal
@@ -191,9 +194,6 @@ function App() {
         settings={settings}
         onUpdateSettings={setSettings}
       />
-      
-      {/* Analytics Debug Panel (Development Only) */}
-      <AnalyticsDebugPanel />
     </div>
     </>
   );

@@ -1,72 +1,123 @@
-# Quantum Chronicles v1.0.0
+# Quantum Chronicles
 
-**An Interactive Narrative Experience** powered by the **Quantum Narrative Convergence Engine (QNCE)**.
+An interactive narrative experience that explores quantum-inspired storytelling mechanics.
 
----
+## ✨ Features
 
-## Welcome to Quantum Chronicles
+- **Interactive Stories**: Make choices that shape narrative outcomes
+- **Quantum Variables**: Your decisions affect four key narrative dimensions:
+  - **Curiosity**: Drive to explore and question
+  - **Coherence**: Logical consistency and understanding  
+  - **Disruption**: Willingness to challenge and change
+  - **Synchrony**: Harmony with surrounding forces
+- **Dynamic Storytelling**: Variable interactions create unique narrative paths
+- **Accessible Design**: Clean interface with optional help system
+- **Responsive**: Works on desktop and mobile devices
 
-Quantum Chronicles is an immersive interactive novel where every choice creates ripples through the narrative universe. Using quantum-inspired storytelling principles, your decisions don't just change the story—they fundamentally alter the fabric of reality itself.
+## 🚀 Quick Start
 
-## What is QNCE?
-QNCE is a revolutionary narrative engine inspired by quantum mechanics concepts:
-- **Superposition:** Multiple narrative possibilities exist simultaneously until choice collapse occurs.
-- **Collapse:** Player choices "collapse" quantum possibilities into concrete narrative paths.
-- **Entanglement:** Early decisions create invisible connections that influence future story branches.
-- **Variable Dynamics:** Four core dimensions (Curiosity, Coherence, Disruption, Synchrony) evolve with each choice.
+### Prerequisites
+- Node.js (version 18 or higher)
+- npm or yarn package manager
 
----
+### Installation
 
-## Interactive Experience
-- **Immersive Narrative**: Experience a story that adapts to your quantum choices.
-- **Variable Dashboard**: Watch your decisions affect Curiosity, Coherence, Disruption, and Synchrony in real-time.
-- **Quantum Feedback**: Observe how choices create narrative convergence or disruption.
-- **Multiple Paths**: Explore different quantum storylines with each playthrough.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ByteSower/Quantum-Chronicles.git
+   cd Quantum-Chronicles
+   ```
 
----
-
-## Core Technology
-- **useQNCE**: Advanced React hook managing quantum narrative state and variable dynamics.
-- **NarrativeDisplay**: Immersive story presentation with smooth transitions.
-- **ChoiceSelector**: Interactive decision interface for quantum choice selection.
-- **VariableDashboard**: Real-time display of narrative quantum variables.
-- **Quantum Feedback System**: Visual indicators of narrative state changes.
-
----
-
-## Getting Started
-1. **Install dependencies:**
-   ```sh
+2. **Install dependencies**
+   ```bash
    npm install
    ```
-2. **Start your quantum journey:**
-   ```sh
+
+3. **Start development server**
+   ```bash
    npm run dev
    ```
-3. **Experience the quantum narrative:**
-   - Make choices and watch the narrative quantum state evolve
-   - Track variable changes in the dashboard
-   - Click "Restart Story" to explore different quantum paths
-   - Use the tutorial to understand quantum narrative mechanics
+
+4. **Open in browser**
+   ```
+   http://localhost:5173/Quantum-Chronicles/
+   ```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist/` directory.
+
+## 🎭 How to Play
+
+1. **Choose a starting point** from the available story options
+2. **Read the narrative** and consider your choices carefully
+3. **Make decisions** that feel authentic to your character
+4. **Watch variables change** as your choices affect the quantum narrative state
+5. **Explore different paths** by making different choices in subsequent playthroughs
+
+## 🛠️ Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run code linting
+
+### Project Structure
+
+```
+src/
+├── components/          # React components
+├── hooks/              # Custom React hooks
+├── utils/              # Utility functions
+├── index.css           # Global styles
+└── main.tsx           # Application entry point
+```
+
+### Technology Stack
+
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Vite** - Build tool and dev server
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes** and ensure they work properly
+4. **Test thoroughly** across different devices and browsers
+5. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+6. **Push to your branch** (`git push origin feature/amazing-feature`)
+7. **Open a Pull Request** with a clear description of your changes
+
+### Development Guidelines
+
+- Write clean, readable code with meaningful variable names
+- Add comments for complex logic, especially narrative mechanics
+- Test your changes across desktop and mobile
+- Ensure accessibility standards are maintained
+- Follow existing code style and formatting
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🌟 Acknowledgments
+
+- Inspired by interactive fiction and quantum mechanics concepts
+- Built with modern web technologies for optimal user experience
+- Designed to make complex narrative mechanics accessible to all users
 
 ---
 
-## Feedback & Development
-We welcome your thoughts and bug reports! Please use our [GitHub Issues page](https://github.com/ByteSower/Quantum-Chronicles/issues/new) to let us know how we can improve Quantum Chronicles.
+**Live Demo**: [https://bytesower.github.io/Quantum-Chronicles](https://bytesower.github.io/Quantum-Chronicles)
 
----
-
-## Sharing & Feedback
-- **Hosted at:** [GitHub Pages](https://bytesower.github.io/Quantum-Chronicles)
-- **Feedback:** Use GitHub Issues or Discussions to report bugs, suggest features, or share ideas.
-
----
-
-## Project Structure
-- `/src`: Source code (organized by feature)
-- `/public`: Static assets
-- `/docs`: Design docs and roadmap
-
----
-
-For more, see `/docs` or open an issue to start a discussion!
+*Explore the quantum nature of storytelling, where every choice creates new narrative possibilities.*

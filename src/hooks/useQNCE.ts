@@ -1295,11 +1295,7 @@ export const useQNCE = (): QNCEReturn => {
     if (!choice) return;
 
     // Track the choice made
-    trackStoryEvent.choice(
-      choice.nextNodeId,
-      choice.text,
-      choice.variableEffects || {}
-    );
+    trackStoryEvent.choice(choice.nextNodeId);
 
     // Handle immediate consequences
     if (choice.consequences?.immediate) {
@@ -1354,9 +1350,7 @@ export const useQNCE = (): QNCEReturn => {
     );
 
     // Track story progression to new node
-    const newDepth = history.length + 1;
-    const storyPath = [...history, choice.nextNodeId].join(' -> ');
-    trackStoryEvent.progress(choice.nextNodeId, storyPath, newDepth);
+    trackStoryEvent.progress(choice.nextNodeId);
 
     setCurrentNodeId(choice.nextNodeId);
     setHistory(prev => [...prev, choice.nextNodeId]);
