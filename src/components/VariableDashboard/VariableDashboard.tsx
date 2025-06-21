@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import AboutQNCEModal from '../AboutQNCEModal';
 
 interface VariableDashboardProps {
   curiosity: number;
@@ -14,12 +15,37 @@ interface VariableChangeAnimation {
   isAnimating: boolean;
 }
 
+// Tooltip component for explaining QNCE concepts
+const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, children }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div className="relative inline-block">
+      <div
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        onClick={() => setIsVisible(!isVisible)}
+        className="cursor-help"
+      >
+        {children}
+      </div>
+      {isVisible && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 border border-indigo-500 rounded-lg text-xs text-white w-48 z-50 shadow-lg">
+          <div className="text-center leading-relaxed">{text}</div>
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const VariableDashboard: React.FC<VariableDashboardProps> = ({
   curiosity,
   coherence,
   disruption,
   synchrony,
 }) => {
+  const [showAboutQNCE, setShowAboutQNCE] = useState(false);
   const [animations, setAnimations] = useState<Record<string, VariableChangeAnimation>>({
     curiosity: { previousValue: curiosity, currentValue: curiosity, isAnimating: false },
     coherence: { previousValue: coherence, currentValue: coherence, isAnimating: false },
@@ -110,6 +136,16 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
     return baseIcons[variableName as keyof typeof baseIcons];
   };
 
+  const getVariableTooltip = (variableName: string) => {
+    const tooltips = {
+      curiosity: "Curiosity drives exploration and discovery. Higher values unlock new paths and reveal hidden information, while lower values limit your narrative options.",
+      coherence: "Coherence represents how well your understanding fits together. Higher coherence provides clarity and stability in your story progression.",
+      disruption: "Disruption measures how much you're challenging the established order. Higher values open radical possibilities but may create instability.",
+      synchrony: "Synchrony reflects how aligned you are with the narrative flow. Higher synchrony creates powerful story convergences and meaningful connections."
+    };
+    return tooltips[variableName as keyof typeof tooltips];
+  };
+
   const renderVariable = (name: string, value: number, label: string) => {
     const animation = animations[name];
     const isIncreasing = animation.currentValue > animation.previousValue;
@@ -129,9 +165,14 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
         >
           {getVariableIcon(name, value, animation.isAnimating)}
         </span>
-        <span className="variable-label font-bold mr-1.5 text-gray-200">
-          {label}:
-        </span>
+        <div className="flex items-center">
+          <span className="variable-label font-bold mr-1.5 text-gray-200">
+            {label}:
+          </span>
+          <Tooltip text={getVariableTooltip(name)}>
+            <span className="text-xs text-gray-400 hover:text-indigo-300 mr-1.5 cursor-help">ℹ️</span>
+          </Tooltip>
+        </div>
         <span 
           className={`variable-value transition-all duration-500 font-semibold ${
             getVariableColor(value, animation.isAnimating)
@@ -173,10 +214,23 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
 
   return (
     <>
+      <AboutQNCEModal 
+        isOpen={showAboutQNCE} 
+        onClose={() => setShowAboutQNCE(false)} 
+      />
+      
       <div id="variable-dashboard" className="text-white font-sans">
-        <div className="flex items-center mb-2">
-          <span className="text-lg mr-2">⚛️</span>
-          <h3 className="text-sm font-bold text-gray-200">Quantum State</h3>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center">
+            <span className="text-lg mr-2">⚛️</span>
+            <h3 className="text-sm font-bold text-gray-200">Quantum State</h3>
+          </div>
+          <button
+            onClick={() => setShowAboutQNCE(true)}
+            className="text-xs text-indigo-400 hover:text-indigo-300 underline"
+          >
+            Learn More
+          </button>
         </div>
         
         {renderVariable('curiosity', curiosity, 'Curiosity')}
@@ -186,8 +240,13 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
         
         {/* Quantum field visualization */}
         <div className="mt-3 pt-2 border-t border-indigo-500 border-opacity-30">
-          <div className="flex justify-between text-xs text-gray-400">
-            <span>Field Strength:</span>
+          <div className="flex justify-between text-xs text-gray-400 items-center">
+            <div className="flex items-center">
+              <span>Field Strength:</span>
+              <Tooltip text="Field Strength represents the convergence of narrative energy from your choices. Higher values indicate that story themes are pulling together strongly, creating focused narrative paths and powerful story moments.">
+                <span className="text-xs text-gray-400 hover:text-indigo-300 ml-1 cursor-help">ℹ️</span>
+              </Tooltip>
+            </div>
             <span className="font-semibold">
               {Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)}
             </span>

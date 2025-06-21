@@ -23,6 +23,7 @@ interface StoryFlowProps {
   onReturnToStart: () => void;
   onShowAbout: () => void;
   onShowSettings: () => void;
+  onShowQNCEHelp?: () => void;
 }
 
 const StoryFlow: React.FC<StoryFlowProps> = ({ 
@@ -31,7 +32,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   devMode,
   onReturnToStart, 
   onShowAbout, 
-  onShowSettings 
+  onShowSettings,
+  onShowQNCEHelp
 }) => {
   const { 
     currentNode, 
@@ -162,7 +164,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   return (
     <>
-      {showModal && <IntroModal onClose={handleIntroClose} />}
+      {showModal && <IntroModal onClose={handleIntroClose} onShowAbout={onShowQNCEHelp} />}
       {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
       
       {/* Developer Mode Variable Dashboard */}

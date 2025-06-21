@@ -1,0 +1,174 @@
+import React from 'react';
+
+interface AboutQNCEModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const AboutQNCEModal: React.FC<AboutQNCEModalProps> = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-900 border border-indigo-500 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center">
+              <span className="text-3xl mr-3">⚛️</span>
+              About QNCE
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white text-2xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="text-gray-300 space-y-6">
+            {/* Introduction */}
+            <section>
+              <h3 className="text-lg font-semibold text-indigo-300 mb-3">What is QNCE?</h3>
+              <p className="leading-relaxed">
+                The <strong>Quantum Narrative Convergence Engine (QNCE)</strong> is an innovative storytelling system 
+                inspired by quantum physics. Just as particles can exist in multiple states until observed, 
+                your story exists in multiple potential paths until you make choices that "collapse" the narrative 
+                into specific outcomes.
+              </p>
+            </section>
+
+            {/* Core Concepts */}
+            <section>
+              <h3 className="text-lg font-semibold text-indigo-300 mb-3">Core Quantum Variables</h3>
+              <div className="grid gap-4">
+                
+                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                  <div className="flex items-center mb-2">
+                    <span className="text-xl mr-2">👁️</span>
+                    <h4 className="font-semibold text-white">Curiosity</h4>
+                  </div>
+                  <p className="text-sm">
+                    Your drive to explore and discover. Higher curiosity unlocks hidden paths, reveals secret information, 
+                    and opens new narrative possibilities. Lower curiosity may limit your options but can provide focus.
+                  </p>
+                </div>
+
+                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                  <div className="flex items-center mb-2">
+                    <span className="text-xl mr-2">🧭</span>
+                    <h4 className="font-semibold text-white">Coherence</h4>
+                  </div>
+                  <p className="text-sm">
+                    How well your understanding and actions fit together. High coherence provides clarity, 
+                    stable relationships, and logical story progression. Low coherence can lead to confusion 
+                    but might reveal unexpected connections.
+                  </p>
+                </div>
+
+                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                  <div className="flex items-center mb-2">
+                    <span className="text-xl mr-2">⚡️</span>
+                    <h4 className="font-semibold text-white">Disruption</h4>
+                  </div>
+                  <p className="text-sm">
+                    Your willingness to challenge the established order. High disruption opens radical possibilities 
+                    and breakthrough moments but may create instability. Low disruption maintains the status quo 
+                    but limits transformative outcomes.
+                  </p>
+                </div>
+
+                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                  <div className="flex items-center mb-2">
+                    <span className="text-xl mr-2">🔗</span>
+                    <h4 className="font-semibold text-white">Synchrony</h4>
+                  </div>
+                  <p className="text-sm">
+                    How aligned you are with the flow of the narrative universe. High synchrony creates powerful 
+                    convergences, meaningful coincidences, and satisfying story resolutions. It represents being 
+                    "in tune" with the deeper patterns of your story.
+                  </p>
+                </div>
+
+              </div>
+            </section>
+
+            {/* Field Strength */}
+            <section>
+              <h3 className="text-lg font-semibold text-indigo-300 mb-3">Field Strength</h3>
+              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <p className="text-sm leading-relaxed">
+                  <strong>Field Strength</strong> measures the total narrative energy generated by all your quantum variables. 
+                  It represents how intensely the story is "pulling together" around key themes and moments. 
+                  Higher field strength indicates that your choices are creating powerful story convergences, 
+                  while lower values suggest a more scattered or exploratory narrative state.
+                </p>
+              </div>
+            </section>
+
+            {/* How It Works */}
+            <section>
+              <h3 className="text-lg font-semibold text-indigo-300 mb-3">How Your Choices Matter</h3>
+              <div className="space-y-3">
+                <div className="flex items-start">
+                  <span className="text-indigo-400 mr-3 mt-1">🌟</span>
+                  <p className="text-sm">
+                    <strong>Every choice affects multiple variables</strong> - A single decision might increase 
+                    your curiosity while decreasing coherence, creating complex narrative ripples.
+                  </p>
+                </div>
+                <div className="flex items-start">
+                  <span className="text-indigo-400 mr-3 mt-1">🌊</span>
+                  <p className="text-sm">
+                    <strong>Variables influence future options</strong> - High curiosity might unlock a secret path, 
+                    while high disruption could close off diplomatic solutions.
+                  </p>
+                </div>
+                <div className="flex items-start">
+                  <span className="text-indigo-400 mr-3 mt-1">🎭</span>
+                  <p className="text-sm">
+                    <strong>Your unique combination matters</strong> - The interplay between all four variables 
+                    creates a personalized narrative experience that reflects your choices and priorities.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Tips */}
+            <section className="border-t border-gray-700 pt-4">
+              <h3 className="text-lg font-semibold text-indigo-300 mb-3">Tips for Exploration</h3>
+              <ul className="text-sm space-y-2">
+                <li className="flex items-start">
+                  <span className="text-yellow-400 mr-2">💡</span>
+                  There's no "right" way to play - each combination of variables leads to different story experiences
+                </li>
+                <li className="flex items-start">
+                  <span className="text-yellow-400 mr-2">🔄</span>
+                  Try different approaches in multiple playthroughs to explore various narrative paths
+                </li>
+                <li className="flex items-start">
+                  <span className="text-yellow-400 mr-2">⚖️</span>
+                  Balance is powerful, but extreme values in specific variables can lead to unique outcomes
+                </li>
+                <li className="flex items-start">
+                  <span className="text-yellow-400 mr-2">📊</span>
+                  Watch how your variables change to understand the consequences of your choices
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-gray-700">
+            <button
+              onClick={onClose}
+              className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            >
+              Ready to Explore
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AboutQNCEModal;

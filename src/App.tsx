@@ -3,6 +3,7 @@ import StartScreen from './components/StartScreen';
 import StoryFlow from './components/StoryFlow';
 import AboutModal from './components/AboutModal';
 import SettingsModal from './components/SettingsModal';
+import AboutQNCEModal from './components/AboutQNCEModal';
 import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
@@ -15,6 +16,7 @@ function App() {
   const [selectedStartingPoint, setSelectedStartingPoint] = useState<StartingPoint | null>(null);
   const [devMode, setDevMode] = useState(false);
   const [showOrientationWarning, setShowOrientationWarning] = useState(true);
+  const [showAboutQNCE, setShowAboutQNCE] = useState(false);
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
@@ -119,7 +121,14 @@ function App() {
               {selectedStartingPoint?.title || 'An Interactive Narrative Experience'}
             </p>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowAboutQNCE(true)}
+              className="px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium bg-purple-600 text-white hover:bg-purple-700"
+              title="Learn about QNCE"
+            >
+              Help
+            </button>
             <button
               onClick={() => setDevMode(prev => !prev)}
               className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium ${
@@ -142,11 +151,16 @@ function App() {
           onReturnToStart={handleReturnToStart}
           onShowAbout={() => setShowAbout(true)}
           onShowSettings={() => setShowSettings(true)}
+          onShowQNCEHelp={() => setShowAboutQNCE(true)}
         />
       </div>
       <AboutModal
         isOpen={showAbout}
         onClose={() => setShowAbout(false)}
+      />
+      <AboutQNCEModal
+        isOpen={showAboutQNCE}
+        onClose={() => setShowAboutQNCE(false)}
       />
       <SettingsModal
         isOpen={showSettings}
