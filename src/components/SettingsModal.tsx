@@ -1,4 +1,5 @@
 import React from 'react';
+import { APP_VERSION, RELEASE_DATE } from '../version';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -129,9 +130,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
             <p className="mb-2">
               <strong className="text-slate-300">Casual Mode:</strong> Clean, immersive narrative experience
             </p>
-            <p>
+            <p className="mb-4">
               <strong className="text-slate-300">Developer Mode:</strong> Exposes technical details and quantum mechanics
             </p>
+            
+            {settings.developerMode && (
+              <div className="border-t border-slate-700 pt-4 mt-4">
+                <h4 className="text-slate-300 font-medium mb-2">Version Information</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-500">Version:</span>
+                    <span className="ml-2 text-indigo-300 font-mono">v{APP_VERSION}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500">Released:</span>
+                    <span className="ml-2 text-slate-300">{RELEASE_DATE}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

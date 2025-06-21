@@ -4,6 +4,7 @@ import StoryFlow from './components/StoryFlow';
 import AboutModal from './components/AboutModal';
 import SettingsModal from './components/SettingsModal';
 import AboutQNCEModal from './components/AboutQNCEModal';
+import { APP_VERSION } from './version';
 import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
@@ -154,6 +155,13 @@ function App() {
           onShowQNCEHelp={() => setShowAboutQNCE(true)}
         />
       </div>
+      
+      {/* Footer with version */}
+      <footer className="mt-8 mb-4 text-center">
+        <p className="text-xs text-slate-500">
+          Quantum Chronicles v{APP_VERSION}
+        </p>
+      </footer>
       <AboutModal
         isOpen={showAbout}
         onClose={() => setShowAbout(false)}
