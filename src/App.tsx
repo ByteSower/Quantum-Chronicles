@@ -14,6 +14,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [selectedStartingPoint, setSelectedStartingPoint] = useState<StartingPoint | null>(null);
   const [devMode, setDevMode] = useState(false);
+  const [showOrientationWarning, setShowOrientationWarning] = useState(true);
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
@@ -35,21 +36,28 @@ function App() {
     return (
       <>
         {/* Mobile Portrait Orientation Warning */}
-        <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
-          <div className="text-center max-w-sm">
-            <div className="text-6xl mb-4">📱</div>
-            <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
-            </p>
-            <button
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-not-allowed opacity-75"
-              disabled
-            >
-              Rotate Device or Use Desktop
-            </button>
+        {showOrientationWarning && (
+          <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
+            <div className="text-center max-w-sm">
+              <div className="text-6xl mb-4">📱</div>
+              <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
+              <p className="text-gray-300 mb-6 leading-relaxed">
+                For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => setShowOrientationWarning(false)}
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                >
+                  Continue Anyway
+                </button>
+                <p className="text-xs text-gray-400">
+                  Note: Some content may be difficult to view in portrait mode
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
         
         <StartScreen
           onSelectStart={handleSelectStart}
@@ -73,21 +81,28 @@ function App() {
   return (
     <>
       {/* Mobile Portrait Orientation Warning */}
-      <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
-        <div className="text-center max-w-sm">
-          <div className="text-6xl mb-4">📱</div>
-          <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
-          <p className="text-gray-300 mb-6 leading-relaxed">
-            For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
-          </p>
-          <button
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-not-allowed opacity-75"
-            disabled
-          >
-            Rotate Device or Use Desktop
-          </button>
+      {showOrientationWarning && (
+        <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
+          <div className="text-center max-w-sm">
+            <div className="text-6xl mb-4">📱</div>
+            <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => setShowOrientationWarning(false)}
+                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              >
+                Continue Anyway
+              </button>
+              <p className="text-xs text-gray-400">
+                Note: Some content may be difficult to view in portrait mode
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       <div
         style={{ margin: '0 auto', textAlign: 'center' }}
