@@ -173,7 +173,7 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
 
   return (
     <>
-      <div id="variable-dashboard" className="fixed top-2.5 right-2.5 bg-gray-900 bg-opacity-90 text-white backdrop-blur-sm p-3 rounded-lg font-sans z-50 border border-gray-700">
+      <div id="variable-dashboard" className="text-white font-sans">
         <div className="flex items-center mb-2">
           <span className="text-lg mr-2">⚛️</span>
           <h3 className="text-sm font-bold text-gray-200">Quantum State</h3>
@@ -185,7 +185,7 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
         {renderVariable('synchrony', synchrony, 'Synchrony')}
         
         {/* Quantum field visualization */}
-        <div className="mt-3 pt-2 border-t border-gray-700">
+        <div className="mt-3 pt-2 border-t border-indigo-500 border-opacity-30">
           <div className="flex justify-between text-xs text-gray-400">
             <span>Field Strength:</span>
             <span className="font-semibold">

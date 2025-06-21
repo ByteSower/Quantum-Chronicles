@@ -34,6 +34,23 @@ function App() {
   if (appState === 'start') {
     return (
       <>
+        {/* Mobile Portrait Orientation Warning */}
+        <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
+          <div className="text-center max-w-sm">
+            <div className="text-6xl mb-4">📱</div>
+            <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
+            </p>
+            <button
+              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-not-allowed opacity-75"
+              disabled
+            >
+              Rotate Device or Use Desktop
+            </button>
+          </div>
+        </div>
+        
         <StartScreen
           onSelectStart={handleSelectStart}
           onShowAbout={() => setShowAbout(true)}
@@ -54,10 +71,28 @@ function App() {
   }
 
   return (
-    <div
-      style={{ margin: '0 auto', textAlign: 'center' }}
-      className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-indigo-950 to-black text-white"
-    >
+    <>
+      {/* Mobile Portrait Orientation Warning */}
+      <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
+        <div className="text-center max-w-sm">
+          <div className="text-6xl mb-4">📱</div>
+          <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
+          <p className="text-gray-300 mb-6 leading-relaxed">
+            For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
+          </p>
+          <button
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-not-allowed opacity-75"
+            disabled
+          >
+            Rotate Device or Use Desktop
+          </button>
+        </div>
+      </div>
+
+      <div
+        style={{ margin: '0 auto', textAlign: 'center' }}
+        className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-indigo-950 to-black text-white"
+      >
       <header className="w-full container mx-auto px-4">
         <div className="flex justify-between items-center mb-4">
           <div></div>
@@ -105,6 +140,7 @@ function App() {
         onUpdateSettings={setSettings}
       />
     </div>
+    </>
   );
 }
 
