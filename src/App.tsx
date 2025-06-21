@@ -13,7 +13,7 @@ function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [selectedStartingPoint, setSelectedStartingPoint] = useState<StartingPoint | null>(null);
-  const [devMode, setDevMode] = useState(true);
+  const [devMode, setDevMode] = useState(false);
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
