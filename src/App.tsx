@@ -13,6 +13,7 @@ function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [selectedStartingPoint, setSelectedStartingPoint] = useState<StartingPoint | null>(null);
+  const [devMode, setDevMode] = useState(true);
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
@@ -58,17 +59,36 @@ function App() {
       className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-indigo-950 to-black text-white"
     >
       <header className="w-full container mx-auto px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-white drop-shadow text-center bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
-          Quantum Chronicles
-        </h1>
-        <p className="text-lg sm:text-xl text-indigo-200 mb-6 font-light">
-          {selectedStartingPoint?.title || 'An Interactive Narrative Experience'}
-        </p>
+        <div className="flex justify-between items-center mb-4">
+          <div></div>
+          <div className="flex-1">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-white drop-shadow text-center bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
+              Quantum Chronicles
+            </h1>
+            <p className="text-lg sm:text-xl text-indigo-200 mb-6 font-light">
+              {selectedStartingPoint?.title || 'An Interactive Narrative Experience'}
+            </p>
+          </div>
+          <div className="flex items-center">
+            <button
+              onClick={() => setDevMode(prev => !prev)}
+              className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium ${
+                devMode 
+                  ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+              title={devMode ? 'Disable Developer Mode' : 'Enable Developer Mode'}
+            >
+              {devMode ? 'Dev: ON' : 'Dev: OFF'}
+            </button>
+          </div>
+        </div>
       </header>
       <div className="max-w-4xl w-full mx-auto px-4 text-center">
         <StoryFlow
           startingPoint={selectedStartingPoint}
           settings={settings}
+          devMode={devMode}
           onReturnToStart={handleReturnToStart}
           onShowAbout={() => setShowAbout(true)}
           onShowSettings={() => setShowSettings(true)}

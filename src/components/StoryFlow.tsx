@@ -19,6 +19,7 @@ interface StoryFlowProps {
     showDebugInfo: boolean;
     animationSpeed: 'slow' | 'normal' | 'fast';
   };
+  devMode: boolean;
   onReturnToStart: () => void;
   onShowAbout: () => void;
   onShowSettings: () => void;
@@ -27,6 +28,7 @@ interface StoryFlowProps {
 const StoryFlow: React.FC<StoryFlowProps> = ({ 
   startingPoint, 
   settings, 
+  devMode,
   onReturnToStart, 
   onShowAbout, 
   onShowSettings 
@@ -48,6 +50,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   } = useQNCE();
   const [showDebug, setShowDebug] = useState(false);
   const [showModal, setShowModal] = useState(true);
+  const [sheetOpen, setSheetOpen] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [initialized, setInitialized] = useState(false);
@@ -161,14 +164,33 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     <>
       {showModal && <IntroModal onClose={handleIntroClose} />}
       {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
-      {settings.showVariableDashboard && (
-        <VariableDashboard 
-          curiosity={variables.curiosity}
-          coherence={variables.coherence}
-          disruption={variables.disruption}
-          synchrony={variables.synchrony}
-        />
+      
+      {/* Developer Mode Variable Dashboard */}
+      {devMode && settings.showVariableDashboard && (
+        <div className={`variable-dashboard ${sheetOpen ? 'open' : 'collapsed'}`}>
+          {/* Mobile bottom sheet header */}
+          <div 
+            className="sheet-header md:hidden" 
+            onClick={() => setSheetOpen(prev => !prev)}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span>Developer Dashboard</span>
+              <span className="text-lg">{sheetOpen ? '▼' : '▲'}</span>
+            </div>
+          </div>
+          
+          {/* Dashboard content */}
+          <div className={`sheet-content ${sheetOpen || 'md:block' ? 'block' : 'hidden'}`}>
+            <VariableDashboard 
+              curiosity={variables.curiosity}
+              coherence={variables.coherence}
+              disruption={variables.disruption}
+              synchrony={variables.synchrony}
+            />
+          </div>
+        </div>
       )}
+      
       <div className="w-full flex flex-col items-center text-white">
         <div className="w-full max-w-md mx-auto px-2 sm:px-4 text-center">
           <div className="flex flex-col items-center w-full">
