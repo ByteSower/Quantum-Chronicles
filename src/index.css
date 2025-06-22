@@ -105,24 +105,26 @@ button:focus-visible {
   }
   
   .variable-dashboard.collapsed {
-    height: 50px; /* Header only */
+    height: 44px; /* Smaller header for mobile */
   }
   
   .variable-dashboard.open {
-    height: 250px; /* Expanded view */
-    max-height: 40vh;
+    height: 220px; /* Slightly smaller expanded view */
+    max-height: 35vh; /* Reduced from 40vh */
   }
   
   .sheet-header {
-    padding: 12px 16px;
-    text-align: center;
+    padding: 8px 16px;
     cursor: pointer;
     background: rgba(99, 102, 241, 0.1);
     border-bottom: 1px solid rgba(99, 102, 241, 0.3);
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 13px;
     user-select: none;
     transition: background-color 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   
   .sheet-header:hover {
@@ -155,7 +157,7 @@ button:focus-visible {
 @media (min-width: 769px) {
   .variable-dashboard {
     position: fixed;
-    top: 20px;
+    top: 80px; /* Moved down to avoid header buttons */
     right: 20px;
     width: 320px;
     max-width: 25vw;
@@ -165,6 +167,14 @@ button:focus-visible {
     backdrop-filter: blur(10px);
     padding: 16px;
     color: #fff;
+    z-index: 900; /* Lower than header elements */
+    transition: all 0.3s ease;
+  }
+  
+  /* Minimized state */
+  .variable-dashboard:has(.dashboard-content.hidden) {
+    width: auto;
+    min-width: 200px;
   }
   
   .sheet-header {
@@ -173,5 +183,206 @@ button:focus-visible {
   
   .sheet-content {
     display: block !important; /* Always show content on desktop */
+  }
+  
+  .dashboard-content {
+    transition: opacity 0.3s ease;
+  }
+}
+
+/* Onboarding and Visual Callouts Styles */
+@layer components {
+  /* Onboarding animations */
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+  
+  .animate-slideDown {
+    animation: slideDown 0.5s ease-out forwards;
+  }
+  
+  .animate-zoom {
+    animation: zoom 0.5s ease-out forwards;
+  }
+  
+  /* Pulsating highlight for choice buttons */
+  .choice-pulse {
+    animation: choicePulse 2s ease-in-out infinite;
+    position: relative;
+  }
+  
+  .choice-pulse::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #8b5cf6, #3b82f6, #06b6d4, #8b5cf6);
+    border-radius: inherit;
+    z-index: -1;
+    animation: gradientShift 3s ease infinite;
+  }
+  
+  /* Onboarding highlight effect */
+  .onboarding-highlight {
+    position: relative;
+    z-index: 45;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.6), 0 0 20px rgba(139, 92, 246, 0.4);
+    border-radius: 8px;
+    animation: highlightPulse 2s ease-in-out infinite;
+  }
+  
+  /* Spotlight effect for onboarding */
+  .onboarding-spotlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle 150px at var(--spotlight-x, 50%) var(--spotlight-y, 50%), 
+                               rgba(0, 0, 0, 0) 0%, 
+                               rgba(0, 0, 0, 0.3) 40%, 
+                               rgba(0, 0, 0, 0.8) 100%);
+    pointer-events: none;
+  }
+  
+  /* Tooltip callout styles */
+  .choice-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(15, 23, 42, 0.95);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 50;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    backdrop-filter: blur(8px);
+  }
+  
+  .choice-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.95);
+  }
+  
+  .choice-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-12px);
+  }
+  
+  /* Micro-prompt banner */
+  .engagement-banner {
+    transform: translateY(100%);
+    transition: transform 0.5s ease-out;
+  }
+  
+  .engagement-banner.visible {
+    transform: translateY(0);
+  }
+  
+  /* Variable teaser inline styles */
+  .variable-teaser {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    backdrop-filter: blur(8px);
+    animation: subtleGlow 4s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes choicePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.6), 0 0 20px rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6);
+  }
+}
+
+@keyframes subtleGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
   }
 }

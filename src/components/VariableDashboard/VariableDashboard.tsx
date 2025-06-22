@@ -1,7 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import AboutQNCEModal from '../AboutQNCEModal';
-import { trackUIEvent } from '../../utils/analytics';
 
 interface VariableDashboardProps {
   curiosity: number;
@@ -46,13 +44,13 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
   disruption,
   synchrony,
 }) => {
-  const [showAboutQNCE, setShowAboutQNCE] = useState(false);
   const [animations, setAnimations] = useState<Record<string, VariableChangeAnimation>>({
     curiosity: { previousValue: curiosity, currentValue: curiosity, isAnimating: false },
     coherence: { previousValue: coherence, currentValue: coherence, isAnimating: false },
     disruption: { previousValue: disruption, currentValue: disruption, isAnimating: false },
     synchrony: { previousValue: synchrony, currentValue: synchrony, isAnimating: false },
   });
+  const [isMinimized, setIsMinimized] = useState(false);
 
   // Trigger animations when values change
   useEffect(() => {
@@ -215,54 +213,54 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
 
   return (
     <>
-      <AboutQNCEModal 
-        isOpen={showAboutQNCE} 
-        onClose={() => setShowAboutQNCE(false)} 
-      />
-      
       <div id="variable-dashboard" className="text-white font-sans">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
             <span className="text-lg mr-2">⚛️</span>
             <h3 className="text-sm font-bold text-gray-200">Quantum State</h3>
+            {/* Small help icon for mobile, more subtle */}
           </div>
-          <button
-            onClick={() => {
-              setShowAboutQNCE(true);
-              trackUIEvent.help('variable_dashboard_learn_more');
-            }}
-            className="text-xs text-indigo-400 hover:text-indigo-300 underline"
-          >
-            Learn More
-          </button>
+          <div className="flex items-center gap-1">
+            {/* Desktop minimize button */}
+            <button
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="hidden md:block text-xs text-gray-400 hover:text-white transition-colors duration-200 px-1"
+              title={isMinimized ? 'Expand Dashboard' : 'Minimize Dashboard'}
+            >
+              {isMinimized ? '📋' : '➖'}
+            </button>
+          </div>
         </div>
         
-        {renderVariable('curiosity', curiosity, 'Curiosity')}
-        {renderVariable('coherence', coherence, 'Coherence')}
-        {renderVariable('disruption', disruption, 'Disruption')}
-        {renderVariable('synchrony', synchrony, 'Synchrony')}
-        
-        {/* Quantum field visualization */}
-        <div className="mt-3 pt-2 border-t border-indigo-500 border-opacity-30">
-          <div className="flex justify-between text-xs text-gray-400 items-center">
-            <div className="flex items-center">
-              <span>Field Strength:</span>
-              <Tooltip text="Field Strength represents the convergence of narrative energy from your choices. Higher values indicate that story themes are pulling together strongly, creating focused narrative paths and powerful story moments.">
-                <span className="text-xs text-gray-400 hover:text-indigo-300 ml-1 cursor-help">ℹ️</span>
-              </Tooltip>
+        {/* Dashboard content - hidden when minimized on desktop */}
+        <div className={`dashboard-content ${isMinimized ? 'hidden md:hidden' : ''}`}>
+          {renderVariable('curiosity', curiosity, 'Curiosity')}
+          {renderVariable('coherence', coherence, 'Coherence')}
+          {renderVariable('disruption', disruption, 'Disruption')}
+          {renderVariable('synchrony', synchrony, 'Synchrony')}
+          
+          {/* Quantum field visualization */}
+          <div className="mt-3 pt-2 border-t border-indigo-500 border-opacity-30">
+            <div className="flex justify-between text-xs text-gray-400 items-center">
+              <div className="flex items-center">
+                <span>Field Strength:</span>
+                <Tooltip text="Field Strength represents the convergence of narrative energy from your choices. Higher values indicate that story themes are pulling together strongly, creating focused narrative paths and powerful story moments.">
+                  <span className="text-xs text-gray-400 hover:text-indigo-300 ml-1 cursor-help">ℹ️</span>
+                </Tooltip>
+              </div>
+              <span className="font-semibold">
+                {Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)}
+              </span>
             </div>
-            <span className="font-semibold">
-              {Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)}
-            </span>
-          </div>
-          <div className="mt-1 h-1 bg-gray-800 rounded overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-1000"
-              style={{
-                width: `${Math.min(100, (Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)) * 2)}%`,
-                filter: 'drop-shadow(0 0 4px currentColor)'
-              }}
-            />
+            <div className="mt-1 h-1 bg-gray-800 rounded overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-1000"
+                style={{
+                  width: `${Math.min(100, (Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)) * 2)}%`,
+                  filter: 'drop-shadow(0 0 4px currentColor)'
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

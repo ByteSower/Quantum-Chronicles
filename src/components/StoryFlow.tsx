@@ -4,10 +4,14 @@ import ChoiceSelector from './ChoiceSelector';
 import StateDebugOverlay from './StateDebugOverlay';
 import IntroModal from './IntroModal';
 import TutorialOverlay from './TutorialOverlay';
+import OnboardingOverlay from './OnboardingOverlay';
+import EngagementBanner from './EngagementBanner';
+import VariableTeaser from './VariableTeaser';
 import VariableDashboard from './VariableDashboard/VariableDashboard';
 import VisualBranchTracker from './VisualBranchTracker';
 import { useQNCE } from '../hooks/useQNCE';
 import LogArea from './LogArea';
+import { analytics } from '../utils/analytics';
 import type { LogEntry } from './LogArea';
 import type { StartingPoint } from './StartScreen';
 
@@ -33,7 +37,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   onReturnToStart, 
   onShowAbout, 
   onShowSettings,
-  onShowQNCEHelp
+  onShowQNCEHelp: _onShowQNCEHelp // Keep for interface compatibility but don't use
 }) => {
   const { 
     currentNode, 
@@ -56,6 +60,13 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   const [showTutorial, setShowTutorial] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [initialized, setInitialized] = useState(false);
+  
+  // Onboarding and engagement states
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
+  const [showEngagementBanner, setShowEngagementBanner] = useState(false);
+  const [choiceCount, setChoiceCount] = useState(0);
+  const [isFirstChoice, setIsFirstChoice] = useState(true);
 
   // Initialize with starting point variables
   useEffect(() => {
@@ -70,10 +81,62 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     setInitialized(false);
   }, [startingPoint?.id]);
 
+  // Scroll depth tracking for engagement prompts
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = scrollTop / docHeight;
+      
+      // Show engagement banner at 75% scroll depth (only if no recent choices and not completed onboarding)
+      if (scrollPercent >= 0.75 && !showEngagementBanner && onboardingCompleted && choiceCount < 3) {
+        setShowEngagementBanner(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [showEngagementBanner, onboardingCompleted, choiceCount]);
+
+  // Check if user should see onboarding (new users)
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('qnce_onboarding_completed');
+    if (!hasSeenOnboarding && !showModal && !showTutorial) {
+      // Show onboarding after intro modal and tutorial
+      setShowOnboarding(true);
+    }
+  }, [showModal, showTutorial]);
+
   // Show tutorial after intro modal is closed
   function handleIntroClose() {
     setShowModal(false);
     setShowTutorial(true);
+  }
+
+  // Handle onboarding completion
+  function handleOnboardingComplete() {
+    setShowOnboarding(false);
+    setOnboardingCompleted(true);
+    localStorage.setItem('qnce_onboarding_completed', 'true');
+    analytics.trackEvent('onboarding_completed', 'education', 'guided_tour');
+  }
+
+  // Handle onboarding dismissal
+  function handleOnboardingDismiss() {
+    setShowOnboarding(false);
+    setOnboardingCompleted(true);
+    localStorage.setItem('qnce_onboarding_completed', 'true');
+    analytics.trackEvent('onboarding_skipped', 'education', 'user_dismissed');
+  }
+
+  // Handle engagement banner interaction
+  function handleEngagementInteraction() {
+    setShowEngagementBanner(false);
+    // Scroll to choices if available
+    const choicesElement = document.querySelector('.choice-button');
+    if (choicesElement) {
+      choicesElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   function handleReset() {
@@ -92,6 +155,13 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     const availableChoices = getAvailableChoices();
     const choiceIndex = availableChoices.findIndex(c => c === choice);
     if (choiceIndex === -1) return;
+    
+    // Track choice count and first choice status
+    setChoiceCount(prev => prev + 1);
+    setIsFirstChoice(false);
+    
+    // Hide engagement banner when choice is made
+    setShowEngagementBanner(false);
     
     // Add consequence messages to logs
     if (choice.consequences?.immediate) {
@@ -164,7 +234,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   return (
     <>
-      {showModal && <IntroModal onClose={handleIntroClose} onShowAbout={onShowQNCEHelp} />}
+      {showModal && <IntroModal onClose={handleIntroClose} />}
       {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
       
       {/* Developer Mode Variable Dashboard */}
@@ -175,9 +245,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             className="sheet-header md:hidden" 
             onClick={() => setSheetOpen(prev => !prev)}
           >
-            <div className="flex items-center justify-center gap-2">
-              <span>Developer Dashboard</span>
-              <span className="text-lg">{sheetOpen ? '▼' : '▲'}</span>
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">⚛️ Quantum State</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400">Tap to {sheetOpen ? 'collapse' : 'expand'}</span>
+                <span className="text-lg">{sheetOpen ? '▼' : '▲'}</span>
+              </div>
             </div>
           </div>
           
@@ -200,7 +275,12 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
               <NarrativeDisplay text={currentNode.text} />
             </div>
             <div className="flex flex-col items-center mb-2 w-full">
-              <ChoiceSelector choices={getAvailableChoices()} onSelect={handleSelectChoice} />
+              <ChoiceSelector 
+                choices={getAvailableChoices()} 
+                onSelect={handleSelectChoice}
+                showOnboardingHints={onboardingCompleted && isFirstChoice}
+                isFirstChoice={isFirstChoice}
+              />
               
               {/* Show locked choices in developer mode */}
               {settings.developerMode && currentNode.choices.length > getAvailableChoices().length && (
@@ -302,7 +382,32 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             />
           </div>
         )}
+        
+        {/* Variable Teaser - appears after first choice */}
+        {choiceCount > 0 && choiceCount <= 2 && (
+          <div className="w-full max-w-md mx-auto mt-6 px-4">
+            <VariableTeaser 
+              variables={variables}
+              showHint={choiceCount === 1}
+              compact={false}
+            />
+          </div>
+        )}
       </div>
+      
+      {/* Onboarding Overlay */}
+      <OnboardingOverlay
+        isOpen={showOnboarding}
+        onComplete={handleOnboardingComplete}
+        onDismiss={handleOnboardingDismiss}
+      />
+      
+      {/* Engagement Banner */}
+      <EngagementBanner
+        isVisible={showEngagementBanner}
+        onInteraction={handleEngagementInteraction}
+        onDismiss={() => setShowEngagementBanner(false)}
+      />
     </>
   );
 };
