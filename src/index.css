@@ -1,0 +1,504 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply h-full;
+  }
+  
+  /* Force choice buttons to maintain gradient background regardless of system preferences */
+  .choice-button,
+  button.choice-button {
+    background: linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234)) !important;
+    background-color: #000000 !important; /* Fallback black background */
+    color: white !important;
+    border: none !important;
+  }
+  
+  .choice-button:hover,
+  button.choice-button:hover {
+    background: linear-gradient(to right, rgb(67, 56, 202), rgb(126, 34, 206)) !important;
+    background-color: #1a1a1a !important; /* Fallback dark background */
+  }
+  
+  /* Force all gradient buttons only - very specific targeting */
+  button[class*="bg-gradient"]:not([class*="bg-clip-text"]),
+  button.bg-gradient-to-r:not([class*="bg-clip-text"]) {
+    background: linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234)) !important;
+    background-color: #000000 !important; /* Fallback black background */
+    color: white !important;
+  }
+
+  /* Ensure gradient buttons remain consistent across all screen sizes */
+  @media (max-width: 600px) {
+    .choice-button,
+    button.choice-button,
+    button[class*="bg-gradient"]:not([class*="bg-clip-text"]),
+    button.bg-gradient-to-r:not([class*="bg-clip-text"]) {
+      background: linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234)) !important;
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+
+  /* Force ALL buttons to have black background - comprehensive override */
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  .btn,
+  .button {
+    background-color: #000000 !important;
+    color: white !important;
+  }
+
+  button:hover,
+  [type="button"]:hover,
+  [type="submit"]:hover,
+  [type="reset"]:hover,
+  .btn:hover,
+  .button:hover {
+    background-color: #1a1a1a !important;
+    color: white !important;
+  }
+
+  /* Override any Tailwind background utilities on buttons */
+  button[class*="bg-"],
+  [type="button"][class*="bg-"],
+  [type="submit"][class*="bg-"],
+  [type="reset"][class*="bg-"] {
+    background-color: #000000 !important;
+    color: white !important;
+  }
+
+  button[class*="bg-"]:hover,
+  [type="button"][class*="bg-"]:hover,
+  [type="submit"][class*="bg-"]:hover,
+  [type="reset"][class*="bg-"]:hover {
+    background-color: #1a1a1a !important;
+    color: white !important;
+  }
+
+  /* Responsive overrides to ensure black background on all screen sizes */
+  @media (max-width: 600px) {
+    button,
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    .btn,
+    .button {
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    button,
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    .btn,
+    .button {
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    button,
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    .btn,
+    .button {
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+}
+
+:root {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #000000 100%);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #8b5cf6;
+  text-decoration: inherit;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #a78bfa;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #000000 100%);
+  background-attachment: fixed;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+h2, h3 {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #000000 !important;
+  color: white !important;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+  background-color: #1a1a1a !important;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #000000 !important;
+    color: white !important;
+  }
+}
+
+/* Developer Mode Variable Dashboard - Bottom Sheet Design */
+.variable-dashboard {
+  z-index: 1000;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Mobile bottom sheet styles */
+@media (max-width: 768px) {
+  .variable-dashboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    border-top: 2px solid rgba(99, 102, 241, 0.5);
+    color: #fff;
+    transition: height 0.3s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .variable-dashboard.collapsed {
+    height: 48px; /* Slightly larger for better touch targets */
+  }
+  
+  .variable-dashboard.open {
+    height: 240px; /* Better spacing for content */
+    max-height: 40vh;
+  }
+  
+  .sheet-header {
+    padding: 12px 16px; /* Better padding for mobile */
+    cursor: pointer;
+    background: rgba(99, 102, 241, 0.1);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+    min-height: 48px;
+  }
+  
+  .sheet-header:hover {
+    background: rgba(99, 102, 241, 0.2);
+  }
+  
+  .sheet-content {
+    overflow-y: auto;
+    padding: 16px;
+    height: calc(100% - 50px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.6) transparent;
+  }
+  
+  .sheet-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .sheet-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .sheet-content::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.6);
+    border-radius: 3px;
+  }
+}
+
+/* Desktop styles - maintain existing layout */
+@media (min-width: 769px) {
+  .variable-dashboard {
+    position: fixed;
+    top: 100px; /* More space from top */
+    right: 10px; /* Tighter to the edge */
+    width: 260px; /* Reduced width */
+    max-width: 20vw; /* Further reduced max-width */
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    padding: 16px;
+    color: #fff;
+    z-index: 900; /* Lower than header elements */
+    transition: all 0.3s ease;
+  }
+  
+  /* Minimized state */
+  .variable-dashboard:has(.dashboard-content.hidden) {
+    width: auto;
+    min-width: 200px;
+  }
+  
+  .sheet-header {
+    display: none; /* Hide header on desktop */
+  }
+  
+  .sheet-content {
+    display: block !important; /* Always show content on desktop */
+  }
+  
+  .dashboard-content {
+    transition: opacity 0.3s ease;
+  }
+}
+
+/* Onboarding and Visual Callouts Styles */
+@layer components {
+  /* Onboarding animations */
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+  
+  .animate-slideDown {
+    animation: slideDown 0.5s ease-out forwards;
+  }
+  
+  .animate-zoom {
+    animation: zoom 0.5s ease-out forwards;
+  }
+  
+  /* Pulsating highlight for choice buttons */
+  .choice-pulse {
+    animation: choicePulse 2s ease-in-out infinite;
+    position: relative;
+  }
+  
+  .choice-pulse::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #8b5cf6, #3b82f6, #06b6d4, #8b5cf6);
+    border-radius: inherit;
+    z-index: -1;
+    animation: gradientShift 3s ease infinite;
+  }
+  
+  /* Onboarding highlight effect */
+  .onboarding-highlight {
+    position: relative;
+    z-index: 45;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.6), 0 0 20px rgba(139, 92, 246, 0.4);
+    border-radius: 8px;
+    animation: highlightPulse 2s ease-in-out infinite;
+  }
+  
+  /* Spotlight effect for onboarding */
+  .onboarding-spotlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle 150px at var(--spotlight-x, 50%) var(--spotlight-y, 50%), 
+                               rgba(0, 0, 0, 0) 0%, 
+                               rgba(0, 0, 0, 0.3) 40%, 
+                               rgba(0, 0, 0, 0.8) 100%);
+    pointer-events: none;
+  }
+  
+  /* Tooltip callout styles */
+  .choice-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(15, 23, 42, 0.95);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 50;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    backdrop-filter: blur(8px);
+  }
+  
+  .choice-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.95);
+  }
+  
+  .choice-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-12px);
+  }
+  
+  /* Micro-prompt banner */
+  .engagement-banner {
+    transform: translateY(100%);
+    transition: transform 0.5s ease-out;
+  }
+  
+  .engagement-banner.visible {
+    transform: translateY(0);
+  }
+  
+  /* Variable teaser inline styles */
+  .variable-teaser {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    backdrop-filter: blur(8px);
+    animation: subtleGlow 4s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes choicePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.6), 0 0 20px rgba(139, 92, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6);
+  }
+}
+
+@keyframes subtleGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+  }
+}

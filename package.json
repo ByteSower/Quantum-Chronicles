@@ -1,0 +1,47 @@
+{
+  "name": "quantum-chronicles",
+  "private": true,
+  "version": "0.3.0-beta.1",
+  "type": "module",
+  "homepage": "https://bytesower.github.io/Quantum-Chronicles",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:beta": "cp .env.beta .env.local && npm run build && rm -f .env.local",
+    "lint": "eslint .",
+    "type-check": "tsc -b --noEmit",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "deploy:beta": "./deploy-beta.sh",
+    "test:accessibility": "npm run build && npx @axe-core/cli http://localhost:4173 --load-delay 3000"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@axe-core/cli": "^4.10.2",
+    "@axe-core/puppeteer": "^4.10.2",
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "axe-core": "^4.10.3",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "gh-pages": "^6.3.0",
+    "globals": "^16.0.0",
+    "postcss": "^8.5.5",
+    "puppeteer": "^24.10.2",
+    "tailwindcss": "^3.3.3",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
+}
