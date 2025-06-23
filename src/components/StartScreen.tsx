@@ -64,19 +64,27 @@ const StartScreen: React.FC<StartScreenProps> = ({ onSelectStart, onShowAbout, o
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-950 to-black flex flex-col items-center justify-center text-white p-4">
       <div className="max-w-4xl w-full mx-auto text-center">
-        {/* Main Title */}
-        <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
-          Quantum Chronicles
-        </h1>
-        <p className="text-xl md:text-2xl text-indigo-200 mb-2 font-light">
-          An Interactive Narrative Experience
-        </p>
-        <p className="text-sm text-slate-400 mb-12">
-          Where every choice ripples through the quantum fabric of reality
-        </p>
+        {/* Header */}
+        <header>
+          <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
+            Quantum Chronicles
+          </h1>
+          <p className="text-xl md:text-2xl text-indigo-200 mb-2 font-light">
+            An Interactive Narrative Experience
+          </p>
+          <p className="text-sm text-slate-400 mb-12">
+            Where every choice ripples through the quantum fabric of reality
+          </p>
+        </header>
 
-        {/* Starting Points */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Main Content */}
+        <main>
+          <h2 className="sr-only">Choose Your Starting Point</h2>
+          
+          {/* Starting Points */}
+          <section aria-labelledby="starting-points-heading">
+            <h3 id="starting-points-heading" className="sr-only">Available Stories</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Available Narrative */}
           {startingPoints.map((point) => (
             <button
@@ -84,9 +92,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ onSelectStart, onShowAbout, o
               onClick={() => onSelectStart(point)}
               className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-indigo-500/30 rounded-lg p-6 text-left hover:from-slate-700/80 hover:to-slate-800/80 hover:border-indigo-400/50 transition-all duration-300 transform hover:scale-105 group"
             >
-              <h3 className="text-xl font-bold mb-2 text-indigo-300 group-hover:text-indigo-200">
+              <h4 className="text-xl font-bold mb-2 text-indigo-300 group-hover:text-indigo-200">
                 {point.title}
-              </h3>
+              </h4>
               <p className="text-slate-300 mb-3 text-sm leading-relaxed">
                 {point.description}
               </p>
@@ -119,9 +127,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ onSelectStart, onShowAbout, o
               <div className="absolute top-4 right-4 text-gray-400">
                 🔒
               </div>
-              <h3 className="text-xl font-bold mb-2 text-gray-400">
+              <h4 className="text-xl font-bold mb-2 text-gray-400">
                 {point.title}
-              </h3>
+              </h4>
               <p className="text-gray-500 mb-3 text-sm leading-relaxed">
                 {point.description}
               </p>
@@ -147,28 +155,34 @@ const StartScreen: React.FC<StartScreenProps> = ({ onSelectStart, onShowAbout, o
               </div>
             </div>
           ))}
-        </div>
+            </div>
+          </section>
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-wrap justify-center gap-4">
-          <button
-            onClick={onShowAbout}
-            className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
-          >
-            About Quantum Chronicles
-          </button>
-          <button
-            onClick={onShowSettings}
-            className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
-          >
-            Settings
-          </button>
-        </div>
+          {/* Navigation */}
+          <nav aria-label="App navigation">
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={onShowAbout}
+                className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
+                aria-label="Learn more about Quantum Chronicles"
+              >
+                About Quantum Chronicles
+              </button>
+              <button
+                onClick={onShowSettings}
+                className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
+                aria-label="Open application settings"
+              >
+                Settings
+              </button>
+            </div>
+          </nav>
+        </main>
 
-        {/* Attribution */}
-        <div className="mt-12 text-xs text-slate-500">
+        {/* Footer */}
+        <footer className="mt-12 text-xs text-slate-500" role="contentinfo">
           <p>Created by ByteSower • Follow us for more interactive experiences!</p>
-        </div>
+        </footer>
       </div>
     </div>
   );

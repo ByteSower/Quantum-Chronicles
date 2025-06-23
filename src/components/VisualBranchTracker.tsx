@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 interface BranchNode {
   id: string;
@@ -23,7 +23,6 @@ const VisualBranchTracker: React.FC<VisualBranchTrackerProps> = ({
   onNodeSelect,
   className = ''
 }) => {
-  const [_animationTrigger, setAnimationTrigger] = useState(0);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -48,10 +47,6 @@ const VisualBranchTracker: React.FC<VisualBranchTrackerProps> = ({
     
     return { svgWidth: width, svgHeight: height, nodeSpacing: spacing };
   }, [nodes]);
-
-  useEffect(() => {
-    setAnimationTrigger(prev => prev + 1);
-  }, [nodes, selectedPath]);
 
   const getNodeColor = useMemo(() => (node: BranchNode, isHovered: boolean = false) => {
     if (node.isCurrent) return isHovered ? '#a855f7' : '#8b5cf6';

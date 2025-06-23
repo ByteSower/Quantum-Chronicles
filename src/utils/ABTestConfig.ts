@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 // A/B Testing and Feature Flag Configuration
 
 export interface FeatureFlags {
@@ -84,15 +86,17 @@ class ABTestManager {
     this.generateNewConfig();
   }
 
-  private isValidConfig(config: any): config is ABTestConfig {
-    return (
-      config &&
-      typeof config.userId === 'string' &&
-      typeof config.sessionId === 'string' &&
-      (config.onboardingVariant === 'A' || config.onboardingVariant === 'B') &&
-      typeof config.assignedAt === 'number' &&
-      config.features &&
-      typeof config.features === 'object'
+  private isValidConfig(config: unknown): config is ABTestConfig {
+    if (!config || typeof config !== 'object') return false;
+    
+    const obj = config as Record<string, unknown>;
+    return !!(
+      typeof obj.userId === 'string' &&
+      typeof obj.sessionId === 'string' &&
+      (obj.onboardingVariant === 'A' || obj.onboardingVariant === 'B') &&
+      typeof obj.assignedAt === 'number' &&
+      obj.features &&
+      typeof obj.features === 'object'
     );
   }
 
@@ -212,11 +216,27 @@ export const abTestManager = new ABTestManager();
 
 // Convenience hooks for React components
 export const useFeatureFlag = (flag: keyof FeatureFlags): boolean => {
-  return abTestManager.getFeatureFlag(flag);
+  const [featureFlag, setFeatureFlag] = useState(() => abTestManager.getFeatureFlag(flag));
+  
+  useEffect(() => {
+    // Re-evaluate feature flag on mount and when flag changes
+    const currentFlag = abTestManager.getFeatureFlag(flag);
+    setFeatureFlag(currentFlag);
+  }, [flag]);
+  
+  return featureFlag;
 };
 
 export const useABTestVariant = (): 'A' | 'B' => {
-  return abTestManager.getVariant();
+  const [variant, setVariant] = useState(() => abTestManager.getVariant());
+  
+  useEffect(() => {
+    // Re-evaluate variant on mount
+    const currentVariant = abTestManager.getVariant();
+    setVariant(currentVariant);
+  }, []);
+  
+  return variant;
 };
 
 // Environment variable overrides for development
@@ -230,6 +250,6 @@ if (import.meta.env.DEV) {
 
   // Expose to window for debugging
   if (typeof window !== 'undefined') {
-    (window as any).abTestManager = abTestManager;
+    (window as unknown as Record<string, unknown>).abTestManager = abTestManager;
   }
 }

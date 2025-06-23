@@ -1,18 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import NarrativeDisplay from './NarrativeDisplay';
 import ChoiceSelector from './ChoiceSelector';
-import StateDebugOverlay from './StateDebugOverlay';
-import IntroModal from './IntroModal';
-import TutorialOverlay from './TutorialOverlay';
-import OnboardingOverlay from './OnboardingOverlay';
-import EngagementBanner from './EngagementBanner';
-import VariableTeaser from './VariableTeaser';
-import VariableDashboard from './VariableDashboard/VariableDashboard';
-import VisualBranchTracker from './VisualBranchTracker';
-import { useQNCE } from '../hooks/useQNCE';
-import LogArea from './LogArea';
+// Lazy load non-critical components
+const StateDebugOverlay = lazy(() => import('./StateDebugOverlay'));
+const IntroModal = lazy(() => import('./IntroModal'));
+const TutorialOverlay = lazy(() => import('./TutorialOverlay'));
+const OnboardingOverlay = lazy(() => import('./OnboardingOverlay'));
+const VariableTeaser = lazy(() => import('./VariableTeaser'));
+const VariableDashboard = lazy(() => import('./VariableDashboard/VariableDashboard'));
+const VisualBranchTracker = lazy(() => import('./VisualBranchTracker'));
+const LogArea = lazy(() => import('./LogArea'));
+const FeedbackPrompt = lazy(() => import('./FeedbackPrompt'));
+import { useQNCE, type Choice } from '../hooks/useQNCE';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 import { useFeatureFlag, useABTestVariant } from '../utils/ABTestConfig';
+import { accessibilityManager } from '../utils/accessibility';
+import { useFeedbackManager } from '../utils/FeedbackManager';
 import type { LogEntry } from './LogArea';
 import type { StartingPoint } from './StartScreen';
 
@@ -31,13 +34,14 @@ interface StoryFlowProps {
   onShowQNCEHelp?: () => void;
 }
 
-const StoryFlow: React.FC<StoryFlowProps> = ({ 
+const StoryFlow: React.FC<StoryFlowProps> = ({
   startingPoint, 
   settings, 
   devMode,
-  onReturnToStart, 
-  onShowAbout, 
+  onReturnToStart,
+  onShowAbout,
   onShowSettings,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onShowQNCEHelp: _onShowQNCEHelp // Keep for interface compatibility but don't use
 }) => {
   const { 
@@ -45,8 +49,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     flags, 
     history, 
     variables, 
-    unlockedNodes: _unlockedNodes,
-    delayedConsequences: _delayedConsequences,
     recentActions,
     makeChoice, 
     reset, 
@@ -64,29 +66,49 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   // Onboarding and engagement states
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
-  const [showEngagementBanner, setShowEngagementBanner] = useState(false);
   const [choiceCount, setChoiceCount] = useState(0);
   const [isFirstChoice, setIsFirstChoice] = useState(true);
+
+  // Feedback management
+  const {
+    currentPrompt,
+    checkForFeedback,
+    handleFeedbackSubmit,
+    handleFeedbackDismiss
+  } = useFeedbackManager();
+
+  // Track session start and end for feedback
+  useEffect(() => {
+    const sessionStartTime = Date.now();
+    
+    // Track session end on component unmount or page unload
+    const handleSessionEnd = () => {
+      const sessionDuration = Date.now() - sessionStartTime;
+      if (sessionDuration > 2 * 60 * 1000) { // At least 2 minutes for meaningful session
+        checkForFeedback('session_ended');
+      }
+    };
+
+    // Add event listeners for session end
+    window.addEventListener('beforeunload', handleSessionEnd);
+    
+    // Return cleanup function
+    return () => {
+      handleSessionEnd();
+      window.removeEventListener('beforeunload', handleSessionEnd);
+    };
+  }, [checkForFeedback]);
 
   // A/B Test configuration
   const abTestVariant = useABTestVariant();
   const enhancedOnboarding = useFeatureFlag('enhancedOnboarding');
-  const microPrompts = useFeatureFlag('microPrompts');
 
   // Initialize A/B test and check onboarding status
   useEffect(() => {
     // Check if onboarding was completed
     const completed = localStorage.getItem('qnce_onboarding_completed') === 'true';
     setOnboardingCompleted(completed);
-    
-    // Debug A/B test assignment
-    if (import.meta.env.DEV) {
-      console.log('🧪 A/B Test Variant:', abTestVariant, {
-        enhancedOnboarding,
-        microPrompts,
-      });
-    }
-  }, [abTestVariant, enhancedOnboarding, microPrompts]);
+  }, [abTestVariant, enhancedOnboarding]);
 
   // Initialize with starting point variables
   useEffect(() => {
@@ -101,39 +123,27 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     setInitialized(false);
   }, [startingPoint?.id]);
 
-  // Scroll depth tracking for engagement prompts
-  useEffect(() => {
-    let pageStartTime = Date.now();
-    
-    const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = scrollTop / docHeight;
-      
-      // Show engagement banner at 75% scroll depth (only if micro-prompts enabled and other conditions met)
-      if (scrollPercent >= 0.75 && !showEngagementBanner && onboardingCompleted && choiceCount < 3 && microPrompts) {
-        setShowEngagementBanner(true);
-        analyticsWrapper.trackEngagementEvent('engagement_prompt_shown', {
-          scrollDepth: scrollPercent * 100,
-          timeOnPage: Date.now() - pageStartTime,
-        });
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [showEngagementBanner, onboardingCompleted, choiceCount, microPrompts]);
-
   // Show tutorial after intro modal is closed
   function handleIntroClose() {
     setShowModal(false);
     // Show onboarding based on A/B test variant
-    // Variant A: Minimal onboarding (baseline)
+    // Variant A: Minimal onboarding (baseline) - but still show if never completed
     // Variant B: Enhanced onboarding with guided tour
+    
+    // Debug logging
+    if (import.meta.env.DEV) {
+      console.log('🎯 Intro closed, checking onboarding conditions:', {
+        enhancedOnboarding,
+        onboardingCompleted,
+        abTestVariant,
+        shouldShowOnboarding: enhancedOnboarding || !onboardingCompleted
+      });
+    }
+    
     if (enhancedOnboarding || !onboardingCompleted) {
       setShowOnboarding(true);
+      analyticsWrapper.trackOnboardingEvent('onboarding_started');
     }
-    analyticsWrapper.trackOnboardingEvent('onboarding_started');
   }
 
   // Handle onboarding completion
@@ -142,6 +152,11 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     setOnboardingCompleted(true);
     localStorage.setItem('qnce_onboarding_completed', 'true');
     analyticsWrapper.trackOnboardingEvent('onboarding_completed');
+    
+    // Trigger feedback prompt after onboarding
+    setTimeout(() => {
+      checkForFeedback('onboarding_finished');
+    }, 2000); // Small delay to let user settle
   }
 
   // Handle onboarding dismissal
@@ -150,28 +165,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     setOnboardingCompleted(true);
     localStorage.setItem('qnce_onboarding_completed', 'true');
     analyticsWrapper.trackOnboardingEvent('onboarding_skipped');
-  }
-
-  // Handle engagement banner interaction
-  function handleEngagementInteraction() {
-    setShowEngagementBanner(false);
-    // Scroll to choices if available
-    const choicesElement = document.querySelector('.choice-button');
-    if (choicesElement) {
-      choicesElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Track successful navigation to choices
-      analyticsWrapper.trackEngagementEvent('engagement_prompt_clicked', {
-        scrollDepth: (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100,
-      });
-    }
-  }
-
-  // Handle engagement banner dismissal
-  function handleEngagementDismiss() {
-    setShowEngagementBanner(false);
-    analyticsWrapper.trackEngagementEvent('engagement_prompt_dismissed', {
-      scrollDepth: (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100,
-    });
   }
 
   function handleReset() {
@@ -188,14 +181,16 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   }
 
   // Enhanced decision logic for good/bad branches
-  function handleSelectChoice(choice: any) {
+  function handleSelectChoice(choice: Choice) {
     // Find the index of the choice in the available choices (filtered)
     const availableChoices = getAvailableChoices();
     const choiceIndex = availableChoices.findIndex(c => c === choice);
     if (choiceIndex === -1) return;
     
     // Track choice count and update first choice flag
-    setChoiceCount(prev => prev + 1);
+    const newChoiceCount = choiceCount + 1;
+    setChoiceCount(newChoiceCount);
+    
     if (isFirstChoice) {
       setIsFirstChoice(false);
       analyticsWrapper.trackChoiceMade({
@@ -206,6 +201,11 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         isFirstChoice: true,
         variables,
       });
+      
+      // Trigger feedback after first choice
+      setTimeout(() => {
+        checkForFeedback('first_choice_completed');
+      }, 3000);
     } else {
       analyticsWrapper.trackChoiceMade({
         choiceId: choice.nextNodeId,
@@ -215,17 +215,33 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         isFirstChoice: false,
         variables,
       });
+      
+      // Trigger story midpoint feedback after several choices
+      if (newChoiceCount === 5) {
+        setTimeout(() => {
+          checkForFeedback('story_midpoint');
+        }, 4000);
+      }
+      
+      // Trigger engagement feedback at deeper story points
+      if (newChoiceCount === 10) {
+        setTimeout(() => {
+          checkForFeedback('story_engagement');
+        }, 5000);
+      }
     }
     
-    // Hide engagement banner when choice is made
-    setShowEngagementBanner(false);
+    // Hide engagement banner when choice is made (functionality preserved for potential re-implementation)
     
     // Add consequence messages to logs
     if (choice.consequences?.immediate) {
-      setLogs(logs => [
-        ...logs,
-        { message: choice.consequences.immediate, type: 'neutral' },
-      ]);
+      const message = choice.consequences.immediate;
+      if (message) {
+        setLogs(logs => [
+          ...logs,
+          { message, type: 'neutral' as const },
+        ]);
+      }
     }
     
     // Classic crossroads narrative nodes
@@ -291,10 +307,18 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   return (
     <>
-      {showModal && <IntroModal onClose={handleIntroClose} />}
-      {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
+      {showModal && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div className="text-white">Loading...</div></div>}>
+          <IntroModal onClose={handleIntroClose} />
+        </Suspense>
+      )}
+      {showTutorial && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div className="text-white">Loading...</div></div>}>
+          <TutorialOverlay onClose={() => setShowTutorial(false)} />
+        </Suspense>
+      )}
       
-      <div className="w-full flex flex-col items-center text-white">
+      <main className="w-full flex flex-col items-center text-white" role="main" aria-label="Interactive story content">
         <div className="w-full max-w-md mx-auto px-2 sm:px-4 text-center">
           <div className="flex flex-col items-center w-full">
             <div className="mb-4 w-full">
@@ -306,12 +330,13 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             {/* Variable Teaser - shows after first choice and periodically thereafter */}
             {choiceCount > 0 && (choiceCount <= 5 || choiceCount % 3 === 0) && (
               <div className="w-full max-w-md mx-auto mb-4 px-4">
-                <VariableTeaser 
-                  variables={variables}
-                  showHint={choiceCount <= 2}
-                  compact={choiceCount > 3}
-                  nodeId={currentNode.id}
-                />
+                <Suspense fallback={<div className="text-gray-500 text-sm">Loading variables...</div>}>
+                  <VariableTeaser 
+                    variables={variables}
+                    showHint={choiceCount <= 2}
+                    compact={choiceCount > 3}
+                  />
+                </Suspense>
               </div>
             )}
             
@@ -362,53 +387,71 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             {/* Show logs only if developer mode and show logs is enabled */}
             {settings.developerMode && settings.showDebugInfo && (
               <div className="w-full mt-2 mb-4 px-2">
-                <LogArea logs={logs} />
+                <Suspense fallback={<div className="text-gray-500 text-sm">Loading logs...</div>}>
+                  <LogArea logs={logs} />
+                </Suspense>
               </div>
             )}
             
-            <div className="flex flex-wrap items-center gap-3 mt-2 w-full max-w-md justify-center">
+            <nav 
+              className="flex flex-wrap items-center gap-3 mt-2 w-full max-w-md justify-center"
+              role="navigation"
+              aria-label="Story navigation and options"
+            >
               <button
-                className="text-xs text-blue-200 underline hover:text-blue-400 transition"
+                className="text-xs text-blue-200 underline hover:text-blue-400 transition focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded"
                 onClick={handleReset}
+                aria-label="Restart the current story from the beginning"
               >
                 Restart Story
               </button>
               <button
-                className="text-xs text-cyan-200 underline hover:text-cyan-400 transition"
+                className="text-xs text-cyan-200 underline hover:text-cyan-400 transition focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50 rounded"
                 onClick={onReturnToStart}
+                aria-label="Return to story selection screen to choose a different story"
               >
                 Change Story
               </button>
               {settings.developerMode && (
                 <button
-                  className="text-xs text-gray-300 underline hover:text-blue-400 transition"
+                  className="text-xs text-gray-300 underline hover:text-blue-400 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 rounded"
                   onClick={() => setShowDebug((v) => !v)}
+                  aria-label={showDebug ? 'Hide debug information panel' : 'Show debug information panel'}
+                  aria-pressed={showDebug}
                 >
                   {showDebug ? 'Hide Debug' : 'Show Debug'}
                 </button>
               )}
               <button
-                className="text-xs text-yellow-300 underline hover:text-yellow-500 transition"
-                onClick={() => setShowTutorial(true)}
+                className="text-xs text-yellow-300 underline hover:text-yellow-500 transition focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 rounded"
+                onClick={() => {
+                  setShowTutorial(true);
+                  accessibilityManager.announce('Tutorial opened', 'polite');
+                }}
+                aria-label="Open tutorial to learn how to use the interface"
               >
                 Tutorial
               </button>
               <button
-                className="text-xs text-purple-300 underline hover:text-purple-500 transition"
+                className="text-xs text-purple-300 underline hover:text-purple-500 transition focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 rounded"
                 onClick={onShowAbout}
+                aria-label="View information about this application"
               >
                 About
               </button>
               <button
-                className="text-xs text-slate-300 underline hover:text-slate-500 transition"
+                className="text-xs text-slate-300 underline hover:text-slate-500 transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-50 rounded"
                 onClick={onShowSettings}
+                aria-label="Open settings to customize your experience"
               >
                 Settings
               </button>
-            </div>
+            </nav>
             
             {showDebug && settings.developerMode && settings.showDebugInfo && (
-              <StateDebugOverlay nodeId={currentNode.id} flags={flags} history={history} />
+              <Suspense fallback={<div className="text-gray-500 text-sm">Loading debug...</div>}>
+                <StateDebugOverlay nodeId={currentNode.id} flags={flags} history={history} />
+              </Suspense>
             )}
           </div>
         </div>
@@ -416,37 +459,62 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         {/* Visual Branch Tracker moved to bottom and scaled down */}
         {settings.developerMode && (
           <div className="w-full max-w-4xl mx-auto mt-6 px-2">
-            <VisualBranchTracker 
-              nodes={getBranchNodes()}
-              selectedPath={history}
-              className="w-full"
-            />
+            <Suspense fallback={<div className="text-gray-500 text-sm">Loading branch visualizer...</div>}>
+              <VisualBranchTracker 
+                nodes={getBranchNodes()}
+                selectedPath={history}
+                className="w-full"
+              />
+            </Suspense>
           </div>
         )}
-      </div>
+      </main>
       
       {/* Onboarding Overlay */}
-      <OnboardingOverlay
-        isOpen={showOnboarding}
-        onComplete={handleOnboardingComplete}
-        onDismiss={handleOnboardingDismiss}
-      />
-      
-      {/* Engagement Banner */}
-      <EngagementBanner
-        isVisible={showEngagementBanner}
-        onInteraction={handleEngagementInteraction}
-        onDismiss={handleEngagementDismiss}
-      />
+      <Suspense fallback={null}>
+        <OnboardingOverlay
+          isOpen={showOnboarding}
+          onComplete={handleOnboardingComplete}
+          onDismiss={handleOnboardingDismiss}
+        />
+      </Suspense>
 
       {/* Developer Mode Variable Dashboard */}
       {devMode && settings.showVariableDashboard && (
-        <VariableDashboard 
-          curiosity={variables.curiosity}
-          coherence={variables.coherence}
-          disruption={variables.disruption}
-          synchrony={variables.synchrony}
-        />
+        <Suspense fallback={<div className="text-gray-500 text-sm">Loading variable dashboard...</div>}>
+          <VariableDashboard 
+            curiosity={variables.curiosity}
+            coherence={variables.coherence}
+            disruption={variables.disruption}
+            synchrony={variables.synchrony}
+            onInteraction={() => {
+              // Track variable dashboard usage and potentially trigger feedback
+              analyticsWrapper.trackUIEvent('feature_used', {
+                feature: 'variable_dashboard',
+                action: 'opened'
+              });
+              setTimeout(() => {
+                checkForFeedback('variable_dashboard_used');
+              }, 2000);
+            }}
+          />
+        </Suspense>
+      )}
+
+      {/* Feedback Prompt */}
+      {currentPrompt && (
+        <Suspense fallback={null}>
+          <FeedbackPrompt
+            isVisible={currentPrompt.isVisible}
+            category={currentPrompt.trigger.category}
+            milestone={currentPrompt.trigger.milestone}
+            title={currentPrompt.trigger.title}
+            description={currentPrompt.trigger.description}
+            quickOptions={currentPrompt.trigger.quickOptions}
+            onSubmit={handleFeedbackSubmit}
+            onDismiss={handleFeedbackDismiss}
+          />
+        </Suspense>
       )}
     </>
   );

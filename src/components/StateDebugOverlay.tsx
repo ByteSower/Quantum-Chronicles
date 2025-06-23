@@ -2,7 +2,7 @@ import React from 'react';
 
 interface StateDebugOverlayProps {
   nodeId: string;
-  flags: Record<string, any>;
+  flags: Record<string, boolean | number | string>;
   history: string[];
   className?: string;
 }

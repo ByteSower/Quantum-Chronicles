@@ -6,7 +6,7 @@ import type { BranchNode } from '../components/VisualBranchTracker';
 export interface Choice {
   text: string;
   nextNodeId: string;
-  flagEffects?: Record<string, any>;
+  flagEffects?: Record<string, boolean | number | string>;
   variableEffects?: {
     curiosity?: number;
     coherence?: number;
@@ -14,7 +14,7 @@ export interface Choice {
     synchrony?: number;
   };
   requirements?: {
-    flags?: Record<string, any>;
+    flags?: Record<string, boolean | number | string>;
     variables?: {
       curiosity?: { min?: number; max?: number };
       coherence?: { min?: number; max?: number };
@@ -1225,7 +1225,7 @@ const NODES: NarrativeNode[] = [
 
 export interface QNCEReturn {
   currentNode: NarrativeNode;
-  flags: Record<string, any>;
+  flags: Record<string, boolean | number | string>;
   history: string[];
   variables: {
     curiosity: number;
@@ -1238,7 +1238,12 @@ export interface QNCEReturn {
   recentActions: string[];
   makeChoice: (choiceIndex: number) => void;
   reset: () => void;
-  initializeFromStartingPoint: (startingPointId: string, variables: any) => void;
+  initializeFromStartingPoint: (startingPointId: string, variables: {
+    curiosity: number;
+    coherence: number;
+    disruption: number;
+    synchrony: number;
+  }) => void;
   getBranchNodes: () => BranchNode[];
   getAvailableChoices: () => Choice[];
   isChoiceAvailable: (choice: Choice) => boolean;
@@ -1246,7 +1251,7 @@ export interface QNCEReturn {
 
 export const useQNCE = (): QNCEReturn => {
   const [currentNodeId, setCurrentNodeId] = useState('start');
-  const [flags, setFlags] = useState<Record<string, any>>({});
+  const [flags, setFlags] = useState<Record<string, boolean | number | string>>({});
   const [history, setHistory] = useState<string[]>(['start']);
   const [variables, setVariables] = useState({
     curiosity: 0,
@@ -1377,7 +1382,12 @@ export const useQNCE = (): QNCEReturn => {
     return currentNode.choices.filter(isChoiceAvailable);
   }, [currentNodeId, isChoiceAvailable]);
 
-  const initializeFromStartingPoint = useCallback((startingPointId: string, initialVariables: any) => {
+  const initializeFromStartingPoint = useCallback((startingPointId: string, initialVariables: {
+    curiosity: number;
+    coherence: number;
+    disruption: number;
+    synchrony: number;
+  }) => {
     let startNodeId = 'start';
     
     // Map starting points to their corresponding initial nodes
@@ -1406,8 +1416,8 @@ export const useQNCE = (): QNCEReturn => {
     
     // Generate positions for nodes (expanded grid layout with better spacing)
     const nodePositions: Record<string, { x: number; y: number }> = {};
-    let x = 120;  // Increased start position
-    let y = 80;   // Increased start position
+    const x = 120;  // Increased start position
+    const y = 80;   // Increased start position
     
     // Position visited nodes first with better spacing
     history.forEach((nodeId, index) => {

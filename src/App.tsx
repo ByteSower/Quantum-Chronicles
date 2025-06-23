@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import StartScreen from './components/StartScreen';
 import StoryFlow from './components/StoryFlow';
-import AboutModal from './components/AboutModal';
-import SettingsModal from './components/SettingsModal';
-import AboutQNCEModal from './components/AboutQNCEModal';
+// Lazy load modal components
+const AboutModal = lazy(() => import('./components/AboutModal'));
+const SettingsModal = lazy(() => import('./components/SettingsModal'));
+const AboutQNCEModal = lazy(() => import('./components/AboutQNCEModal'));
 import { analytics, trackUIEvent } from './utils/analytics';
 import type { StartingPoint } from './components/StartScreen';
 import './index.css';
@@ -180,20 +181,26 @@ function App() {
           Quantum Chronicles
         </p>
       </footer>
-      <AboutModal
-        isOpen={showAbout}
-        onClose={() => setShowAbout(false)}
-      />
-      <AboutQNCEModal
-        isOpen={showAboutQNCE}
-        onClose={() => setShowAboutQNCE(false)}
-      />
-      <SettingsModal
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-        settings={settings}
-        onUpdateSettings={setSettings}
-      />
+      <Suspense fallback={null}>
+        <AboutModal
+          isOpen={showAbout}
+          onClose={() => setShowAbout(false)}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <AboutQNCEModal
+          isOpen={showAboutQNCE}
+          onClose={() => setShowAboutQNCE(false)}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          settings={settings}
+          onUpdateSettings={setSettings}
+        />
+      </Suspense>
     </div>
     </>
   );

@@ -5,6 +5,7 @@ interface VariableDashboardProps {
   coherence: number;
   disruption: number;
   synchrony: number;
+  onInteraction?: () => void;
 }
 
 interface VariableChangeAnimation {
@@ -42,6 +43,7 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
   coherence,
   disruption,
   synchrony,
+  onInteraction,
 }) => {
   const [animations, setAnimations] = useState<Record<string, VariableChangeAnimation>>({
     curiosity: { previousValue: curiosity, currentValue: curiosity, isAnimating: false },
@@ -107,6 +109,7 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
         });
       }, 1500);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curiosity, coherence, disruption, synchrony]);
 
   const getVariableColor = (value: number, isAnimating: boolean) => {
@@ -250,7 +253,10 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
       <div className="md:hidden">
         <div 
           className="sheet-header" 
-          onClick={() => setIsMobileOpen(prev => !prev)}
+          onClick={() => {
+            setIsMobileOpen(prev => !prev);
+            onInteraction?.();
+          }}
         >
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
@@ -276,7 +282,10 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setIsMinimized(!isMinimized)}
+              onClick={() => {
+                setIsMinimized(!isMinimized);
+                onInteraction?.();
+              }}
               className="text-xs text-gray-400 hover:text-white transition-colors duration-200 px-1"
               title={isMinimized ? 'Expand Dashboard' : 'Minimize Dashboard'}
             >

@@ -37,6 +37,15 @@ const engagementEventSchema = baseEventSchema.extend({
   timeOnPage: z.number().optional(),
 });
 
+const feedbackEventSchema = baseEventSchema.extend({
+  eventType: z.enum(['feedback_prompt_shown', 'feedback_prompt_dismissed', 'feedback_response_submitted', 'feedback_quick_option_selected']),
+  category: z.enum(['onboarding', 'story', 'choice', 'interaction', 'overall']),
+  milestone: z.string(),
+  rating: z.number().optional(),
+  hasComment: z.boolean().optional(),
+  quickOption: z.string().optional(),
+});
+
 const narrativeEventSchema = baseEventSchema.extend({
   eventType: z.enum(['story_progress', 'story_reset', 'story_completed']),
   nodeId: z.string(),
@@ -45,18 +54,9 @@ const narrativeEventSchema = baseEventSchema.extend({
 });
 
 const uiEventSchema = baseEventSchema.extend({
-  eventType: z.enum([
-    'feature_used', 
-    'modal_opened', 
-    'modal_closed', 
-    'tooltip_viewed',
-    'variable_teaser_displayed',
-    'variable_teaser_clicked',
-    'scroll_milestone_reached'
-  ]),
+  eventType: z.enum(['feature_used', 'modal_opened', 'modal_closed', 'tooltip_viewed']),
   feature: z.string(),
   action: z.string().optional(),
-  metadata: z.record(z.any()).optional(),
 });
 
 // Union of all possible events
@@ -64,6 +64,7 @@ const eventSchema = z.union([
   choiceMadeSchema,
   onboardingEventSchema,
   engagementEventSchema,
+  feedbackEventSchema,
   narrativeEventSchema,
   uiEventSchema,
 ]);
@@ -73,6 +74,7 @@ export type AnalyticsEvent = z.infer<typeof eventSchema>;
 export type ChoiceMadeEvent = z.infer<typeof choiceMadeSchema>;
 export type OnboardingEvent = z.infer<typeof onboardingEventSchema>;
 export type EngagementEvent = z.infer<typeof engagementEventSchema>;
+export type FeedbackEvent = z.infer<typeof feedbackEventSchema>;
 export type NarrativeEvent = z.infer<typeof narrativeEventSchema>;
 export type UIEvent = z.infer<typeof uiEventSchema>;
 
@@ -122,6 +124,7 @@ class AnalyticsWrapper {
     if (eventType.includes('choice')) return 'narrative_interaction';
     if (eventType.includes('onboarding')) return 'education';
     if (eventType.includes('engagement')) return 'user_engagement';
+    if (eventType.includes('feedback')) return 'user_feedback';
     if (eventType.includes('story')) return 'narrative_flow';
     return 'user_interface';
   }
@@ -139,11 +142,11 @@ class AnalyticsWrapper {
     }
   }
 
-  private getCustomParameters(event: AnalyticsEvent): Record<string, any> {
-    const params: Record<string, any> = {};
+  private getCustomParameters(event: AnalyticsEvent): Record<string, unknown> {
+    const params: Record<string, unknown> = {};
 
     switch (event.eventType) {
-      case 'choice_made':
+      case 'choice_made': {
         const choiceEvent = event as ChoiceMadeEvent;
         params.choice_id = choiceEvent.choiceId;
         params.node_id = choiceEvent.nodeId;
@@ -153,13 +156,28 @@ class AnalyticsWrapper {
         params.disruption = choiceEvent.variables.disruption;
         params.synchrony = choiceEvent.variables.synchrony;
         break;
+      }
       
       case 'onboarding_completed':
-      case 'onboarding_skipped':
+      case 'onboarding_skipped': {
         const onboardingEvent = event as OnboardingEvent;
         if (onboardingEvent.timeSpent) params.time_spent = onboardingEvent.timeSpent;
         if (onboardingEvent.step) params.final_step = onboardingEvent.step;
         break;
+      }
+
+      case 'feedback_response_submitted':
+      case 'feedback_prompt_shown':
+      case 'feedback_prompt_dismissed':
+      case 'feedback_quick_option_selected': {
+        const feedbackEvent = event as FeedbackEvent;
+        params.feedback_category = feedbackEvent.category;
+        params.milestone = feedbackEvent.milestone;
+        if (feedbackEvent.rating) params.rating = feedbackEvent.rating;
+        if (feedbackEvent.hasComment !== undefined) params.has_comment = feedbackEvent.hasComment;
+        if (feedbackEvent.quickOption) params.quick_option = feedbackEvent.quickOption;
+        break;
+      }
     }
 
     return params;
@@ -202,6 +220,13 @@ class AnalyticsWrapper {
     this.trackEvent({ ...data, eventType });
   }
 
+  public trackFeedbackEvent(
+    eventType: 'feedback_prompt_shown' | 'feedback_prompt_dismissed' | 'feedback_response_submitted' | 'feedback_quick_option_selected',
+    data: Omit<FeedbackEvent, 'eventType' | 'timestamp' | 'userId' | 'sessionId' | 'variant'>
+  ): void {
+    this.trackEvent({ ...data, eventType });
+  }
+
   public trackNarrativeEvent(
     eventType: 'story_progress' | 'story_reset' | 'story_completed',
     data: Omit<NarrativeEvent, 'eventType' | 'timestamp' | 'userId' | 'sessionId' | 'variant'>
@@ -239,6 +264,7 @@ export const analyticsWrapper = new AnalyticsWrapper();
 
 // Legacy compatibility - gradually migrate from this
 export const analytics = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   trackEvent: (action: string, category: string, _label?: string) => {
     analyticsWrapper.trackEvent({
       eventType: 'feature_used' as const,

@@ -9,7 +9,12 @@ interface SettingsModalProps {
     showDebugInfo: boolean;
     animationSpeed: 'slow' | 'normal' | 'fast';
   };
-  onUpdateSettings: (settings: any) => void;
+  onUpdateSettings: (settings: {
+    developerMode: boolean;
+    showVariableDashboard: boolean;
+    showDebugInfo: boolean;
+    animationSpeed: 'slow' | 'normal' | 'fast';
+  }) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdateSettings }) => {
