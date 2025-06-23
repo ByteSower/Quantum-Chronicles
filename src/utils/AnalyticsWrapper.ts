@@ -45,9 +45,18 @@ const narrativeEventSchema = baseEventSchema.extend({
 });
 
 const uiEventSchema = baseEventSchema.extend({
-  eventType: z.enum(['feature_used', 'modal_opened', 'modal_closed', 'tooltip_viewed']),
+  eventType: z.enum([
+    'feature_used', 
+    'modal_opened', 
+    'modal_closed', 
+    'tooltip_viewed',
+    'variable_teaser_displayed',
+    'variable_teaser_clicked',
+    'scroll_milestone_reached'
+  ]),
   feature: z.string(),
   action: z.string().optional(),
+  metadata: z.record(z.any()).optional(),
 });
 
 // Union of all possible events

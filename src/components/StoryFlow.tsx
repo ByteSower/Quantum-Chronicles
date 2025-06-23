@@ -103,6 +103,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   // Scroll depth tracking for engagement prompts
   useEffect(() => {
+    let pageStartTime = Date.now();
+    
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -113,13 +115,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         setShowEngagementBanner(true);
         analyticsWrapper.trackEngagementEvent('engagement_prompt_shown', {
           scrollDepth: scrollPercent * 100,
+          timeOnPage: Date.now() - pageStartTime,
         });
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [showEngagementBanner, onboardingCompleted, choiceCount]);
+  }, [showEngagementBanner, onboardingCompleted, choiceCount, microPrompts]);
 
   // Show tutorial after intro modal is closed
   function handleIntroClose() {
@@ -156,7 +159,19 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     const choicesElement = document.querySelector('.choice-button');
     if (choicesElement) {
       choicesElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Track successful navigation to choices
+      analyticsWrapper.trackEngagementEvent('engagement_prompt_clicked', {
+        scrollDepth: (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100,
+      });
     }
+  }
+
+  // Handle engagement banner dismissal
+  function handleEngagementDismiss() {
+    setShowEngagementBanner(false);
+    analyticsWrapper.trackEngagementEvent('engagement_prompt_dismissed', {
+      scrollDepth: (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100,
+    });
   }
 
   function handleReset() {
@@ -295,6 +310,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
                   variables={variables}
                   showHint={choiceCount <= 2}
                   compact={choiceCount > 3}
+                  nodeId={currentNode.id}
                 />
               </div>
             )}
@@ -420,7 +436,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
       <EngagementBanner
         isVisible={showEngagementBanner}
         onInteraction={handleEngagementInteraction}
-        onDismiss={() => setShowEngagementBanner(false)}
+        onDismiss={handleEngagementDismiss}
       />
 
       {/* Developer Mode Variable Dashboard */}

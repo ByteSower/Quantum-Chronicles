@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
 interface VariableTeaserProps {
   variables: {
@@ -9,12 +10,14 @@ interface VariableTeaserProps {
   };
   showHint?: boolean;
   compact?: boolean;
+  nodeId?: string; // For analytics tracking
 }
 
 const VariableTeaser: React.FC<VariableTeaserProps> = ({ 
   variables, 
   showHint = true,
-  compact = false 
+  compact = false,
+  nodeId = 'unknown'
 }) => {
   const variableList = [
     { 
@@ -51,9 +54,35 @@ const VariableTeaser: React.FC<VariableTeaserProps> = ({
 
   const highest = getHighestVariable();
 
+  // Track when variable teaser is displayed
+  useEffect(() => {
+    analyticsWrapper.trackUIEvent('feature_used', {
+      feature: 'variable_teaser_display',
+      action: compact ? 'compact_displayed' : 'full_displayed',
+    });
+    
+    // Log nodeId for debugging if needed
+    if (import.meta.env.DEV && nodeId) {
+      console.log('Variable teaser displayed on node:', nodeId);
+    }
+  }, [compact, nodeId]);
+
+  const handleTeaserClick = () => {
+    analyticsWrapper.trackUIEvent('feature_used', {
+      feature: 'variable_teaser_interaction',
+      action: 'clicked',
+    });
+  };
+
   if (compact) {
     return (
-      <div className="variable-teaser bg-gradient-to-r from-slate-800/60 to-slate-900/60 border border-indigo-500/20 rounded-lg p-3 backdrop-blur-sm">
+      <div 
+        className="variable-teaser bg-gradient-to-r from-slate-800/60 to-slate-900/60 border border-indigo-500/20 rounded-lg p-3 backdrop-blur-sm cursor-pointer hover:border-indigo-500/40 transition-all duration-300"
+        onClick={handleTeaserClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && handleTeaserClick()}
+      >
         <div className="flex items-center justify-center gap-2 text-center">
           <span className="text-lg">{highest.icon}</span>
           <span className="text-indigo-300 font-medium">
@@ -70,7 +99,13 @@ const VariableTeaser: React.FC<VariableTeaserProps> = ({
   }
 
   return (
-    <div className="variable-teaser bg-gradient-to-r from-slate-800/80 to-slate-900/80 border border-indigo-500/30 rounded-lg p-4 backdrop-blur-sm">
+    <div 
+      className="variable-teaser bg-gradient-to-r from-slate-800/80 to-slate-900/80 border border-indigo-500/30 rounded-lg p-4 backdrop-blur-sm cursor-pointer hover:border-indigo-500/50 transition-all duration-300"
+      onClick={handleTeaserClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && handleTeaserClick()}
+    >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xl">{highest.icon}</span>
