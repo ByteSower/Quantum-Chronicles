@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { analytics } from '../utils/analytics';
+import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
 interface OnboardingOverlayProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ const onboardingSteps: OnboardingStep[] = [
   {
     id: 'welcome',
     title: 'Welcome to Quantum Chronicles!',
-    content: 'Experience storytelling inspired by **quantum physics** — where your choices shape multiple narrative possibilities that exist until you make decisions.',
+    content: 'New here? Let us show you around! **Returning user?** Feel free to skip to your story. Experience storytelling inspired by **quantum physics** — where your choices shape multiple narrative possibilities.',
     position: 'center',
     animation: 'fadeIn'
   },
@@ -73,7 +73,7 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
-      analytics.trackEvent('onboarding_started', 'education', 'guided_tour');
+      analyticsWrapper.trackOnboardingEvent('onboarding_started');
     } else {
       setIsVisible(false);
     }
@@ -103,7 +103,10 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   }, [step, isVisible]);
 
   const handleNext = () => {
-    analytics.trackEvent('onboarding_step_completed', 'education', step.id);
+    analyticsWrapper.trackUIEvent('feature_used', {
+      feature: 'onboarding_step',
+      action: step.id,
+    });
     
     if (activeStep < onboardingSteps.length - 1) {
       setActiveStep(activeStep + 1);
@@ -113,13 +116,16 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   };
 
   const handleComplete = () => {
-    analytics.trackEvent('onboarding_completed', 'education', 'guided_tour');
+    analyticsWrapper.trackOnboardingEvent('onboarding_completed');
     setIsVisible(false);
     onComplete();
   };
 
   const handleSkip = () => {
-    analytics.trackEvent('onboarding_skipped', 'education', `step_${activeStep}`);
+    analyticsWrapper.trackOnboardingEvent('onboarding_skipped', {
+      step: activeStep,
+      totalSteps: onboardingSteps.length,
+    });
     setIsVisible(false);
     onDismiss();
   };
@@ -140,41 +146,42 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
   const getPositionClass = (position: string) => {
     switch (position) {
       case 'top':
-        return 'top-8 left-1/2 transform -translate-x-1/2';
+        return 'self-start';
       case 'bottom':
-        return 'bottom-8 left-1/2 transform -translate-x-1/2';
+        return 'self-end';
       case 'left':
-        return 'left-8 top-1/2 transform -translate-y-1/2';
+        return 'self-center mr-auto';
       case 'right':
-        return 'right-8 top-1/2 transform -translate-y-1/2';
+        return 'self-center ml-auto';
       default:
-        return 'top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
+        return 'self-center'; // center position
     }
   };
 
   if (!isVisible) return null;
 
   return (
-    <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-75 z-40 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-black bg-opacity-75 transition-opacity duration-300" />
       
       {/* Spotlight effect for highlighted elements */}
       {step.targetElement && (
-        <div className="fixed inset-0 pointer-events-none z-45">
+        <div className="absolute inset-0 pointer-events-none">
           <div className="onboarding-spotlight" />
         </div>
       )}
 
       {/* Onboarding Modal */}
       <div 
-        className={`fixed z-50 ${getPositionClass(step.position)} max-w-sm w-full mx-4`}
+        className={`relative ${getPositionClass(step.position)} max-w-sm w-full mx-4 z-10`}
       >
         <div 
           className={`
             bg-gradient-to-br from-slate-800 to-slate-900 
             border border-indigo-500/30 
             rounded-xl shadow-2xl p-6
+            pointer-events-auto
             ${getAnimationClass(step.animation)}
           `}
         >
@@ -208,9 +215,9 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           <div className="flex justify-between items-center">
             <button
               onClick={handleSkip}
-              className="text-slate-400 hover:text-white transition-colors duration-200 text-sm"
+              className="text-slate-400 hover:text-white transition-colors duration-200 text-sm flex items-center gap-1"
             >
-              Skip Tour
+              <span>✨</span> Skip to Story
             </button>
             
             <div className="flex gap-3">
@@ -238,7 +245,7 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           <div className={`absolute w-0 h-0 ${getArrowClasses(step.position)}`} />
         )}
       </div>
-    </>
+    </div>
   );
 };
 

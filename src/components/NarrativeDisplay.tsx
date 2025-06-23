@@ -5,8 +5,12 @@ interface NarrativeDisplayProps {
   animationDuration?: number;
 }
 
-const NarrativeDisplay: React.FC<NarrativeDisplayProps> = ({ text, animationDuration = 500 }) => {
+const NarrativeDisplay: React.FC<NarrativeDisplayProps> = ({ 
+  text, 
+  animationDuration = 500
+}) => {
   const [visible, setVisible] = useState(false);
+  
   useEffect(() => {
     setVisible(false);
     const timeout = setTimeout(() => setVisible(true), 50);

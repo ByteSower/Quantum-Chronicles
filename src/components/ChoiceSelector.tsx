@@ -23,8 +23,6 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
           <button
             className={`
               choice-button
-              bg-gradient-to-r from-indigo-600 to-purple-600 
-              hover:from-indigo-700 hover:to-purple-700 
               text-white rounded-lg shadow-lg px-6 py-3 
               transition-all duration-300 
               focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-50 
@@ -32,9 +30,19 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
               transform hover:scale-105
               ${showOnboardingHints && isFirstChoice ? 'choice-pulse' : ''}
             `}
+            style={{
+              background: 'linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234))',
+              border: 'none'
+            }}
             onClick={() => onSelect(choice)}
-            onMouseEnter={() => setHoveredChoice(idx)}
-            onMouseLeave={() => setHoveredChoice(null)}
+            onMouseEnter={(e) => {
+              setHoveredChoice(idx);
+              e.currentTarget.style.background = 'linear-gradient(to right, rgb(67, 56, 202), rgb(126, 34, 206))';
+            }}
+            onMouseLeave={(e) => {
+              setHoveredChoice(null);
+              e.currentTarget.style.background = 'linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234))';
+            }}
             onFocus={() => setHoveredChoice(idx)}
             onBlur={() => setHoveredChoice(null)}
             tabIndex={0}

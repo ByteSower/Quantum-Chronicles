@@ -6,6 +6,116 @@
   html, body {
     @apply h-full;
   }
+  
+  /* Force choice buttons to maintain gradient background regardless of system preferences */
+  .choice-button,
+  button.choice-button {
+    background: linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234)) !important;
+    background-color: #000000 !important; /* Fallback black background */
+    color: white !important;
+    border: none !important;
+  }
+  
+  .choice-button:hover,
+  button.choice-button:hover {
+    background: linear-gradient(to right, rgb(67, 56, 202), rgb(126, 34, 206)) !important;
+    background-color: #1a1a1a !important; /* Fallback dark background */
+  }
+  
+  /* Force all gradient buttons only - very specific targeting */
+  button[class*="bg-gradient"]:not([class*="bg-clip-text"]),
+  button.bg-gradient-to-r:not([class*="bg-clip-text"]) {
+    background: linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234)) !important;
+    background-color: #000000 !important; /* Fallback black background */
+    color: white !important;
+  }
+
+  /* Ensure gradient buttons remain consistent across all screen sizes */
+  @media (max-width: 600px) {
+    .choice-button,
+    button.choice-button,
+    button[class*="bg-gradient"]:not([class*="bg-clip-text"]),
+    button.bg-gradient-to-r:not([class*="bg-clip-text"]) {
+      background: linear-gradient(to right, rgb(79, 70, 229), rgb(147, 51, 234)) !important;
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+
+  /* Force ALL buttons to have black background - comprehensive override */
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  .btn,
+  .button {
+    background-color: #000000 !important;
+    color: white !important;
+  }
+
+  button:hover,
+  [type="button"]:hover,
+  [type="submit"]:hover,
+  [type="reset"]:hover,
+  .btn:hover,
+  .button:hover {
+    background-color: #1a1a1a !important;
+    color: white !important;
+  }
+
+  /* Override any Tailwind background utilities on buttons */
+  button[class*="bg-"],
+  [type="button"][class*="bg-"],
+  [type="submit"][class*="bg-"],
+  [type="reset"][class*="bg-"] {
+    background-color: #000000 !important;
+    color: white !important;
+  }
+
+  button[class*="bg-"]:hover,
+  [type="button"][class*="bg-"]:hover,
+  [type="submit"][class*="bg-"]:hover,
+  [type="reset"][class*="bg-"]:hover {
+    background-color: #1a1a1a !important;
+    color: white !important;
+  }
+
+  /* Responsive overrides to ensure black background on all screen sizes */
+  @media (max-width: 600px) {
+    button,
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    .btn,
+    .button {
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    button,
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    .btn,
+    .button {
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    button,
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    .btn,
+    .button {
+      background-color: #000000 !important;
+      color: white !important;
+    }
+  }
 }
 
 :root {
@@ -59,12 +169,14 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #000000 !important;
+  color: white !important;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
   border-color: #646cff;
+  background-color: #1a1a1a !important;
 }
 button:focus,
 button:focus-visible {
@@ -80,13 +192,15 @@ button:focus-visible {
     color: #747bff;
   }
   button {
-    background-color: #f9f9f9;
+    background-color: #000000 !important;
+    color: white !important;
   }
 }
 
 /* Developer Mode Variable Dashboard - Bottom Sheet Design */
 .variable-dashboard {
   z-index: 1000;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 /* Mobile bottom sheet styles */
@@ -102,29 +216,31 @@ button:focus-visible {
     transition: height 0.3s ease;
     z-index: 1000;
     backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
   }
   
   .variable-dashboard.collapsed {
-    height: 44px; /* Smaller header for mobile */
+    height: 48px; /* Slightly larger for better touch targets */
   }
   
   .variable-dashboard.open {
-    height: 220px; /* Slightly smaller expanded view */
-    max-height: 35vh; /* Reduced from 40vh */
+    height: 240px; /* Better spacing for content */
+    max-height: 40vh;
   }
   
   .sheet-header {
-    padding: 8px 16px;
+    padding: 12px 16px; /* Better padding for mobile */
     cursor: pointer;
     background: rgba(99, 102, 241, 0.1);
     border-bottom: 1px solid rgba(99, 102, 241, 0.3);
-    font-weight: 500;
-    font-size: 13px;
     user-select: none;
-    transition: background-color 0.2s ease;
-    min-height: 44px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+    font-size: 13px;
+    transition: background-color 0.2s ease;
+    min-height: 48px;
   }
   
   .sheet-header:hover {
@@ -157,10 +273,10 @@ button:focus-visible {
 @media (min-width: 769px) {
   .variable-dashboard {
     position: fixed;
-    top: 80px; /* Moved down to avoid header buttons */
-    right: 20px;
-    width: 320px;
-    max-width: 25vw;
+    top: 100px; /* More space from top */
+    right: 10px; /* Tighter to the edge */
+    width: 260px; /* Reduced width */
+    max-width: 20vw; /* Further reduced max-width */
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 12px;

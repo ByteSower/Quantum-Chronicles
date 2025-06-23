@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface VariableDashboardProps {
@@ -51,6 +50,7 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
     synchrony: { previousValue: synchrony, currentValue: synchrony, isAnimating: false },
   });
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Trigger animations when values change
   useEffect(() => {
@@ -211,61 +211,84 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
     );
   };
 
-  return (
+  const DashboardContent = () => (
     <>
-      <div id="variable-dashboard" className="text-white font-sans">
+      {renderVariable('curiosity', curiosity, 'Curiosity')}
+      {renderVariable('coherence', coherence, 'Coherence')}
+      {renderVariable('disruption', disruption, 'Disruption')}
+      {renderVariable('synchrony', synchrony, 'Synchrony')}
+      
+      {/* Quantum field visualization */}
+      <div className="mt-3 pt-2 border-t border-indigo-500 border-opacity-30">
+        <div className="flex justify-between text-xs text-gray-400 items-center">
+          <div className="flex items-center">
+            <span>Field Strength:</span>
+            <Tooltip text="Field Strength represents the convergence of narrative energy from your choices. Higher values indicate that story themes are pulling together strongly, creating focused narrative paths and powerful story moments.">
+              <span className="text-xs text-gray-400 hover:text-indigo-300 ml-1 cursor-help">ℹ️</span>
+            </Tooltip>
+          </div>
+          <span className="font-semibold">
+            {Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)}
+          </span>
+        </div>
+        <div className="mt-1 h-1 bg-gray-800 rounded overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-1000"
+            style={{
+              width: `${Math.min(100, (Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)) * 2)}%`,
+              filter: 'drop-shadow(0 0 4px currentColor)'
+            }}
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className={`variable-dashboard ${isMobileOpen ? 'open' : 'collapsed'}`}>
+      {/* Mobile: visible on small screens */}
+      <div className="md:hidden">
+        <div 
+          className="sheet-header" 
+          onClick={() => setIsMobileOpen(prev => !prev)}
+        >
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">⚛️ Quantum State</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400">Tap to {isMobileOpen ? 'collapse' : 'expand'}</span>
+              <span className="text-lg">{isMobileOpen ? '▼' : '▲'}</span>
+            </div>
+          </div>
+        </div>
+        <div className={`dashboard-content sheet-content ${isMobileOpen ? 'block' : 'hidden'}`}>
+          <DashboardContent />
+        </div>
+      </div>
+      
+      {/* Desktop: visible on medium screens and up */}
+      <div className="hidden md:block">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
             <span className="text-lg mr-2">⚛️</span>
             <h3 className="text-sm font-bold text-gray-200">Quantum State</h3>
-            {/* Small help icon for mobile, more subtle */}
           </div>
           <div className="flex items-center gap-1">
-            {/* Desktop minimize button */}
             <button
               onClick={() => setIsMinimized(!isMinimized)}
-              className="hidden md:block text-xs text-gray-400 hover:text-white transition-colors duration-200 px-1"
+              className="text-xs text-gray-400 hover:text-white transition-colors duration-200 px-1"
               title={isMinimized ? 'Expand Dashboard' : 'Minimize Dashboard'}
             >
               {isMinimized ? '📋' : '➖'}
             </button>
           </div>
         </div>
-        
-        {/* Dashboard content - hidden when minimized on desktop */}
-        <div className={`dashboard-content ${isMinimized ? 'hidden md:hidden' : ''}`}>
-          {renderVariable('curiosity', curiosity, 'Curiosity')}
-          {renderVariable('coherence', coherence, 'Coherence')}
-          {renderVariable('disruption', disruption, 'Disruption')}
-          {renderVariable('synchrony', synchrony, 'Synchrony')}
-          
-          {/* Quantum field visualization */}
-          <div className="mt-3 pt-2 border-t border-indigo-500 border-opacity-30">
-            <div className="flex justify-between text-xs text-gray-400 items-center">
-              <div className="flex items-center">
-                <span>Field Strength:</span>
-                <Tooltip text="Field Strength represents the convergence of narrative energy from your choices. Higher values indicate that story themes are pulling together strongly, creating focused narrative paths and powerful story moments.">
-                  <span className="text-xs text-gray-400 hover:text-indigo-300 ml-1 cursor-help">ℹ️</span>
-                </Tooltip>
-              </div>
-              <span className="font-semibold">
-                {Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)}
-              </span>
-            </div>
-            <div className="mt-1 h-1 bg-gray-800 rounded overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-1000"
-                style={{
-                  width: `${Math.min(100, (Math.abs(curiosity) + Math.abs(coherence) + Math.abs(disruption) + Math.abs(synchrony)) * 2)}%`,
-                  filter: 'drop-shadow(0 0 4px currentColor)'
-                }}
-              />
-            </div>
-          </div>
+        <div className={`dashboard-content ${isMinimized ? 'hidden' : 'block'}`}>
+          <DashboardContent />
         </div>
       </div>
       
-      {/* CSS for custom animations */}
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes fadeInOut {
@@ -285,7 +308,7 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
           }
         `
       }} />
-    </>
+    </div>
   );
 };
 

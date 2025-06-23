@@ -5,7 +5,7 @@ interface TutorialOverlayProps {
 }
 
 const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => (
-  <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
+  <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80 onboarding-highlight">
     <div className="max-w-3xl w-full mx-auto bg-gradient-to-b from-slate-800 to-slate-900 p-6 rounded-lg shadow-2xl text-left border border-indigo-500/30">
       <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">Quantum Chronicles Tutorial</h2>
       <p className="mb-2 text-slate-300">
@@ -20,9 +20,9 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose }) => (
         </li>
       </ul>
       <p className="mb-4 text-slate-300">
-        Every choice you make doesn't just change the story—it fundamentally alters the narrative's quantum signature, creating a truly unique experience.
+        Every choice you make doesn&apos;t just change the story—it fundamentally alters the narrative&apos;s quantum signature, creating a truly unique experience.
       </p>
-      <button onClick={onClose} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-semibold transition-all duration-300 shadow-lg focus:outline-none">
+      <button onClick={onClose} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg px-6 py-3 font-semibold transition-all duration-300 shadow-lg focus:outline-none choice-pulse">
         Enter the Quantum Narrative
       </button>
     </div>

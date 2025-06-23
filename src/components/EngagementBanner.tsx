@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { analytics } from '../utils/analytics';
+import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
 interface EngagementBannerProps {
   isVisible: boolean;
@@ -21,19 +21,19 @@ const EngagementBanner: React.FC<EngagementBannerProps> = ({
   useEffect(() => {
     if (isVisible) {
       setIsAnimating(true);
-      analytics.trackEvent('engagement_prompt_shown', 'user_interface', 'scroll_trigger');
+      // Note: engagement_prompt_shown is tracked in StoryFlow when banner is triggered
     } else {
       setIsAnimating(false);
     }
   }, [isVisible]);
 
   const handleInteraction = () => {
-    analytics.trackEvent('engagement_prompt_clicked', 'user_interface', 'scroll_trigger');
+    analyticsWrapper.trackEngagementEvent('engagement_prompt_clicked');
     onInteraction();
   };
 
   const handleDismiss = () => {
-    analytics.trackEvent('engagement_prompt_dismissed', 'user_interface', 'scroll_trigger');
+    analyticsWrapper.trackEngagementEvent('engagement_prompt_dismissed');
     onDismiss();
   };
 
