@@ -61,13 +61,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
                 </div>
                 <button
                   onClick={() => handleToggle('developerMode')}
-                  className={`w-12 h-6 rounded-full transition-colors relative ${
-                    settings.developerMode ? 'bg-indigo-600' : 'bg-slate-600'
-                  }`}
+                  role="switch"
+                  aria-checked={settings.developerMode}
+                  aria-label={`Developer Mode ${settings.developerMode ? 'enabled' : 'disabled'}`}
+                  className={`
+                    relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
+                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
+                    ${settings.developerMode ? 'bg-indigo-600' : 'bg-slate-600'}
+                  `}
                 >
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                    settings.developerMode ? 'translate-x-6' : 'translate-x-0.5'
-                  }`} />
+                  <span className="sr-only">Toggle Developer Mode</span>
+                  <span
+                    className={`
+                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
+                      transition duration-200 ease-in-out
+                      ${settings.developerMode ? 'translate-x-6' : 'translate-x-0'}
+                    `}
+                  />
                 </button>
               </div>
 
@@ -78,13 +88,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
                 </div>
                 <button
                   onClick={() => handleToggle('showVariableDashboard')}
-                  className={`w-12 h-6 rounded-full transition-colors relative ${
-                    settings.showVariableDashboard ? 'bg-indigo-600' : 'bg-slate-600'
-                  }`}
+                  role="switch"
+                  aria-checked={settings.showVariableDashboard}
+                  aria-label={`Variable Dashboard ${settings.showVariableDashboard ? 'enabled' : 'disabled'}`}
+                  className={`
+                    relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
+                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
+                    ${settings.showVariableDashboard ? 'bg-indigo-600' : 'bg-slate-600'}
+                  `}
                 >
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                    settings.showVariableDashboard ? 'translate-x-6' : 'translate-x-0.5'
-                  }`} />
+                  <span className="sr-only">Toggle Variable Dashboard</span>
+                  <span
+                    className={`
+                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
+                      transition duration-200 ease-in-out
+                      ${settings.showVariableDashboard ? 'translate-x-6' : 'translate-x-0'}
+                    `}
+                  />
                 </button>
               </div>
 
@@ -96,13 +116,23 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings
                   </div>
                   <button
                     onClick={() => handleToggle('showDebugInfo')}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${
-                      settings.showDebugInfo ? 'bg-indigo-600' : 'bg-slate-600'
-                    }`}
+                    role="switch"
+                    aria-checked={settings.showDebugInfo}
+                    aria-label={`Debug Information ${settings.showDebugInfo ? 'enabled' : 'disabled'}`}
+                    className={`
+                      relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
+                      transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
+                      ${settings.showDebugInfo ? 'bg-indigo-600' : 'bg-slate-600'}
+                    `}
                   >
-                    <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                      settings.showDebugInfo ? 'translate-x-6' : 'translate-x-0.5'
-                    }`} />
+                    <span className="sr-only">Toggle Debug Information</span>
+                    <span
+                      className={`
+                        pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
+                        transition duration-200 ease-in-out
+                        ${settings.showDebugInfo ? 'translate-x-6' : 'translate-x-0'}
+                      `}
+                    />
                   </button>
                 </div>
               )}

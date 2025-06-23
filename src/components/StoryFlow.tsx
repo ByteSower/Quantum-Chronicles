@@ -105,10 +105,21 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   // Initialize A/B test and check onboarding status
   useEffect(() => {
-    // Check if onboarding was completed
-    const completed = localStorage.getItem('qnce_onboarding_completed') === 'true';
-    setOnboardingCompleted(completed);
-  }, [abTestVariant, enhancedOnboarding]);
+    // Always show onboarding for new sessions (don't persist completion)
+    // This helps users who forget quickly and ensures consistent UX
+    setOnboardingCompleted(false);
+    
+    // Debug logging
+    if (import.meta.env.DEV) {
+      console.log('🎯 Session onboarding status:', {
+        abTestVariant,
+        enhancedOnboarding,
+        showModal,
+        showOnboarding,
+        sessionBased: true
+      });
+    }
+  }, [abTestVariant, enhancedOnboarding, showModal, showOnboarding]);
 
   // Initialize with starting point variables
   useEffect(() => {
@@ -130,27 +141,40 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     // Variant A: Minimal onboarding (baseline) - but still show if never completed
     // Variant B: Enhanced onboarding with guided tour
     
+    const shouldShow = enhancedOnboarding || !onboardingCompleted;
+    
     // Debug logging
     if (import.meta.env.DEV) {
       console.log('🎯 Intro closed, checking onboarding conditions:', {
         enhancedOnboarding,
         onboardingCompleted,
         abTestVariant,
-        shouldShowOnboarding: enhancedOnboarding || !onboardingCompleted
+        shouldShowOnboarding: shouldShow,
+        localStorage_value: localStorage.getItem('qnce_onboarding_completed'),
+        willShowOnboarding: shouldShow
       });
     }
     
-    if (enhancedOnboarding || !onboardingCompleted) {
+    if (shouldShow) {
+      console.log('✅ Starting onboarding overlay');
       setShowOnboarding(true);
       analyticsWrapper.trackOnboardingEvent('onboarding_started');
+    } else {
+      console.log('❌ Skipping onboarding - already completed and not enhanced variant');
+      // For beta testing: always show onboarding if enhanced onboarding is enabled
+      if (enhancedOnboarding && import.meta.env.VITE_APP_ENV === 'beta') {
+        console.log('🧪 Beta override: Showing onboarding anyway for testing');
+        setShowOnboarding(true);
+        analyticsWrapper.trackOnboardingEvent('onboarding_started');
+      }
     }
   }
 
   // Handle onboarding completion
   function handleOnboardingComplete() {
     setShowOnboarding(false);
-    setOnboardingCompleted(true);
-    localStorage.setItem('qnce_onboarding_completed', 'true');
+    setOnboardingCompleted(true); // Only for this session
+    // Don't persist to localStorage - allow fresh onboarding each session
     analyticsWrapper.trackOnboardingEvent('onboarding_completed');
     
     // Trigger feedback prompt after onboarding
@@ -162,8 +186,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   // Handle onboarding dismissal
   function handleOnboardingDismiss() {
     setShowOnboarding(false);
-    setOnboardingCompleted(true);
-    localStorage.setItem('qnce_onboarding_completed', 'true');
+    setOnboardingCompleted(true); // Only for this session
+    // Don't persist to localStorage - allow fresh onboarding each session
     analyticsWrapper.trackOnboardingEvent('onboarding_skipped');
   }
 
