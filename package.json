@@ -17,6 +17,8 @@
     "test:accessibility": "npm run build && npx @axe-core/cli http://localhost:4173 --load-delay 3000"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^3.25.67"

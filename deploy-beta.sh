@@ -154,9 +154,10 @@ echo "✅ Beta release notes created"
 
 # Deployment simulation (replace with actual deployment commands)
 echo "🌐 Simulating beta deployment..."
-echo "   📤 Would deploy to: https://beta.quantumchronicles.example.com"
+echo "   📤 Would deploy to: http://localhost:3000 (or your actual beta domain)"
 echo "   📊 Analytics endpoint: $VITE_ANALYTICS_ENDPOINT"
 echo "   💬 Feedback endpoint: $VITE_FEEDBACK_ENDPOINT"
+echo "   🚀 Mock server: http://localhost:3001"
 
 # Clean up
 rm -f .env.local
