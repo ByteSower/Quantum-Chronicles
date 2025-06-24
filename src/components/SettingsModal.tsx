@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FeedbackDataPanel } from './FeedbackDataPanel';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -36,6 +37,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleDebug,
   showDebug
 }) => {
+  const [showFeedbackData, setShowFeedbackData] = useState(false);
+  
   if (!isOpen) return null;
 
   const handleToggle = (key: string) => {
@@ -276,6 +279,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           </button>
         </div>
       </div>
+      
+      {/* Feedback Data Panel */}
+      <FeedbackDataPanel 
+        isVisible={showFeedbackData}
+        onClose={() => setShowFeedbackData(false)}
+      />
     </div>
   );
 };
