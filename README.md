@@ -2,6 +2,8 @@
 
 An interactive narrative experience that explores quantum-inspired storytelling mechanics.
 
+🚀 **Beta Version** - Now live with session-based onboarding and improved accessibility!
+
 ## ✨ Features
 
 - **Interactive Stories**: Make choices that shape narrative outcomes
