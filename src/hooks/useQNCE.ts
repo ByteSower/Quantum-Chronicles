@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { trackStoryEvent } from '../utils/analytics';
 import type { BranchNode } from '../components/VisualBranchTracker';
+import { getAllExpansionNodes } from '../narratives/forgottenTruth';
 
 // QNCE Data Models
 export interface Choice {
@@ -26,6 +27,11 @@ export interface Choice {
   consequences?: {
     immediate?: string; // Message shown immediately
     delayed?: { nodeId: string; message: string }[]; // Effects that trigger later
+  };
+  feedbackHook?: (data: Record<string, unknown>) => void;
+  assetPlaceholder?: {
+    visual?: string;
+    audio?: string;
   };
 }
 
@@ -1067,6 +1073,14 @@ const NODES: NarrativeNode[] = [
         nextNodeId: 'forgotten_truth_council_negotiation',
         flagEffects: { negotiatingCouncil: true },
         variableEffects: { coherence: +2, synchrony: +2 }
+      },
+      {
+        text: 'Investigate the ancient origins of consciousness manipulation',
+        nextNodeId: 'forgotten_truth_origins_gateway',
+        flagEffects: { seekingOrigins: true, investigatedAncientRoots: true },
+        variableEffects: { curiosity: +3, coherence: +2 },
+        requirements: { variables: { curiosity: { min: 10 }, coherence: { min: 8 } } },
+        consequences: { immediate: 'Your search for truth leads you to secrets older than civilization itself...' }
       }
     ]
   },
@@ -1145,6 +1159,14 @@ const NODES: NarrativeNode[] = [
         flagEffects: { controllingConvergence: true },
         variableEffects: { coherence: +3, synchrony: +3 },
         requirements: { variables: { coherence: { min: 12 }, synchrony: { min: 12 } } }
+      },
+      {
+        text: 'Seek the true source of all consciousness experiments',
+        nextNodeId: 'forgotten_truth_catalyst_contact',
+        flagEffects: { seekingTrueSource: true, deepInvestigation: true },
+        variableEffects: { curiosity: +4, coherence: +2 },
+        requirements: { variables: { curiosity: { min: 14 }, coherence: { min: 12 } } },
+        consequences: { immediate: 'Your investigation leads you beyond human organizations to something far more profound...' }
       }
     ]
   },
@@ -1170,6 +1192,22 @@ const NODES: NarrativeNode[] = [
         nextNodeId: 'forgotten_truth_entity_warning',
         flagEffects: { warnedEntities: true },
         variableEffects: { curiosity: +2, synchrony: +3 }
+      },
+      {
+        text: 'Explore quantum memory echoes connecting all consciousness',
+        nextNodeId: 'forgotten_truth_memory_nexus',
+        flagEffects: { accessedMemoryEchoes: true, quantumMemoryAccess: true },
+        variableEffects: { synchrony: +3, curiosity: +2 },
+        requirements: { variables: { synchrony: { min: 12 } } },
+        consequences: { immediate: 'Your consciousness becomes a nexus for memories scattered across time and space...' }
+      },
+      {
+        text: 'Investigate dimensional convergence affecting reality',
+        nextNodeId: 'forgotten_truth_dimensional_gateway',
+        flagEffects: { accessedDimensions: true, dimensionalContact: true },
+        variableEffects: { disruption: +3, synchrony: +2 },
+        requirements: { variables: { disruption: { min: 8 }, synchrony: { min: 10 } } },
+        consequences: { immediate: 'The barriers between realities begin to reveal themselves to your enhanced perception...' }
       }
     ]
   },
@@ -1219,8 +1257,21 @@ const NODES: NarrativeNode[] = [
   {
     id: 'forgotten_truth_entity_transformation',
     text: 'You complete the transformation into a quantum consciousness entity, existing beyond physical form but maintaining your connection to humanity. You become a bridge between human and post-human consciousness, helping to guide the species\' next evolutionary step.',
-    choices: []
+    choices: [
+      {
+        text: 'Discover who has been orchestrating all consciousness experiments',
+        nextNodeId: 'forgotten_truth_catalyst_contact',
+        flagEffects: { seekingCatalyst: true, transcendedForm: true },
+        variableEffects: { synchrony: +4, curiosity: +3 },
+        requirements: { variables: { synchrony: { min: 18 }, coherence: { min: 16 } } },
+        consequences: { immediate: 'From your transcended state, you perceive the true architect behind all reality manipulation...' }
+      }
+    ]
   },
+  
+  // === FORGOTTEN TRUTH EXPANSION SEGMENTS ===
+  // These nodes are integrated from the modular expansion segments
+  ...getAllExpansionNodes(),
 ];
 
 export interface QNCEReturn {
@@ -1301,6 +1352,22 @@ export const useQNCE = (): QNCEReturn => {
 
     // Track the choice made
     trackStoryEvent.choice(choice.nextNodeId);
+
+    // Trigger feedback hook if present
+    if (choice.feedbackHook) {
+      try {
+        choice.feedbackHook({
+          nodeId: currentNode.id,
+          choiceText: choice.text,
+          nextNodeId: choice.nextNodeId,
+          currentFlags: flags,
+          currentVariables: variables,
+          timestamp: Date.now()
+        });
+      } catch (error) {
+        console.warn('Feedback hook error:', error);
+      }
+    }
 
     // Handle immediate consequences
     if (choice.consequences?.immediate) {

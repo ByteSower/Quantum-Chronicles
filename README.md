@@ -118,6 +118,28 @@ This project is open source and available under the [MIT License](LICENSE).
 - Built with modern web technologies for optimal user experience
 - Designed to make complex narrative mechanics accessible to all users
 
+## 🆕 Latest Updates
+
+### Forgotten Truth Narrative Expansion (v0.3.0-beta.1)
+The Forgotten Truth storyline has been significantly expanded with five new modular narrative segments:
+
+1. **Origins Unveiled** - Discover the ancient roots of consciousness experiments
+2. **Echoes of Quantum Memory** - Experience memories across time and space  
+3. **The Convergence of Realms** - Explore multidimensional consciousness
+4. **The Catalyst's Revelation** - Meet the cosmic entity behind it all
+5. **Legacy of Quantum Convergence** - See the future impact of your choices
+
+**Features:**
+- 🧠 Deep QNCE integration with dynamic variable requirements
+- 🔄 Modular design for easy expansion and modification
+- 🎯 Seamless integration with existing narrative flow
+- 📊 Advanced feedback hooks and analytics integration
+- 🎨 Placeholder support for future visual/audio assets
+- 💾 Session-based state management across segments
+
+**How to Access:**
+Progress through the main Forgotten Truth storyline and look for new choices that lead to deeper investigations. The expansions are accessible from key decision points based on your QNCE variable values (curiosity, coherence, disruption, synchrony).
+
 ---
 
 **Live Demo**: [https://bytesower.github.io/Quantum-Chronicles](https://bytesower.github.io/Quantum-Chronicles)

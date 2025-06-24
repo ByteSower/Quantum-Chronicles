@@ -235,7 +235,6 @@ class FeedbackManager {
       quickOption: feedback.comment && feedback.comment.length < 100 ? feedback.comment : undefined
     });
 
-    // TODO: In production, also send to backend API
     if (import.meta.env.DEV) {
       console.log('💬 Feedback submitted:', feedback);
     }

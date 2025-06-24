@@ -11,11 +11,11 @@ const VariableTeaser = lazy(() => import('./VariableTeaser'));
 const VariableDashboard = lazy(() => import('./VariableDashboard/VariableDashboard'));
 const VisualBranchTracker = lazy(() => import('./VisualBranchTracker'));
 const LogArea = lazy(() => import('./LogArea'));
-const FeedbackPrompt = lazy(() => import('./FeedbackPrompt'));
+const ConsolidatedFeedbackPrompt = lazy(() => import('./ConsolidatedFeedbackPrompt'));
 import { useQNCE, type Choice } from '../hooks/useQNCE';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 import { useFeatureFlag, useABTestVariant } from '../utils/ABTestConfig';
-import { useFeedbackManager } from '../utils/FeedbackManager';
+import { useConsolidatedFeedbackManager } from '../utils/ConsolidatedFeedbackManager';
 import type { LogEntry } from './LogArea';
 import type { StartingPoint } from './StartScreen';
 
@@ -79,13 +79,15 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   const [choiceCount, setChoiceCount] = useState(0);
   const [isFirstChoice, setIsFirstChoice] = useState(true);
 
-  // Feedback management
+  // Consolidated Feedback management
   const {
-    currentPrompt,
+    currentMilestone,
+    isVisible: isFeedbackVisible,
     checkForFeedback,
     handleFeedbackSubmit,
-    handleFeedbackDismiss
-  } = useFeedbackManager();
+    handleFeedbackDismiss,
+    updateSessionData
+  } = useConsolidatedFeedbackManager();
 
   // Track session start and end for feedback
   useEffect(() => {
@@ -94,8 +96,9 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     // Track session end on component unmount or page unload
     const handleSessionEnd = () => {
       const sessionDuration = Date.now() - sessionStartTime;
-      if (sessionDuration > 2 * 60 * 1000) { // At least 2 minutes for meaningful session
-        checkForFeedback('session_ended');
+      // Only trigger session feedback for substantial sessions (15+ minutes)
+      if (sessionDuration > 15 * 60 * 1000) {
+        checkForFeedback('session_completion');
       }
     };
 
@@ -187,10 +190,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     // Don't persist to localStorage - allow fresh onboarding each session
     analyticsWrapper.trackOnboardingEvent('onboarding_completed');
     
-    // Trigger feedback prompt after onboarding
-    setTimeout(() => {
-      checkForFeedback('onboarding_finished');
-    }, 2000); // Small delay to let user settle
+    // No immediate feedback - let users experience the app first
+    // Feedback will be triggered naturally through engagement milestones
   }
 
   // Handle onboarding dismissal
@@ -236,10 +237,19 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         variables,
       });
       
-      // Trigger feedback after first choice
-      setTimeout(() => {
-        checkForFeedback('first_choice_completed');
-      }, 3000);
+      // Update session data for feedback system
+      updateSessionData({ choiceCount: newChoiceCount, currentSegment: currentNode.id });
+      
+      // Very conservative feedback triggers - only for deep engagement
+      // Require both significant choices AND meaningful time investment
+      const sessionDuration = Date.now() - (performance.timeOrigin || Date.now() - 60000);
+      const meaningfulEngagement = newChoiceCount >= 15 && sessionDuration > 12 * 60 * 1000; // 15+ choices AND 12+ minutes
+      
+      if (meaningfulEngagement) {
+        setTimeout(() => {
+          checkForFeedback('deep_engagement');
+        }, 6000); // Longer delay to ensure natural flow
+      }
     } else {
       analyticsWrapper.trackChoiceMade({
         choiceId: choice.nextNodeId,
@@ -250,19 +260,10 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         variables,
       });
       
-      // Trigger story midpoint feedback after several choices
-      if (newChoiceCount === 5) {
-        setTimeout(() => {
-          checkForFeedback('story_midpoint');
-        }, 4000);
-      }
+      // Update session data for feedback system
+      updateSessionData({ choiceCount: newChoiceCount, currentSegment: currentNode.id });
       
-      // Trigger engagement feedback at deeper story points
-      if (newChoiceCount === 10) {
-        setTimeout(() => {
-          checkForFeedback('story_engagement');
-        }, 5000);
-      }
+      // Only trigger feedback at major story completion points to reduce interruptions
     }
     
     // Hide engagement banner when choice is made (functionality preserved for potential re-implementation)
@@ -339,6 +340,39 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     }
   }
 
+  // Check for story completion after choice is made
+  useEffect(() => {
+    if (!currentNode) return;
+    
+    // Detect story completion: nodes with no choices (endings)
+    const isStoryEnding = currentNode.choices.length === 0;
+    
+    // Detect major segment completion: specific ending nodes for major story branches
+    const majorEndingNodes = [
+      'forgotten_truth_quantum_awakening',
+      'forgotten_truth_global_revelation', 
+      'forgotten_truth_collective_power',
+      'forgotten_truth_knowledge_sharing',
+      'forgotten_truth_consciousness_protectors',
+      'forgotten_truth_hybrid_consciousness',
+      'forgotten_truth_evolution_guide'
+    ];
+    
+    const isMajorSegmentComplete = majorEndingNodes.includes(currentNode.id);
+    
+    if (isStoryEnding) {
+      // Complete story ending - highest priority feedback
+      setTimeout(() => {
+        checkForFeedback('story_completion');
+      }, 3000); // Allow time to read the ending
+    } else if (isMajorSegmentComplete && choiceCount >= 10) {
+      // Major story branch completed with meaningful engagement
+      setTimeout(() => {
+        checkForFeedback('story_branch_completion');
+      }, 4000); // Allow time to appreciate the completion
+    }
+  }, [currentNode, choiceCount, checkForFeedback]);
+
   return (
     <>
       {showModal && (
@@ -358,6 +392,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             <div className="mb-4 w-full">
               <NarrativeDisplay 
                 text={currentNode.text}
+                variables={variables}
               />
             </div>
             
@@ -488,23 +523,25 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
                 action: 'opened'
               });
               setTimeout(() => {
-                checkForFeedback('variable_dashboard_used');
+                // Dashboard interaction tracked for analytics but no immediate feedback popup
               }, 2000);
             }}
           />
         </Suspense>
       )}
 
-      {/* Feedback Prompt */}
-      {currentPrompt && (
+      {/* Consolidated Feedback Prompt */}
+      {currentMilestone && (
         <Suspense fallback={null}>
-          <FeedbackPrompt
-            isVisible={currentPrompt.isVisible}
-            category={currentPrompt.trigger.category}
-            milestone={currentPrompt.trigger.milestone}
-            title={currentPrompt.trigger.title}
-            description={currentPrompt.trigger.description}
-            quickOptions={currentPrompt.trigger.quickOptions}
+          <ConsolidatedFeedbackPrompt
+            isVisible={isFeedbackVisible}
+            milestone={currentMilestone}
+            sessionData={{
+              choiceCount,
+              sessionDuration: Date.now() - (Date.now() - 1000 * 60 * 10), // Approximation
+              segmentsReached: [currentNode.id],
+              qnceVariables: variables
+            }}
             onSubmit={handleFeedbackSubmit}
             onDismiss={handleFeedbackDismiss}
           />

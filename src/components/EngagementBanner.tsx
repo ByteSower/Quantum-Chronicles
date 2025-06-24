@@ -26,7 +26,6 @@ const EngagementBanner: React.FC<EngagementBannerProps> = ({
       setIsAnimating(true);
       // Announce engagement prompt to screen readers
       accessibilityManager.announce('Engagement prompt appeared. ' + message, 'polite');
-      // Note: engagement_prompt_shown is tracked in StoryFlow when banner is triggered
     } else {
       setIsAnimating(false);
     }
