@@ -44,7 +44,7 @@ VITE_AB_TEST_ENDPOINT=http://localhost:3001/api/variants
 
 ## 🌐 **For Production Deployment**
 
-When you have actual production endpoints from your infrastructure team, update `.env.beta`:
+When you have actual production endpoints, update `.env.beta`:
 
 ```bash
 # Replace with your actual production endpoints

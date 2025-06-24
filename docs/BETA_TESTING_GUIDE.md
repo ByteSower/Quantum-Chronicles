@@ -140,9 +140,9 @@
 - What you loved most: [free text]
 
 ### Where to Submit Feedback
-- **Team Slack**: #quantum-chronicles-beta channel
-- **Email**: beta-feedback@quantumchronicles.example.com
-- **Shared Document**: [link to team feedback sheet]
+- **GitHub Issues**: Report bugs and feature requests
+- **Email**: feedback@quantumchronicles.example.com
+- **In-App Feedback**: Use the built-in feedback system
 
 ## ⚠️ Known Beta Limitations
 
@@ -175,7 +175,7 @@
 ## 🗓️ Beta Timeline
 
 ### Week 1: Internal Testing
-- Team members test all scenarios
+- Core functionality testing across all scenarios
 - Initial bug fixes and usability improvements
 - Validate analytics data collection
 
