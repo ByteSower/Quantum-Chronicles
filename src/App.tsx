@@ -16,7 +16,6 @@ function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [selectedStartingPoint, setSelectedStartingPoint] = useState<StartingPoint | null>(null);
-  const [devMode, setDevMode] = useState(false);
   const [showOrientationWarning, setShowOrientationWarning] = useState(true);
   const [showAboutQNCE, setShowAboutQNCE] = useState(false);
   const [settings, setSettings] = useState({
@@ -145,21 +144,6 @@ function App() {
             >
               Help
             </button>
-            <button
-              onClick={() => {
-                const newDevMode = !devMode;
-                setDevMode(newDevMode);
-                trackUIEvent.feature('developer_mode', newDevMode ? 'enabled' : 'disabled');
-              }}
-              className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium ${
-                devMode 
-                  ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-              title={devMode ? 'Disable Developer Mode' : 'Enable Developer Mode'}
-            >
-              {devMode ? 'Dev: ON' : 'Dev: OFF'}
-            </button>
           </div>
         </div>
       </header>
@@ -167,11 +151,12 @@ function App() {
         <StoryFlow
           startingPoint={selectedStartingPoint}
           settings={settings}
-          devMode={devMode}
+          devMode={settings.developerMode}
           onReturnToStart={handleReturnToStart}
           onShowAbout={() => setShowAbout(true)}
           onShowSettings={() => setShowSettings(true)}
           onShowQNCEHelp={() => setShowAboutQNCE(true)}
+          onUpdateSettings={setSettings}
         />
       </div>
       

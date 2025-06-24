@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import NarrativeDisplay from './NarrativeDisplay';
 import ChoiceSelector from './ChoiceSelector';
+import EnhancedSettingsModal from './EnhancedSettingsModal';
 // Lazy load non-critical components
 const StateDebugOverlay = lazy(() => import('./StateDebugOverlay'));
 const IntroModal = lazy(() => import('./IntroModal'));
@@ -14,7 +15,6 @@ const FeedbackPrompt = lazy(() => import('./FeedbackPrompt'));
 import { useQNCE, type Choice } from '../hooks/useQNCE';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 import { useFeatureFlag, useABTestVariant } from '../utils/ABTestConfig';
-import { accessibilityManager } from '../utils/accessibility';
 import { useFeedbackManager } from '../utils/FeedbackManager';
 import type { LogEntry } from './LogArea';
 import type { StartingPoint } from './StartScreen';
@@ -32,6 +32,13 @@ interface StoryFlowProps {
   onShowAbout: () => void;
   onShowSettings: () => void;
   onShowQNCEHelp?: () => void;
+  // Add new props for settings modal actions
+  onUpdateSettings?: (settings: {
+    developerMode: boolean;
+    showVariableDashboard: boolean;
+    showDebugInfo: boolean;
+    animationSpeed: 'slow' | 'normal' | 'fast';
+  }) => void;
 }
 
 const StoryFlow: React.FC<StoryFlowProps> = ({
@@ -40,9 +47,11 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   devMode,
   onReturnToStart,
   onShowAbout,
-  onShowSettings,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onShowQNCEHelp: _onShowQNCEHelp // Keep for interface compatibility but don't use
+  onShowSettings: _onShowSettings, // Keep for interface compatibility but don't use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onShowQNCEHelp: _onShowQNCEHelp, // Keep for interface compatibility but don't use
+  onUpdateSettings
 }) => {
   const { 
     currentNode, 
@@ -60,6 +69,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   const [showDebug, setShowDebug] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showEnhancedSettings, setShowEnhancedSettings] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [initialized, setInitialized] = useState(false);
   
@@ -418,57 +428,17 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             )}
             
             <nav 
-              className="flex flex-wrap items-center gap-3 mt-2 w-full max-w-md justify-center"
+              className="flex flex-wrap items-center gap-4 mt-2 w-full max-w-md justify-center"
               role="navigation"
               aria-label="Story navigation and options"
             >
               <button
-                className="text-xs text-blue-200 underline hover:text-blue-400 transition focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded"
-                onClick={handleReset}
-                aria-label="Restart the current story from the beginning"
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600/50 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-50 text-sm font-medium"
+                onClick={() => setShowEnhancedSettings(true)}
+                aria-label="Open settings and navigation options"
               >
-                Restart Story
-              </button>
-              <button
-                className="text-xs text-cyan-200 underline hover:text-cyan-400 transition focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50 rounded"
-                onClick={onReturnToStart}
-                aria-label="Return to story selection screen to choose a different story"
-              >
-                Change Story
-              </button>
-              {settings.developerMode && (
-                <button
-                  className="text-xs text-gray-300 underline hover:text-blue-400 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 rounded"
-                  onClick={() => setShowDebug((v) => !v)}
-                  aria-label={showDebug ? 'Hide debug information panel' : 'Show debug information panel'}
-                  aria-pressed={showDebug}
-                >
-                  {showDebug ? 'Hide Debug' : 'Show Debug'}
-                </button>
-              )}
-              <button
-                className="text-xs text-yellow-300 underline hover:text-yellow-500 transition focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 rounded"
-                onClick={() => {
-                  setShowTutorial(true);
-                  accessibilityManager.announce('Tutorial opened', 'polite');
-                }}
-                aria-label="Open tutorial to learn how to use the interface"
-              >
-                Tutorial
-              </button>
-              <button
-                className="text-xs text-purple-300 underline hover:text-purple-500 transition focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 rounded"
-                onClick={onShowAbout}
-                aria-label="View information about this application"
-              >
-                About
-              </button>
-              <button
-                className="text-xs text-slate-300 underline hover:text-slate-500 transition focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-50 rounded"
-                onClick={onShowSettings}
-                aria-label="Open settings to customize your experience"
-              >
-                Settings
+                <span>⚙️</span>
+                Menu
               </button>
             </nav>
             
@@ -540,6 +510,39 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
           />
         </Suspense>
       )}
+
+      {/* Enhanced Settings Modal */}
+      <EnhancedSettingsModal
+        isOpen={showEnhancedSettings}
+        onClose={() => setShowEnhancedSettings(false)}
+        settings={settings}
+        onUpdateSettings={(newSettings) => {
+          // Pass settings changes back to App level
+          if (onUpdateSettings) {
+            onUpdateSettings(newSettings);
+          }
+        }}
+        onRestartStory={() => {
+          handleReset();
+          setShowEnhancedSettings(false);
+        }}
+        onChangeStory={() => {
+          onReturnToStart();
+          setShowEnhancedSettings(false);
+        }}
+        onShowTutorial={() => {
+          setShowTutorial(true);
+          setShowEnhancedSettings(false);
+        }}
+        onShowAbout={() => {
+          onShowAbout();
+          setShowEnhancedSettings(false);
+        }}
+        onToggleDebug={() => {
+          setShowDebug(!showDebug);
+        }}
+        showDebug={showDebug}
+      />
     </>
   );
 };

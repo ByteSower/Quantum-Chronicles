@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SettingsModalProps {
+interface EnhancedSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   settings: {
@@ -15,16 +15,16 @@ interface SettingsModalProps {
     showDebugInfo: boolean;
     animationSpeed: 'slow' | 'normal' | 'fast';
   }) => void;
-  // New props for consolidated actions
-  onRestartStory?: () => void;
-  onChangeStory?: () => void;
-  onShowTutorial?: () => void;
-  onShowAbout?: () => void;
-  onToggleDebug?: () => void;
-  showDebug?: boolean;
+  // Story-specific actions
+  onRestartStory: () => void;
+  onChangeStory: () => void;
+  onShowTutorial: () => void;
+  onShowAbout: () => void;
+  onToggleDebug: () => void;
+  showDebug: boolean;
 }
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ 
+const EnhancedSettingsModal: React.FC<EnhancedSettingsModalProps> = ({ 
   isOpen, 
   onClose, 
   settings, 
@@ -54,10 +54,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-      <div className="max-w-2xl w-full mx-4 bg-gradient-to-b from-slate-800 to-slate-900 p-6 rounded-lg shadow-2xl border border-indigo-500/30">
+      <div className="max-w-2xl w-full mx-4 bg-gradient-to-b from-slate-800 to-slate-900 p-6 rounded-lg shadow-2xl border border-indigo-500/30 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">
-            Settings
+            Settings & Menu
           </h2>
           <button
             onClick={onClose}
@@ -68,9 +68,56 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         <div className="space-y-6">
-          {/* Display Mode */}
+          {/* Quick Actions */}
           <div className="border-b border-slate-700 pb-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Display Mode</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  onRestartStory();
+                  onClose();
+                }}
+                className="flex items-center gap-2 px-4 py-3 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-lg hover:bg-blue-600/30 transition-colors"
+              >
+                <span>🔄</span>
+                Restart Story
+              </button>
+              <button
+                onClick={() => {
+                  onChangeStory();
+                  onClose();
+                }}
+                className="flex items-center gap-2 px-4 py-3 bg-cyan-600/20 border border-cyan-500/30 text-cyan-300 rounded-lg hover:bg-cyan-600/30 transition-colors"
+              >
+                <span>📚</span>
+                Change Story
+              </button>
+              <button
+                onClick={() => {
+                  onShowTutorial();
+                  onClose();
+                }}
+                className="flex items-center gap-2 px-4 py-3 bg-yellow-600/20 border border-yellow-500/30 text-yellow-300 rounded-lg hover:bg-yellow-600/30 transition-colors"
+              >
+                <span>📖</span>
+                Tutorial
+              </button>
+              <button
+                onClick={() => {
+                  onShowAbout();
+                  onClose();
+                }}
+                className="flex items-center gap-2 px-4 py-3 bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-lg hover:bg-purple-600/30 transition-colors"
+              >
+                <span>ℹ️</span>
+                About
+              </button>
+            </div>
+          </div>
+
+          {/* Display Settings */}
+          <div className="border-b border-slate-700 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Display Settings</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -130,7 +177,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-slate-300 font-medium">Debug Information</p>
-                    <p className="text-xs text-slate-500">Show internal state and flags (Dev Mode only)</p>
+                    <p className="text-xs text-slate-500">Show detailed technical debugging data</p>
                   </div>
                   <button
                     onClick={() => handleToggle('showDebugInfo')}
@@ -177,6 +224,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
+          {/* Developer Actions */}
+          {settings.developerMode && (
+            <div className="border-b border-slate-700 pb-4">
+              <h3 className="text-lg font-semibold text-white mb-4">Developer Tools</h3>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    onToggleDebug();
+                  }}
+                  className={`flex items-center gap-2 px-4 py-3 border rounded-lg transition-colors ${
+                    showDebug 
+                      ? 'bg-gray-600/30 border-gray-500/50 text-gray-300' 
+                      : 'bg-gray-600/20 border-gray-500/30 text-gray-400 hover:bg-gray-600/30'
+                  }`}
+                >
+                  <span>{showDebug ? '👁️' : '🔍'}</span>
+                  {showDebug ? 'Hide Debug' : 'Show Debug'}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Information */}
           <div className="text-sm text-slate-400">
             <p className="mb-2">
@@ -186,85 +255,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               <strong className="text-slate-300">Developer Mode:</strong> Exposes technical details and quantum mechanics
             </p>
           </div>
-
-          {/* Quick Actions */}
-          <div className="border-b border-slate-700 pb-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {onRestartStory && (
-                <button
-                  onClick={() => {
-                    onRestartStory();
-                    onClose();
-                  }}
-                  className="flex items-center gap-2 px-4 py-3 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-lg hover:bg-blue-600/30 transition-colors"
-                >
-                  <span>🔄</span>
-                  Restart Story
-                </button>
-              )}
-              {onChangeStory && (
-                <button
-                  onClick={() => {
-                    onChangeStory();
-                    onClose();
-                  }}
-                  className="flex items-center gap-2 px-4 py-3 bg-cyan-600/20 border border-cyan-500/30 text-cyan-300 rounded-lg hover:bg-cyan-600/30 transition-colors"
-                >
-                  <span>📚</span>
-                  Change Story
-                </button>
-              )}
-              {onShowTutorial && (
-                <button
-                  onClick={() => {
-                    onShowTutorial();
-                    onClose();
-                  }}
-                  className="flex items-center gap-2 px-4 py-3 bg-yellow-600/20 border border-yellow-500/30 text-yellow-300 rounded-lg hover:bg-yellow-600/30 transition-colors"
-                >
-                  <span>📖</span>
-                  Tutorial
-                </button>
-              )}
-              {onShowAbout && (
-                <button
-                  onClick={() => {
-                    onShowAbout();
-                    onClose();
-                  }}
-                  className="flex items-center gap-2 px-4 py-3 bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-lg hover:bg-purple-600/30 transition-colors"
-                >
-                  <span>ℹ️</span>
-                  About
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Developer Actions */}
-          {settings.developerMode && (
-            <div className="border-b border-slate-700 pb-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Developer Tools</h3>
-              <div className="flex gap-3">
-                {onToggleDebug && (
-                  <button
-                    onClick={() => {
-                      onToggleDebug();
-                    }}
-                    className={`flex items-center gap-2 px-4 py-3 border rounded-lg transition-colors ${
-                      showDebug 
-                        ? 'bg-gray-600/30 border-gray-500/50 text-gray-300' 
-                        : 'bg-gray-600/20 border-gray-500/30 text-gray-400 hover:bg-gray-600/30'
-                    }`}
-                  >
-                    <span>{showDebug ? '👁️' : '🔍'}</span>
-                    {showDebug ? 'Hide Debug' : 'Show Debug'}
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="flex justify-end gap-3 mt-8">
@@ -272,7 +262,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             onClick={onClose}
             className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg"
           >
-            Apply Settings
+            Done
           </button>
         </div>
       </div>
@@ -280,4 +270,4 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   );
 };
 
-export default SettingsModal;
+export default EnhancedSettingsModal;
