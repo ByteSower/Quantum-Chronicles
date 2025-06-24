@@ -6,8 +6,6 @@ const AboutModal = lazy(() => import('./components/AboutModal'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const AboutQNCEModal = lazy(() => import('./components/AboutQNCEModal'));
 import { analytics, trackUIEvent } from './utils/analytics';
-// Import feedback data access to enable console commands
-import './utils/FeedbackDataAccess';
 import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
