@@ -5,7 +5,6 @@ import StateDebugOverlay from './StateDebugOverlay';
 import IntroModal from './IntroModal';
 import TutorialOverlay from './TutorialOverlay';
 import VariableDashboard from './VariableDashboard/VariableDashboard';
-import VisualBranchTracker from './VisualBranchTracker';
 import { useQNCE } from '../hooks/useQNCE';
 import LogArea from './LogArea';
 import type { LogEntry } from './LogArea';
@@ -40,15 +39,12 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     flags, 
     history, 
     variables, 
-    unlockedNodes: _unlockedNodes,
-    delayedConsequences: _delayedConsequences,
-    recentActions,
     makeChoice, 
     reset, 
     initializeFromStartingPoint, 
-    getBranchNodes, 
     getAvailableChoices,
-    isChoiceAvailable 
+    isChoiceAvailable,
+    getCurrentNodeText
   } = useQNCE();
   const [showDebug, setShowDebug] = useState(false);
   const [showModal, setShowModal] = useState(true);
@@ -130,6 +126,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     ];
     
     // Use the original choice index from all choices for the actual makeChoice call
+    if (!currentNode || !currentNode.choices) return;
     const originalChoiceIndex = currentNode.choices.findIndex(c => c === choice);
     makeChoice(originalChoiceIndex);
     
@@ -184,10 +181,10 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
           {/* Dashboard content */}
           <div className={`sheet-content ${sheetOpen || 'md:block' ? 'block' : 'hidden'}`}>
             <VariableDashboard 
-              curiosity={variables.curiosity}
-              coherence={variables.coherence}
-              disruption={variables.disruption}
-              synchrony={variables.synchrony}
+              curiosity={Number(variables.curiosity || 0)}
+              coherence={Number(variables.coherence || 0)}
+              disruption={Number(variables.disruption || 0)}
+              synchrony={Number(variables.synchrony || 0)}
             />
           </div>
         </div>
@@ -197,23 +194,23 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
         <div className="w-full max-w-md mx-auto px-2 sm:px-4 text-center">
           <div className="flex flex-col items-center w-full">
             <div className="mb-4 w-full">
-              <NarrativeDisplay text={currentNode.text} />
+              <NarrativeDisplay text={currentNode ? getCurrentNodeText() : "Loading..."} />
             </div>
             <div className="flex flex-col items-center mb-2 w-full">
               <ChoiceSelector choices={getAvailableChoices()} onSelect={handleSelectChoice} />
               
               {/* Show locked choices in developer mode */}
-              {settings.developerMode && currentNode.choices.length > getAvailableChoices().length && (
+              {settings.developerMode && currentNode && currentNode.choices && currentNode.choices.length > getAvailableChoices().length && (
                 <div className="mt-2 p-2 bg-gray-800 bg-opacity-50 rounded text-xs text-gray-400 w-full">
                   <details>
                     <summary className="cursor-pointer text-yellow-400">
-                      🔒 {currentNode.choices.length - getAvailableChoices().length} Locked Choice(s)
+                      🔒 {currentNode.choices ? currentNode.choices.length - getAvailableChoices().length : 0} Locked Choice(s)
                     </summary>
                     <div className="mt-2 space-y-1">
-                      {currentNode.choices.filter(choice => !isChoiceAvailable(choice)).map((choice, index) => (
+                      {currentNode.choices?.filter(choice => !isChoiceAvailable(choice)).map((choice, index) => (
                         <div key={index} className="text-gray-500 italic">
-                          "{choice.text}" 
-                          {choice.requirements && (
+                          "{choice.choiceText}" 
+                          {choice.conditions && (
                             <div className="text-xs text-red-400 ml-2">
                               Requirements not met
                             </div>
@@ -225,18 +222,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
                 </div>
               )}
             </div>
-            
-            {/* Show recent actions in developer mode */}
-            {settings.developerMode && recentActions.length > 0 && (
-              <div className="w-full mt-2 mb-2 px-2">
-                <div className="bg-blue-900 bg-opacity-30 p-2 rounded text-xs">
-                  <h4 className="text-blue-300 font-semibold mb-1">Recent Quantum Effects:</h4>
-                  {recentActions.slice(0, 3).map((action, index) => (
-                    <div key={index} className="text-blue-200 mb-1">• {action}</div>
-                  ))}
-                </div>
-              </div>
-            )}
             
             {/* Show logs only if developer mode and show logs is enabled */}
             {settings.developerMode && settings.showDebugInfo && (
@@ -286,20 +271,16 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
               </button>
             </div>
             
-            {showDebug && settings.developerMode && settings.showDebugInfo && (
-              <StateDebugOverlay nodeId={currentNode.id} flags={flags} history={history} />
+            {showDebug && settings.developerMode && settings.showDebugInfo && currentNode && (
+              <StateDebugOverlay nodeId={currentNode.nodeId} flags={flags} history={history} />
             )}
           </div>
         </div>
         
-        {/* Visual Branch Tracker moved to bottom and scaled down */}
-        {settings.developerMode && (
+        {/* Visual Branch Tracker - disabled until getBranchNodes is reimplemented */}
+        {false && settings.developerMode && (
           <div className="w-full max-w-4xl mx-auto mt-6 px-2">
-            <VisualBranchTracker 
-              nodes={getBranchNodes()}
-              selectedPath={history}
-              className="w-full"
-            />
+            <div className="text-gray-500 text-center">Visual Branch Tracker - Coming Soon</div>
           </div>
         )}
       </div>
