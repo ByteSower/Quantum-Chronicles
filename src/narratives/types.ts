@@ -5,87 +5,56 @@
 // Import feedback hook functions from analytics
 import { FEEDBACK_HOOKS as ANALYTICS_FEEDBACK_HOOKS } from '../utils/analytics';
 
+export type QNCEVariables = Record<string, number | boolean>;
+
+export interface FlagUpdate {
+  flag: string;
+  operation: 'increment' | 'decrement' | 'set';
+  value: number | boolean;
+}
+
+export interface FlagCondition {
+  flag: string;
+  operator: '>' | '<' | '>=' | '<=' | '===' | '!==';
+  value: number | boolean;
+}
+
+export interface FeedbackHook {
+  milestone: 'branch_completion' | 'deep_engagement' | 'story_completion';
+  delay: number;
+}
+
 export interface Choice {
-  text: string;
-  nextNodeId: string;
-  flagEffects?: Record<string, boolean | number | string>;
-  variableEffects?: {
-    curiosity?: number;
-    coherence?: number;
-    disruption?: number;
-    synchrony?: number;
-  };
-  requirements?: {
-    flags?: Record<string, boolean | number | string>;
-    variables?: {
-      curiosity?: { min?: number; max?: number };
-      coherence?: { min?: number; max?: number };
-      disruption?: { min?: number; max?: number };
-      synchrony?: { min?: number; max?: number };
-    };
-  };
-  unlocks?: string[];
-  consequences?: {
-    immediate?: string;
-    delayed?: { nodeId: string; message: string }[];
-  };
-  // Beta testing features
-  feedbackHook?: (data: Record<string, unknown>) => void; // Function for feedback collection at this choice point
-  assetPlaceholder?: {
-    visual?: string; // Placeholder for future visual assets
-    audio?: string; // Placeholder for future audio assets
-  };
+  choiceText: string;
+  nextNodeId: string; // namespaced ID like 'origins:ft_scanFragments'
+  flagUpdates?: FlagUpdate[];
+  conditions?: FlagCondition[];
 }
 
 export interface NarrativeNode {
-  id: string;
-  text: string;
-  choices: Choice[];
-  metadata?: {
-    segment: string;
-    themes: string[];
-    quantumDynamics?: {
-      superposition?: boolean;
-      entanglement?: string[];
-      collapse?: boolean;
-    };
+  nodeId: string;
+  text?: string;
+  dynTextFunction?: (vars: QNCEVariables) => string;
+  textAfter?: (vars: QNCEVariables) => string;
+  assetPlaceholders?: {
+    visualCue?: string;
+    audioCue?: string;
+    hapticCue?: string;
   };
-  // QNCE dynamic content support
-  dynamicText?: {
-    template: string; // Text template with {{variableName}} placeholders
-    variables: string[]; // List of variable names used in template
-  };
-  // Beta testing features
-  feedbackPrompt?: string; // Optional feedback prompt for this node
-  assetPlaceholder?: {
-    visual?: string; // Placeholder for future visual assets
-    audio?: string; // Placeholder for future audio assets
-    music?: string; // Placeholder for future background music
-  };
+  choices?: Choice[];
+  feedbackHook?: FeedbackHook;
 }
 
 export interface NarrativeSegment {
-  id: string;
+  segmentId: string;
   title: string;
   description: string;
   startNodeId: string;
+  exitPoints: string[];
+  initialFlags: Record<string, number | boolean>;
+  initialVariables: Record<string, any>;
+  globalFlagDecay: number;
   nodes: NarrativeNode[];
-  metadata: {
-    version: string;
-    dynamicVariables: string[];
-    feedbackHooks: (string | ((data: Record<string, unknown>) => void))[];
-    placeholderAssets: string[];
-  };
-  // Access control
-  entryPoints?: string[]; // Node IDs that can lead into this segment
-  exitPoints?: string[]; // Node IDs that lead out of this segment
-  requiredFlags?: Record<string, boolean | number | string>;
-  requiredVariables?: {
-    curiosity?: { min?: number; max?: number };
-    coherence?: { min?: number; max?: number };
-    disruption?: { min?: number; max?: number };
-    synchrony?: { min?: number; max?: number };
-  };
 }
 
 export interface SessionState {
@@ -113,39 +82,6 @@ export function interpolateText(
   return template.replace(/\{\{(\w+)\}\}/g, (match, varName) => {
     return variables[varName] !== undefined ? String(variables[varName]) : match;
   });
-}
-
-/**
- * Utility function to validate if a narrative segment can be accessed
- */
-export function canAccessSegment(
-  segment: NarrativeSegment,
-  flags: Record<string, boolean | number | string>,
-  variables: { curiosity: number; coherence: number; disruption: number; synchrony: number }
-): boolean {
-  // Check flag requirements
-  if (segment.requiredFlags) {
-    for (const [flagName, requiredValue] of Object.entries(segment.requiredFlags)) {
-      if (flags[flagName] !== requiredValue) {
-        return false;
-      }
-    }
-  }
-
-  // Check variable requirements
-  if (segment.requiredVariables) {
-    for (const [varName, requirements] of Object.entries(segment.requiredVariables)) {
-      const currentValue = variables[varName as keyof typeof variables];
-      if (requirements.min !== undefined && currentValue < requirements.min) {
-        return false;
-      }
-      if (requirements.max !== undefined && currentValue > requirements.max) {
-        return false;
-      }
-    }
-  }
-
-  return true;
 }
 
 /**
