@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { accessibilityManager, a11y } from '../utils/accessibility';
+import type { QNCEVariables } from '../narratives/types';
 
 interface NarrativeDisplayProps {
   text: string;
   animationDuration?: number;
-  variables?: Record<string, number | string | boolean>;
+  variables?: QNCEVariables;
 }
 
 const NarrativeDisplay: React.FC<NarrativeDisplayProps> = ({ 

@@ -180,6 +180,10 @@ class ConsolidatedFeedbackManager {
     };
   }
 
+  public getSessionData() {
+    return this.feedbackData;
+  }
+
   /**
    * Single popup enforcement - only one feedback popup can be active at a time
    */
@@ -379,6 +383,7 @@ export function useConsolidatedFeedbackManager() {
   const [manager] = useState(() => new ConsolidatedFeedbackManager());
   const [currentMilestone, setCurrentMilestone] = useState<FeedbackMilestone | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [sessionData, setSessionData] = useState(manager.getSessionData());
   
   // Tracking refs for session data
   const choiceCountRef = useRef(0);
@@ -393,6 +398,7 @@ export function useConsolidatedFeedbackManager() {
     
     if (milestoneData) {
       setCurrentMilestone(milestoneData);
+      setSessionData(manager.getSessionData());
       setIsVisible(true);
     }
   }, [manager]);
@@ -424,6 +430,7 @@ export function useConsolidatedFeedbackManager() {
     manager,
     currentMilestone,
     isVisible,
+    sessionData,
     checkForFeedback,
     handleFeedbackSubmit,
     handleFeedbackDismiss,

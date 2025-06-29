@@ -15,7 +15,3 @@ export function flagIncrement(flag: string, amount = 1): FlagUpdate {
 export function flagDecrement(flag: string, amount = 1): FlagUpdate {
   return { flag, operation: 'decrement', value: amount };
 }
-
-export function flagSet(flag: string, value: number | boolean): FlagUpdate {
-  return { flag, operation: 'set', value };
-}

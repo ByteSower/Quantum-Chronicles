@@ -49,7 +49,10 @@ export const trackStoryEvent = {
     analytics.trackEvent('story_progress', 'narrative', nodeId),
   
   choice: (choiceId: string) => 
-    analytics.trackEvent('choice_made', 'narrative', choiceId)
+    analytics.trackEvent('choice_made', 'narrative', choiceId),
+
+  reset: (segmentId: string) =>
+    analytics.trackEvent('story_reset', 'narrative', segmentId)
 };
 
 // Enhanced tracking for QNCE expansion features

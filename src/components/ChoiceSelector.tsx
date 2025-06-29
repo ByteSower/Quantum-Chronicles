@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { Choice } from '../hooks/useQNCE';
+import type { Choice } from '../narratives/types';
 import { accessibilityManager, a11y } from '../utils/accessibility';
 
 interface ChoiceSelectorProps {
@@ -22,7 +22,7 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
   // Announce when new choices are available
   useEffect(() => {
     if (choices.length > 0) {
-      const choiceTexts = choices.map(c => c.text).join(', ');
+      const choiceTexts = choices.map(c => c.choiceText).join(', ');
       accessibilityManager.announceContentChange('choice', 
         `${choices.length} choice${choices.length > 1 ? 's' : ''} available: ${choiceTexts}`
       );
@@ -94,11 +94,11 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
             onBlur={() => setHoveredChoice(null)}
             tabIndex={0}
             data-choice-index={idx}
-            aria-label={a11y.getChoiceLabel(choice.text, idx, true)}
+            aria-label={a11y.getChoiceLabel(choice.choiceText, idx, true)}
             aria-describedby={showOnboardingHints && isFirstChoice ? `choice-hint-${idx}` : undefined}
             role="button"
           >
-            {choice.text}
+            {choice.choiceText}
           </button>
           
           {/* Tooltip for guidance */}

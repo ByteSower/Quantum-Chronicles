@@ -13,6 +13,12 @@ export interface FlagUpdate {
   value: number | boolean;
 }
 
+export interface VariableUpdate {
+  variable: keyof QNCEVariables;
+  operation: 'add' | 'subtract' | 'set';
+  value: number;
+}
+
 export interface FlagCondition {
   flag: string;
   operator: '>' | '<' | '>=' | '<=' | '===' | '!==';
@@ -28,6 +34,7 @@ export interface Choice {
   choiceText: string;
   nextNodeId: string; // namespaced ID like 'origins:ft_scanFragments'
   flagUpdates?: FlagUpdate[];
+  variableUpdates?: VariableUpdate[];
   conditions?: FlagCondition[];
 }
 
@@ -55,20 +62,6 @@ export interface NarrativeSegment {
   initialVariables: Record<string, any>;
   globalFlagDecay: number;
   nodes: NarrativeNode[];
-}
-
-export interface SessionState {
-  segmentId: string;
-  nodeId: string;
-  flags: Record<string, boolean | number | string>;
-  variables: {
-    curiosity: number;
-    coherence: number;
-    disruption: number;
-    synchrony: number;
-  };
-  sessionId: string;
-  timestamp: number;
 }
 
 /**
