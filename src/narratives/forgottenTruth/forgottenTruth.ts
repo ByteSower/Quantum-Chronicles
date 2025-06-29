@@ -248,6 +248,76 @@ const exitNodes: NarrativeNode[] = [
   }
 ];
 
+// Missing core nodes that are referenced but not defined
+const missingCoreNodes: NarrativeNode[] = [
+  {
+    nodeId: 'ft_immediateProtection',
+    text: 'You focus on creating immediate safeguards for consciousness-enhanced individuals. Working with government contacts and fellow enhanced humans, you establish protection protocols and safe houses. The work is dangerous - powerful forces want to continue the experiments - but your dedication saves lives.',
+    choices: [
+      {
+        choiceText: 'Sacrifice yourself to ensure the protections remain in place',
+        nextNodeId: 'ft_exit_sacrifice_made',
+        conditions: [{ flag: 'coherence', operator: '>=', value: 10 }],
+        flagUpdates: [flagIncrement('coherence', 2)]
+      },
+      {
+        choiceText: 'Build the coalition to continue the work',
+        nextNodeId: 'ft_buildCoalition',
+        flagUpdates: [flagIncrement('synchrony', 1)]
+      },
+      {
+        choiceText: 'Reveal the truth to protect everyone',
+        nextNodeId: 'ft_exit_revelation_complete',
+        flagUpdates: [flagIncrement('curiosity', 1)]
+      }
+    ]
+  },
+  {
+    nodeId: 'ft_exposeTruth',
+    text: 'You decide to expose the entire conspiracy to the world. The revelation causes massive upheaval - governments fall, public trust shatters, but the truth finally emerges. Enhanced individuals come forward, and humanity begins to grapple with its quantum future.',
+    choices: [
+      {
+        choiceText: 'Accept your role as a guide for the awakening',
+        nextNodeId: 'ft_exit_transcendence',
+        conditions: [{ flag: 'synchrony', operator: '>=', value: 8 }],
+        flagUpdates: [flagIncrement('synchrony', 3)]
+      },
+      {
+        choiceText: 'Form a coalition to manage the transition',
+        nextNodeId: 'ft_exit_coalition_formed',
+        flagUpdates: [flagIncrement('coherence', 1)]
+      },
+      {
+        choiceText: 'Document everything for future generations',
+        nextNodeId: 'ft_exit_revelation_complete',
+        flagUpdates: [flagIncrement('curiosity', 2)]
+      }
+    ]
+  },
+  {
+    nodeId: 'ft_studyEntity',
+    text: 'You carefully study the orchestrating entity\'s methods and motivations. Through quantum consciousness techniques, you begin to understand its true nature - neither malevolent nor benevolent, but utterly focused on humanity\'s survival through transformation.',
+    choices: [
+      {
+        choiceText: 'Merge your consciousness with the entity to understand completely',
+        nextNodeId: 'ft_exit_transcendence',
+        conditions: [{ flag: 'curiosity', operator: '>=', value: 12 }],
+        flagUpdates: [flagIncrement('disruption', 2)]
+      },
+      {
+        choiceText: 'Use your knowledge to build a better coalition',
+        nextNodeId: 'ft_buildCoalition',
+        flagUpdates: [flagIncrement('coherence', 2)]
+      },
+      {
+        choiceText: 'Share your findings with the world',
+        nextNodeId: 'ft_exposeTruth',
+        flagUpdates: [flagIncrement('curiosity', 1)]
+      }
+    ]
+  }
+];
+
 export const forgottenTruth: NarrativeSegment = {
   segmentId: 'forgottenTruth',
   title: 'The Forgotten Truth',
@@ -470,7 +540,8 @@ export const forgottenTruth: NarrativeSegment = {
     ...realmConvergenceNodes,
     ...catalystRevelationNodes,
     ...quantumLegacyNodes,
+    ...missingCoreNodes,
     ...exitNodes,
-    ...exitNodes,
+    ...missingCoreNodes,
   ],
 };
