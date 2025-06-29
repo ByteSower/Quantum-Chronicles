@@ -57,7 +57,7 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
   return (
     <div 
       ref={containerRef}
-      className="flex flex-col gap-3 mt-4 items-center w-full"
+      className="choice-selector flex flex-col gap-3 mt-4 items-center w-full"
       role="group"
       aria-labelledby={choicesListId}
     >
