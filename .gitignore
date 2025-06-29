@@ -22,17 +22,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Internal development tools - DO NOT COMMIT TO PUBLIC REPO
-dev-tools/
-**/dev-tools/
-internal-tools/
-**/internal-tools/
-*test*.js
-*TEST*.js
-*INTERNAL*.md
-*internal*.md
-*SUMMARY*.md
-*STATUS*.md
-*REPORT*.md
-feedback-data-access.*
+VERSION_LOG.md
