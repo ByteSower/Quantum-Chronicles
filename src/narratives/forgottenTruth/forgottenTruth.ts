@@ -208,6 +208,46 @@ const quantumLegacyNodes: NarrativeNode[] = [
   },
 ];
 
+// Story completion/exit nodes with feedback hooks
+const exitNodes: NarrativeNode[] = [
+  {
+    nodeId: 'ft_exit_revelation_complete',
+    text: 'You have uncovered the full truth behind the consciousness experiments. The revelation has changed not just your understanding, but your very nature. As you contemplate what comes next, you realize this is only the beginning of a new chapter in human evolution. The quantum threads of your choices will echo through time.',
+    choices: [],
+    feedbackHook: {
+      milestone: 'story_completion',
+      delay: 2000
+    }
+  },
+  {
+    nodeId: 'ft_exit_coalition_formed', 
+    text: 'Your coalition of enhanced individuals has laid the groundwork for humanity\'s conscious evolution. The network of allies you\'ve built spans the globe, ready to guide the species through this transition. Your journey of discovery becomes the foundation for countless others who will follow.',
+    choices: [],
+    feedbackHook: {
+      milestone: 'story_completion',
+      delay: 2000
+    }
+  },
+  {
+    nodeId: 'ft_exit_sacrifice_made',
+    text: 'Your sacrifice has protected humanity from the dangerous extremes of consciousness manipulation. Though the cost was high, your actions have ensured that the future of human awareness will be shaped by wisdom rather than reckless ambition. The quantum echoes of your choices will resonate through generations.',
+    choices: [],
+    feedbackHook: {
+      milestone: 'story_completion', 
+      delay: 2000
+    }
+  },
+  {
+    nodeId: 'ft_exit_transcendence',
+    text: 'You have transcended the boundaries between individual and collective consciousness. No longer bound by the limitations of a single mind, you exist as a bridge between humanity\'s past and its quantum future. Your transformation opens pathways that others will one day follow.',
+    choices: [],
+    feedbackHook: {
+      milestone: 'story_completion',
+      delay: 2000
+    }
+  }
+];
+
 export const forgottenTruth: NarrativeSegment = {
   segmentId: 'forgottenTruth',
   title: 'The Forgotten Truth',
@@ -321,6 +361,12 @@ export const forgottenTruth: NarrativeSegment = {
           choiceText: 'Build a coalition of enhanced individuals',
           nextNodeId: 'ft_buildCoalition',
           flagUpdates: [flagIncrement('coherence', 2), flagIncrement('synchrony', 1)]
+        },
+        {
+          choiceText: 'Complete your investigation and reveal the truth',
+          nextNodeId: 'ft_exit_revelation_complete',
+          conditions: [{ flag: 'curiosity', operator: '>=', value: 10 }],
+          flagUpdates: [flagIncrement('coherence', 1)]
         }
       ]
     },
@@ -339,6 +385,12 @@ export const forgottenTruth: NarrativeSegment = {
             flagIncrement('synchrony', 4),
             flagIncrement('coherence', 2),
           ],
+        },
+        {
+          choiceText: 'Unite the coalition to shape humanity\'s future',
+          nextNodeId: 'ft_exit_coalition_formed',
+          conditions: [{ flag: 'coherence', operator: '>=', value: 12 }],
+          flagUpdates: [flagIncrement('synchrony', 2)]
         },
         {
           choiceText: 'Establish immediate protections for enhanced individuals',
@@ -418,5 +470,7 @@ export const forgottenTruth: NarrativeSegment = {
     ...realmConvergenceNodes,
     ...catalystRevelationNodes,
     ...quantumLegacyNodes,
+    ...exitNodes,
+    ...exitNodes,
   ],
 };

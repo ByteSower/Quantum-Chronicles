@@ -1,6 +1,19 @@
 import { useState, useCallback, useRef } from 'react';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
+// Quick star rating feedback data
+export interface StarRatingFeedbackData {
+  rating: number;
+  comment?: string;
+  milestone: string;
+  timestamp: number;
+  sessionData?: {
+    nodeId: string;
+    choiceCount: number;
+    sessionDuration: number;
+  };
+}
+
 // Enhanced feedback data for consolidated system
 export interface ConsolidatedFeedbackData {
   // Overall experience rating

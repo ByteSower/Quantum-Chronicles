@@ -3,8 +3,10 @@ import NarrativeDisplay from './NarrativeDisplay';
 import ChoiceSelector from './ChoiceSelector';
 const StateDebugOverlay = lazy(() => import('./StateDebugOverlay'));
 const ConsolidatedFeedbackPrompt = lazy(() => import('./ConsolidatedFeedbackPrompt'));
+const StarRatingOverlay = lazy(() => import('./StarRatingOverlay'));
 import { useQNCE } from '../hooks/useQNCE';
 import { useConsolidatedFeedbackManager } from '../utils/ConsolidatedFeedbackManager';
+import { useStarRatingFeedback } from '../utils/StarRatingFeedbackManager';
 
 interface StoryFlowProps {
   settings: {
@@ -38,6 +40,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     sessionData
   } = useConsolidatedFeedbackManager();
 
+  // Star rating feedback for story completion
+  const {
+    isVisible: isStarRatingVisible,
+    checkForFeedback: checkForStarRating,
+    handleSubmit: handleStarRatingSubmit,
+    handleSkip: handleStarRatingSkip
+  } = useStarRatingFeedback();
+
   useEffect(() => {
     const sessionStartTime = Date.now();
     const handleSessionEnd = () => {
@@ -61,6 +71,13 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
     if (currentNode.feedbackHook) {
       checkForFeedback(currentNode.feedbackHook.milestone);
+      
+      // Also check for star rating feedback at story completion
+      if (currentNode.feedbackHook.milestone === 'story_completion') {
+        setTimeout(() => {
+          checkForStarRating(currentNode.feedbackHook!.milestone, currentNode.nodeId, history.length);
+        }, currentNode.feedbackHook.delay || 1000);
+      }
     }
 
     if (isFirstChoice) {
@@ -105,6 +122,18 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
             sessionData={sessionData}
             onSubmit={handleFeedbackSubmit}
             onDismiss={handleFeedbackDismiss}
+          />
+        )}
+      </Suspense>
+
+      <Suspense fallback={<div>Loading...</div>}>
+        {isStarRatingVisible && (
+          <StarRatingOverlay
+            isVisible={isStarRatingVisible}
+            title="How was your story experience?"
+            description="Rate your quantum narrative journey!"
+            onSubmit={handleStarRatingSubmit}
+            onSkip={handleStarRatingSkip}
           />
         )}
       </Suspense>

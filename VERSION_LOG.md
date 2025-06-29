@@ -48,6 +48,31 @@
 
 ---
 
+### v1.3.1-dev (Feature/Feedback-System Branch) - IN PROGRESS
+**Base Commit:** `7265743`  
+**Date:** June 29, 2025  
+**Status:** 🔄 Active Development
+
+**Current Sprint: Feedback System Enhancement**
+- ✅ **Comprehensive Analytics Integration:** Added tutorial and SideMenu tracking
+- ✅ **Star Rating System:** Quick feedback collection at story completion points
+- ✅ **Story Exit Points:** Added narrative completion nodes with feedback hooks
+- 🔄 **Consolidated Feedback Integration:** Enhanced existing feedback system for story milestones
+- 🔄 **Cross-Browser QA:** Testing responsive design and functionality
+- 📋 **Next:** User acceptance testing and beta deployment preparation
+
+**New Components:**
+- `StarRatingOverlay.tsx`: Quick 5-star rating with optional comments
+- `StarRatingFeedbackManager.ts`: Lightweight feedback collection for exit points
+- Exit nodes in narrative: `ft_exit_revelation_complete`, `ft_exit_coalition_formed`, etc.
+
+**Analytics Enhancements:**
+- Tutorial engagement tracking (start, step progression, completion/skip)
+- SideMenu usage analytics (open/close, navigation choices, keyboard usage)
+- Star rating feedback collection with milestone tracking
+
+---
+
 ## Development Guidelines
 
 ### Feature Branch Naming
