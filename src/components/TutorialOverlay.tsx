@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TUTORIAL_STEPS, TUTORIAL_ANALYTICS_EVENTS } from '../config/tutorialSteps';
-import { trackUIEvent } from '../utils/analytics';
+import { TUTORIAL_STEPS } from '../config/tutorialSteps';
+import { trackTutorialEvent } from '../utils/analytics';
 
 interface TutorialOverlayProps {
   onClose: () => void;
@@ -10,6 +10,7 @@ interface TutorialOverlayProps {
 const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [tutorialStartTime] = useState(Date.now());
   const overlayRef = useRef<HTMLDivElement>(null);
   const focusTrapRef = useRef<HTMLDivElement>(null);
 
@@ -20,9 +21,9 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
   // Analytics tracking
   useEffect(() => {
     if (currentStepIndex === 0) {
-      trackUIEvent.feature('tutorial', TUTORIAL_ANALYTICS_EVENTS.STARTED);
+      trackTutorialEvent.start();
     }
-    trackUIEvent.feature('tutorial', `${TUTORIAL_ANALYTICS_EVENTS.STEP_VIEWED}_${currentStep.id}`);
+    trackTutorialEvent.step(currentStep.id, currentStepIndex);
   }, [currentStepIndex, currentStep.id]);
 
   // Focus management and keyboard navigation
@@ -103,7 +104,8 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
   };
 
   const handleComplete = () => {
-    trackUIEvent.feature('tutorial', TUTORIAL_ANALYTICS_EVENTS.COMPLETED);
+    const completionTime = Date.now() - tutorialStartTime;
+    trackTutorialEvent.complete(TUTORIAL_STEPS.length, completionTime);
     setIsVisible(false);
     if (currentStep.action?.callback) {
       currentStep.action.callback();
@@ -115,7 +117,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
   };
 
   const handleSkipTutorial = () => {
-    trackUIEvent.feature('tutorial', `${TUTORIAL_ANALYTICS_EVENTS.SKIPPED}_${currentStep.id}`);
+    trackTutorialEvent.skip(currentStep.id, currentStepIndex);
     setIsVisible(false);
     setTimeout(onClose, 300);
   };

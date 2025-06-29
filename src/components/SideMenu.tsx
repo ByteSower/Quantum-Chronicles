@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { trackSideMenuEvent } from '../utils/analytics';
 
 interface SideMenuProps {
   onHome?: () => void;
@@ -19,9 +20,23 @@ export function SideMenu({
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   
-  const handleMenuAction = (action?: () => void) => {
+  const handleMenuAction = (action?: () => void, destination?: string) => {
+    if (destination) {
+      trackSideMenuEvent.navigate(destination);
+    }
     if (action) action();
     setOpen(false); // Close menu after action
+    trackSideMenuEvent.close();
+  };
+
+  const toggleMenu = () => {
+    const newOpenState = !open;
+    setOpen(newOpenState);
+    if (newOpenState) {
+      trackSideMenuEvent.open();
+    } else {
+      trackSideMenuEvent.close();
+    }
   };
 
   // Handle escape key and click outside
@@ -31,6 +46,8 @@ export function SideMenu({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpen(false);
+        trackSideMenuEvent.close();
+        trackSideMenuEvent.keyboardNavigation('escape_close');
         buttonRef.current?.focus(); // Return focus to hamburger button
       }
     };
@@ -38,6 +55,7 @@ export function SideMenu({
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
+        trackSideMenuEvent.close();
       }
     };
 
@@ -66,7 +84,7 @@ export function SideMenu({
         aria-label="Open menu"
         aria-expanded={open}
         className="p-2 fixed top-4 right-4 z-50 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-        onClick={() => setOpen(o => !o)}
+        onClick={toggleMenu}
       >
         ☰
       </button>
@@ -93,7 +111,7 @@ export function SideMenu({
               <li role="listitem">
                 <button 
                   className="w-full text-left p-2 hover:bg-gray-100 rounded transition-colors focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onClick={() => handleMenuAction(onHome)}
+                  onClick={() => handleMenuAction(onHome, 'home')}
                   aria-label="Go to home"
                 >
                   Home
@@ -102,7 +120,7 @@ export function SideMenu({
               <li role="listitem">
                 <button 
                   className="w-full text-left p-2 hover:bg-gray-100 rounded transition-colors focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onClick={() => handleMenuAction(onTutorial)}
+                  onClick={() => handleMenuAction(onTutorial, 'tutorial')}
                   aria-label="Open tutorial"
                 >
                   Tutorial
@@ -111,7 +129,7 @@ export function SideMenu({
               <li role="listitem">
                 <button 
                   className="w-full text-left p-2 hover:bg-gray-100 rounded transition-colors focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onClick={() => handleMenuAction(onSettings)}
+                  onClick={() => handleMenuAction(onSettings, 'settings')}
                   aria-label="Open settings"
                 >
                   Settings
@@ -120,7 +138,7 @@ export function SideMenu({
               <li role="listitem">
                 <button 
                   className="w-full text-left p-2 hover:bg-gray-100 rounded transition-colors focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onClick={() => handleMenuAction(onRestart)}
+                  onClick={() => handleMenuAction(onRestart, 'restart_story')}
                   aria-label="Restart story"
                 >
                   Restart Story
@@ -129,7 +147,7 @@ export function SideMenu({
               <li role="listitem">
                 <button 
                   className="w-full text-left p-2 hover:bg-gray-100 rounded transition-colors focus:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onClick={() => handleMenuAction(onToggleVariables)}
+                  onClick={() => handleMenuAction(onToggleVariables, 'variables')}
                   aria-label="Toggle variables dashboard"
                 >
                   Variables

@@ -112,4 +112,37 @@ export const FEEDBACK_HOOKS = {
   }
 };
 
+// Tutorial tracking events
+export const trackTutorialEvent = {
+  start: () => 
+    analytics.trackEvent('tutorial_start', 'onboarding', 'multi_step_tutorial'),
+  
+  step: (stepId: string, stepIndex: number) => 
+    analytics.trackEvent('tutorial_step', 'onboarding', `${stepId}_step_${stepIndex}`),
+  
+  complete: (totalSteps: number, completionTime: number) => 
+    analytics.trackEvent('tutorial_complete', 'onboarding', `${totalSteps}_steps_${completionTime}ms`),
+  
+  skip: (stepId: string, stepIndex: number) => 
+    analytics.trackEvent('tutorial_skip', 'onboarding', `${stepId}_step_${stepIndex}`),
+  
+  exit: (stepId: string, stepIndex: number) => 
+    analytics.trackEvent('tutorial_exit', 'onboarding', `${stepId}_step_${stepIndex}`)
+};
+
+// SideMenu tracking events
+export const trackSideMenuEvent = {
+  open: () => 
+    analytics.trackEvent('sidemenu_open', 'navigation', 'hamburger_menu'),
+  
+  close: () => 
+    analytics.trackEvent('sidemenu_close', 'navigation', 'hamburger_menu'),
+  
+  navigate: (destination: string) => 
+    analytics.trackEvent('sidemenu_navigate', 'navigation', destination),
+  
+  keyboardNavigation: (action: string) => 
+    analytics.trackEvent('sidemenu_keyboard', 'accessibility', action)
+};
+
 export default analytics;
