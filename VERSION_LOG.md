@@ -71,12 +71,12 @@
 - SideMenu usage analytics (open/close, navigation choices, keyboard usage)
 - Star rating feedback collection with milestone tracking
 
-### ⚠️ KNOWN ISSUES
-- **StarRatingOverlay**: Feedback overlay not appearing at exit nodes during testing
-  - Component implemented but not triggering correctly in development environment
-  - Core story functionality unaffected
-  - Documented in STAR_RATING_TESTING_REPORT.md
-  - Priority: Medium (post-MVP enhancement)
+### ✅ RESOLVED ISSUES  
+- **StarRatingOverlay**: Fixed duplicate node inclusion issue
+  - Removed duplicate `...missingCoreNodes` from narrative array  
+  - StarRatingOverlay now appears correctly at all exit nodes after 2s delay
+  - Verified in both development and production builds
+  - All four exit paths working: revelation_complete, coalition_formed, sacrifice_made, transcendence
 
 ---
 
