@@ -542,6 +542,5 @@ export const forgottenTruth: NarrativeSegment = {
     ...quantumLegacyNodes,
     ...missingCoreNodes,
     ...exitNodes,
-    ...missingCoreNodes,
   ],
 };

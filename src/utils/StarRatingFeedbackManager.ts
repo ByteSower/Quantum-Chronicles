@@ -22,6 +22,12 @@ class StarRatingFeedbackManager {
   }
 
   shouldShowFeedback(milestone: string): boolean {
+    console.log('⭐ StarRating shouldShowFeedback check:', { 
+      milestone, 
+      isStoryCompletion: milestone === 'story_completion',
+      notAlreadySubmitted: !this.feedbackSubmitted.has(milestone),
+      alreadySubmitted: Array.from(this.feedbackSubmitted)
+    });
     // Only show at story completion points and only once per session
     return milestone === 'story_completion' && !this.feedbackSubmitted.has(milestone);
   }
@@ -58,7 +64,9 @@ export function useStarRatingFeedback() {
   const [sessionData, setSessionData] = useState<any>({});
 
   const checkForFeedback = useCallback((milestone: string, nodeId: string, choiceCount: number) => {
+    console.log('⭐ checkForFeedback called:', { milestone, nodeId, choiceCount });
     if (manager.shouldShowFeedback(milestone)) {
+      console.log('⭐ Setting star rating visible!');
       setCurrentMilestone(milestone);
       setSessionData({
         nodeId,
@@ -66,6 +74,8 @@ export function useStarRatingFeedback() {
         sessionDuration: manager.getSessionDuration()
       });
       setIsVisible(true);
+    } else {
+      console.log('⭐ Star rating feedback not shown - conditions not met');
     }
   }, [manager]);
 

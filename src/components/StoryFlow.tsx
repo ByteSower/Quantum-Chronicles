@@ -70,11 +70,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     updateSessionData({ choiceCount: history.length });
 
     if (currentNode.feedbackHook) {
+      console.log('🎯 FeedbackHook detected:', currentNode.feedbackHook, 'on node:', currentNode.nodeId);
       checkForFeedback(currentNode.feedbackHook.milestone);
       
       // Also check for star rating feedback at story completion
       if (currentNode.feedbackHook.milestone === 'story_completion') {
+        console.log('⭐ Star rating feedback should trigger in', currentNode.feedbackHook.delay || 1000, 'ms');
         setTimeout(() => {
+          console.log('⭐ Triggering star rating feedback now');
           checkForStarRating(currentNode.feedbackHook!.milestone, currentNode.nodeId, history.length);
         }, currentNode.feedbackHook.delay || 1000);
       }
