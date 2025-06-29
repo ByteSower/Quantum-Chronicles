@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
+import StartScreen from './components/StartScreen';
 import StoryFlow from './components/StoryFlow';
 import { SideMenu } from './components/SideMenu';
 // Lazy load modal components
@@ -6,9 +7,13 @@ const AboutModal = lazy(() => import('./components/AboutModal'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const AboutQNCEModal = lazy(() => import('./components/AboutQNCEModal'));
 import { analytics, trackUIEvent } from './utils/analytics';
+import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
+type AppMode = 'start' | 'story';
+
 function App() {
+  const [mode, setMode] = useState<AppMode>('start');
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showAboutQNCE, setShowAboutQNCE] = useState(false);
@@ -29,6 +34,11 @@ function App() {
     analytics.trackEvent('session_start', 'engagement', 'forgottenTruth');
   }, []);
 
+  const handleSelectStart = (startingPoint: StartingPoint) => {
+    console.log('Starting with:', startingPoint); // For now, just log it
+    setMode('story');
+  };
+
   const handleRestart = () => {
     setStoryKey(prevKey => prevKey + 1); // Increment key to re-mount StoryFlow
     // Track restart event
@@ -36,8 +46,8 @@ function App() {
   };
 
   const handleHome = () => {
-    // For now, home is the same as restart
-    handleRestart();
+    setMode('start');
+    setStoryKey(prevKey => prevKey + 1); // Reset story state
   };
 
   const handleToggleVariables = () => {
@@ -57,10 +67,18 @@ function App() {
         onRestart={handleRestart}
         onToggleVariables={handleToggleVariables}
       />
-      <StoryFlow
-        key={storyKey} // Use key to ensure component re-mounts on restart
-        settings={settings}
-      />
+      {mode === 'start' ? (
+        <StartScreen
+          onSelectStart={handleSelectStart}
+          onShowAbout={() => setShowAbout(true)}
+          onShowSettings={() => setShowSettings(true)}
+        />
+      ) : (
+        <StoryFlow
+          key={storyKey} // Use key to ensure component re-mounts on restart
+          settings={settings}
+        />
+      )}
       <Suspense fallback={<div>Loading...</div>}>
         <AboutModal
           isOpen={showAbout}

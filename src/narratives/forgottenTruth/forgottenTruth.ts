@@ -322,7 +322,7 @@ export const forgottenTruth: NarrativeSegment = {
   segmentId: 'forgottenTruth',
   title: 'The Forgotten Truth',
   description: 'Uncover the hidden conspiracy behind quantum consciousness experiments and discover the ancient origins of human awareness manipulation across time and dimension.',
-  startNodeId: 'ft_globalConspiracy',
+  startNodeId: 'ft_journalDiscovery',
   exitPoints: [],
   initialFlags: {
     curiosity: 0,
@@ -333,6 +333,98 @@ export const forgottenTruth: NarrativeSegment = {
   initialVariables: {},
   globalFlagDecay: 0.1,
   nodes: [
+    // TRUE BEGINNING - The Journal Discovery
+    {
+      nodeId: 'ft_journalDiscovery',
+      text: 'In the quiet town of Millbrook, you\'ve always felt something was missing from your memories. Today, you found an old journal hidden in your grandmother\'s attic. The first entry reads: "The truth they made us forget is more dangerous than any lie." Your hands tremble as you realize this is your handwriting—but you have no memory of writing it.',
+      choices: [
+        {
+          choiceText: 'Read the journal immediately',
+          nextNodeId: 'ft_readJournal',
+          flagUpdates: [flagIncrement('curiosity', 2)],
+        },
+        {
+          choiceText: 'Research your grandmother\'s past first',
+          nextNodeId: 'ft_researchGrandmother',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        },
+        {
+          choiceText: 'Confront your family about the memories',
+          nextNodeId: 'ft_confrontFamily',
+          flagUpdates: [flagIncrement('disruption', 1)],
+        }
+      ]
+    },
+
+    // Bridge nodes from the journal discovery to the main investigation
+    {
+      nodeId: 'ft_readJournal',
+      text: 'The journal entries reveal a chilling story: experiments on consciousness, memory manipulation, and a place called the Blackwood Institute. The final entry, dated just days before your grandmother\'s mysterious disappearance, reads: "They\'re coming for me. If you\'re reading this, you need to know the truth about what they did to us." This isn\'t fiction—it\'s a warning.',
+      choices: [
+        {
+          choiceText: 'Investigate the Blackwood Institute',
+          nextNodeId: 'ft_investigateInstitute',
+          flagUpdates: [flagIncrement('curiosity', 1)],
+        },
+        {
+          choiceText: 'Search for more evidence of the experiments',
+          nextNodeId: 'ft_globalConspiracy',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_researchGrandmother',
+      text: 'Your research into your grandmother\'s past reveals disturbing gaps. Official records are heavily redacted, but you find traces: medical files from an institute that "officially" never existed, payments from government sources, and testimonies from other families about similar disappearances in the 1980s.',
+      choices: [
+        {
+          choiceText: 'Follow the trail of the mysterious institute',
+          nextNodeId: 'ft_investigateInstitute',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        },
+        {
+          choiceText: 'Contact other affected families',
+          nextNodeId: 'ft_globalConspiracy',
+          flagUpdates: [flagIncrement('synchrony', 1)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_confrontFamily',
+      text: 'When you confront your family about the missing memories, their reactions are telling. Your mother becomes visibly distressed, your father leaves the room, and your uncle finally breaks: "We promised never to speak of it. After what happened to your grandmother, we thought... we thought it was safer if you never remembered." The conspiracy runs deeper than you imagined.',
+      choices: [
+        {
+          choiceText: 'Demand to know everything they\'re hiding',
+          nextNodeId: 'ft_globalConspiracy',
+          flagUpdates: [flagIncrement('disruption', 2)],
+        },
+        {
+          choiceText: 'Gently ask them to help you understand',
+          nextNodeId: 'ft_investigateInstitute',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_investigateInstitute',
+      text: 'The Blackwood Institute officially closed in 1987, but your research reveals disturbing patterns. Former patients describe memory gaps, shared nightmares, and abilities they can\'t explain. As you dig deeper into public records and news archives, you begin to see connections that paint a terrifying picture.',
+      choices: [
+        {
+          choiceText: 'Follow the trail of former patients',
+          nextNodeId: 'ft_globalConspiracy',
+          flagUpdates: [flagIncrement('curiosity', 1)],
+        },
+        {
+          choiceText: 'Investigate other similar facilities',
+          nextNodeId: 'ft_globalConspiracy',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        }
+      ]
+    },
+
     // CORE NODE #1 - Entry point that can branch into Origins
     {
       nodeId: 'ft_globalConspiracy',
