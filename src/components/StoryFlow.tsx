@@ -72,10 +72,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 relative">
-      <Suspense fallback={<div>Loading...</div>}>
-        {settings.showDebugInfo && <StateDebugOverlay nodeId={currentNode.nodeId} variables={variables} history={history} className={showDebug ? 'opacity-100' : 'opacity-0'} />}
-      </Suspense>
-
       <div className="w-full max-w-3xl mx-auto flex-grow flex flex-col justify-center">
         <NarrativeDisplay 
           text={currentNode.dynTextFunction ? currentNode.dynTextFunction(variables) : (currentNode.text || 'Error: Node has no text')} 
@@ -96,6 +92,10 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
           </button>
         </div>
       )}
+
+      <Suspense fallback={<div>Loading...</div>}>
+        {settings.showDebugInfo && <StateDebugOverlay nodeId={currentNode.nodeId} variables={variables} history={history} className={showDebug ? 'opacity-100' : 'opacity-0'} />}
+      </Suspense>
 
       <Suspense fallback={<div>Loading...</div>}>
         {isFeedbackVisible && currentMilestone && (

@@ -46,7 +46,7 @@ const NarrativeDisplay: React.FC<NarrativeDisplayProps> = ({
   return (
     <div 
       ref={narrativeRef}
-      className={`max-h-96 overflow-y-auto px-2 py-2 bg-white/90 text-gray-900 rounded-lg shadow mb-6 transition-opacity ${visible ? 'opacity-100' : 'opacity-0'}`}
+      className={`narrative-display max-h-96 overflow-y-auto px-2 py-2 bg-white/90 text-gray-900 rounded-lg shadow mb-6 transition-opacity ${visible ? 'opacity-100' : 'opacity-0'}`}
       style={{ transitionDuration: `${animationDuration}ms` }}
       role="main"
       aria-live="polite"
