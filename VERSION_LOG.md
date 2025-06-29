@@ -26,19 +26,24 @@
 **Status:** 🟡 Active Development
 
 **Development Strategy:**
-- 🎯 Systematic feature restoration
-- 🔄 Feature branch workflow
-- 📋 TODO-driven development
-- 🧪 Incremental testing approach
+- 🎯 **Unified Narrative Refactor:** Merged all expansion modules into a single, cohesive narrative structure (`forgottenTruth.ts`).
+- 🔄 **Engine Overhaul:** Refactored the `useQNCE` hook to support the new unified schema, including namespaced node IDs and in-story branching.
+- 📋 **UI Simplification:** Removed the `StartScreen` and streamlined the app to launch directly into the `StoryFlow`.
+- 🧪 **Component Updates:** Updated all major UI components (`NarrativeDisplay`, `ChoiceSelector`, `StateDebugOverlay`, `App`, `StoryFlow`) to align with the new engine and data structures.
 
-**Planned Features:**
-- [ ] Unified button menu
+**Completed Features:**
+- [x] **Narrative Schema Migration:** Updated `types.ts` and all related files to a new, unified narrative schema.
+- [x] **Unified Narrative Structure:** Merged all expansion modules into a single `forgottenTruth.ts` segment.
+- [x] **Engine Refactor:** Overhauled `useQNCE.ts` for the new schema.
+- [x] **UI Refactor:** Removed `StartScreen` and updated all components for the new engine.
+- [x] **Unified Button Menu:** Implemented `SideMenu` component with global navigation for tutorial, settings, restart, and variables.
+
+**In Progress:**
 - [ ] Enhanced tutorial system
 - [ ] Refined feedback mechanics
 - [ ] Improved settings modal
 - [ ] Variable dashboard enhancements
 - [ ] Visual branch tracking
-- [ ] Narrative schema migration
 
 **Branch:** `develop`
 

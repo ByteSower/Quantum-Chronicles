@@ -1,23 +1,20 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import StartScreen from './components/StartScreen';
 import StoryFlow from './components/StoryFlow';
+import { SideMenu } from './components/SideMenu';
 // Lazy load modal components
 const AboutModal = lazy(() => import('./components/AboutModal'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const AboutQNCEModal = lazy(() => import('./components/AboutQNCEModal'));
 import { analytics, trackUIEvent } from './utils/analytics';
-import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
-type AppState = 'start' | 'story';
-
 function App() {
-  const [appState, setAppState] = useState<AppState>('start');
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [selectedStartingPoint, setSelectedStartingPoint] = useState<StartingPoint | null>(null);
-  const [showOrientationWarning, setShowOrientationWarning] = useState(true);
   const [showAboutQNCE, setShowAboutQNCE] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showVariables, setShowVariables] = useState(false);
+  const [storyKey, setStoryKey] = useState(0); // Add a key to force re-mount StoryFlow
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
@@ -28,56 +25,43 @@ function App() {
   // Initialize analytics and send app start event
   useEffect(() => {
     trackUIEvent.feature('app', 'initialized');
+    // Track session start
+    analytics.trackEvent('session_start', 'engagement', 'forgottenTruth');
   }, []);
 
-  const handleSelectStart = (startingPoint: StartingPoint) => {
-    setSelectedStartingPoint(startingPoint);
-    setAppState('story');
-    
-    // Track session start
-    analytics.trackEvent('session_start', 'engagement', startingPoint.id);
+  const handleRestart = () => {
+    setStoryKey(prevKey => prevKey + 1); // Increment key to re-mount StoryFlow
+    // Track restart event
+    trackUIEvent.feature('navigation', 'restart_story');
   };
 
-  const handleReturnToStart = () => {
-    setAppState('start');
-    setSelectedStartingPoint(null);
-    
-    // Track return to start
-    trackUIEvent.feature('navigation', 'return_to_start');
+  const handleHome = () => {
+    // For now, home is the same as restart
+    handleRestart();
   };
 
-  if (appState === 'start') {
-    return (
-      <>
-        {/* Mobile Portrait Orientation Warning */}
-        {showOrientationWarning && (
-          <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
-            <div className="text-center max-w-sm">
-              <div className="text-6xl mb-4">📱</div>
-              <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
-              </p>
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => setShowOrientationWarning(false)}
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-                >
-                  Continue Anyway
-                </button>
-                <p className="text-xs text-gray-400">
-                  Note: Some content may be difficult to view in portrait mode
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <StartScreen
-          onSelectStart={handleSelectStart}
-          onShowAbout={() => setShowAbout(true)}
-          onShowSettings={() => setShowSettings(true)}
-        />
+  const handleToggleVariables = () => {
+    setShowVariables(prev => !prev);
+    setSettings(prev => ({
+      ...prev,
+      showVariableDashboard: !prev.showVariableDashboard
+    }));
+  };
+
+  return (
+    <>
+      <SideMenu
+        onHome={handleHome}
+        onTutorial={() => setShowTutorial(true)}
+        onSettings={() => setShowSettings(true)}
+        onRestart={handleRestart}
+        onToggleVariables={handleToggleVariables}
+      />
+      <StoryFlow
+        key={storyKey} // Use key to ensure component re-mounts on restart
+        settings={settings}
+      />
+      <Suspense fallback={<div>Loading...</div>}>
         <AboutModal
           isOpen={showAbout}
           onClose={() => setShowAbout(false)}
@@ -88,105 +72,39 @@ function App() {
           settings={settings}
           onUpdateSettings={setSettings}
         />
-      </>
-    );
-  }
-
-  return (
-    <>
-      {/* Mobile Portrait Orientation Warning */}
-      {showOrientationWarning && (
-        <div className="md:hidden portrait:flex landscape:hidden fixed inset-0 bg-black bg-opacity-95 flex-col items-center justify-center p-6 z-50">
-          <div className="text-center max-w-sm">
-            <div className="text-6xl mb-4">📱</div>
-            <h2 className="text-xl font-bold mb-4 text-white">Best Experience</h2>
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              For the optimal Quantum Chronicles experience, please rotate your device to <strong>landscape mode</strong> or use a <strong>desktop browser</strong>.
-            </p>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => setShowOrientationWarning(false)}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-              >
-                Continue Anyway
-              </button>
-              <p className="text-xs text-gray-400">
-                Note: Some content may be difficult to view in portrait mode
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div
-        style={{ margin: '0 auto', textAlign: 'center' }}
-        className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-indigo-950 to-black text-white"
-      >
-      <header className="w-full container mx-auto px-4">
-        <div className="flex justify-between items-center mb-4">
-          <div></div>
-          <div className="flex-1">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 drop-shadow text-center bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
-              Quantum Chronicles
-            </h1>
-            <p className="text-lg sm:text-xl text-indigo-200 mb-6 font-light">
-              {selectedStartingPoint?.title || 'An Interactive Narrative Experience'}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setShowAboutQNCE(true);
-                trackUIEvent.help('about_qnce');
-              }}
-              className="px-3 py-2 text-sm rounded-lg transition-all duration-200 font-medium bg-purple-600 text-white hover:bg-purple-700"
-              title="Learn about QNCE"
-            >
-              Help
-            </button>
-          </div>
-        </div>
-      </header>
-      <div className="max-w-4xl w-full mx-auto px-4 text-center">
-        <StoryFlow
-          startingPoint={selectedStartingPoint}
-          settings={settings}
-          devMode={settings.developerMode}
-          onReturnToStart={handleReturnToStart}
-          onShowAbout={() => setShowAbout(true)}
-          onShowSettings={() => setShowSettings(true)}
-          onShowQNCEHelp={() => setShowAboutQNCE(true)}
-          onUpdateSettings={setSettings}
-        />
-      </div>
-      
-      {/* Footer */}
-      <footer className="mt-8 mb-4 text-center">
-        <p className="text-xs text-slate-500">
-          Quantum Chronicles
-        </p>
-      </footer>
-      <Suspense fallback={null}>
-        <AboutModal
-          isOpen={showAbout}
-          onClose={() => setShowAbout(false)}
-        />
-      </Suspense>
-      <Suspense fallback={null}>
         <AboutQNCEModal
           isOpen={showAboutQNCE}
           onClose={() => setShowAboutQNCE(false)}
         />
+        {/* Tutorial modal placeholder - will be implemented in next feature */}
+        {showTutorial && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-lg max-w-md">
+              <h3 className="text-lg font-bold mb-4">Tutorial Coming Soon</h3>
+              <p className="mb-4">Enhanced tutorial system will be implemented in the next feature.</p>
+              <button 
+                onClick={() => setShowTutorial(false)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+        {/* Variables dashboard placeholder - will show current value */}
+        {showVariables && (
+          <div className="fixed top-20 right-4 bg-white p-4 rounded-lg shadow-lg z-40 max-w-xs">
+            <h4 className="font-bold mb-2">Variables Dashboard</h4>
+            <p className="text-sm text-gray-600 mb-2">Enhanced dashboard coming soon.</p>
+            <button 
+              onClick={() => setShowVariables(false)}
+              className="text-xs bg-gray-200 px-2 py-1 rounded hover:bg-gray-300"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </Suspense>
-      <Suspense fallback={null}>
-        <SettingsModal
-          isOpen={showSettings}
-          onClose={() => setShowSettings(false)}
-          settings={settings}
-          onUpdateSettings={setSettings}
-        />
-      </Suspense>
-    </div>
     </>
   );
 }
