@@ -21,15 +21,29 @@ interface StartScreenProps {
 
 const startingPoints: StartingPoint[] = [
   {
+    id: 'originsUnveiled',
+    title: 'Origins Unveiled',
+    description: 'Discover the first traces of quantum technology in an abandoned laboratory.',
+    theme: 'Mystery-discovery with quantum consciousness themes',
+    initialVariables: { curiosity: 6, coherence: 4, disruption: 3, synchrony: 5 }
+  },
+  {
+    id: 'template',
+    title: 'Template Journey',
+    description: 'A simple example narrative to demonstrate the QNCE system.',
+    theme: 'Tutorial for understanding quantum narrative mechanics',
+    initialVariables: { curiosity: 5, coherence: 5, disruption: 3, synchrony: 7 }
+  }
+];
+
+const lockedStartingPoints: StartingPoint[] = [
+  {
     id: 'forgotten_truth',
     title: 'The Forgotten Truth',
     description: 'Uncover buried memories and hidden experiments in a small town with dark secrets.',
     theme: 'Mystery-thriller with quantum consciousness themes',
     initialVariables: { curiosity: 2, coherence: 1, disruption: 1, synchrony: 0 }
-  }
-];
-
-const lockedStartingPoints: StartingPoint[] = [
+  },
   {
     id: 'classic',
     title: 'The Crossroads',

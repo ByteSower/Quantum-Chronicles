@@ -101,28 +101,12 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     const goodNodes = ['campfire', 'merchant', 'signal', 'welcome', 'shortcut'];
     const badNodes = ['lost'];
     
-    // The Forgotten Truth narrative nodes - expanded with new nodes
-    const forgottenTruthGoodNodes = [
-      'forgotten_truth_transfer', 'forgotten_truth_network', 'forgotten_truth_repair', 
-      'forgotten_truth_multiverse', 'forgotten_truth_acceptance', 'forgotten_truth_evidence',
-      'forgotten_truth_expose', 'forgotten_truth_rescue', 'forgotten_truth_guided_recovery',
-      'forgotten_truth_research_notes', 'forgotten_truth_network_secret',
-      'forgotten_truth_ai_negotiation', 'forgotten_truth_hybrid_consciousness',
-      'forgotten_truth_evolution_guide', 'forgotten_truth_consciousness_protectors',
-      'forgotten_truth_global_revelation', 'forgotten_truth_collective_power',
-      'forgotten_truth_individual_choice', 'forgotten_truth_quantum_awakening',
-      'forgotten_truth_knowledge_sharing'
+    // Origins Unveiled narrative nodes
+    const originsUnveiledGoodNodes = [
+      'ou_revelation'
     ];
-    const forgottenTruthBadNodes = [
-      'forgotten_truth_denial', 'forgotten_truth_therapy', 'forgotten_truth_destruction',
-      'forgotten_truth_ai_conflict', 'forgotten_truth_forced_return'
-    ];
-    const forgottenTruthNeutralNodes = [
-      'forgotten_truth_acceptance_forced', 'forgotten_truth_protection', 'forgotten_truth_seal',
-      'forgotten_truth_webb_confrontation', 'forgotten_truth_deception',
-      'forgotten_truth_reversal_attempt', 'forgotten_truth_safe_reversal',
-      'forgotten_truth_guardian', 'forgotten_truth_shadow_guardian',
-      'forgotten_truth_healers', 'forgotten_truth_expert_consultation'
+    const originsUnveiledNeutralNodes = [
+      'ou_discovery', 'ou_examination'
     ];
     
     // Use the original choice index from all choices for the actual makeChoice call
@@ -131,9 +115,9 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     makeChoice(originalChoiceIndex);
     
     // Check for good outcomes
-    if (goodNodes.includes(choice.nextNodeId) || forgottenTruthGoodNodes.includes(choice.nextNodeId)) {
-      const message = forgottenTruthGoodNodes.includes(choice.nextNodeId) 
-        ? 'Quantum Convergence: Truth illuminated, consciousness expanded!'
+    if (goodNodes.includes(choice.nextNodeId) || originsUnveiledGoodNodes.includes(choice.nextNodeId)) {
+      const message = originsUnveiledGoodNodes.includes(choice.nextNodeId) 
+        ? 'Quantum Discovery: Truth illuminated, knowledge expanded!'
         : 'Branch Good: Favorable narrative shift achieved!';
       setLogs(logs => [
         ...logs,
@@ -141,20 +125,17 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
       ]);
     } 
     // Check for bad outcomes
-    else if (badNodes.includes(choice.nextNodeId) || forgottenTruthBadNodes.includes(choice.nextNodeId)) {
-      const message = forgottenTruthBadNodes.includes(choice.nextNodeId)
-        ? 'Memory Fracture: Consciousness destabilized, truth buried deeper!'
-        : 'Branch Bad: Narrative collapse warning triggered!';
+    else if (badNodes.includes(choice.nextNodeId)) {
       setLogs(logs => [
         ...logs,
-        { message, type: 'bad' },
+        { message: 'Branch Bad: Narrative collapse warning triggered!', type: 'bad' },
       ]);
     }
     // Check for neutral/complex outcomes
-    else if (forgottenTruthNeutralNodes.includes(choice.nextNodeId)) {
+    else if (originsUnveiledNeutralNodes.includes(choice.nextNodeId)) {
       setLogs(logs => [
         ...logs,
-        { message: 'Quantum Equilibrium: Truth balanced with wisdom - consequences uncertain.', type: 'neutral' },
+        { message: 'Quantum Equilibrium: Discovery balanced with caution.', type: 'neutral' },
       ]);
     }
   }
