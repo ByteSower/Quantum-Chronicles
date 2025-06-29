@@ -41,7 +41,7 @@
 
 ### Future Enhancements
 - [ ] **Narrative Schema Migration** (`feature/narrative-schema`)
-  - Implement Brain's Reference Structure
+  - Implement modular narrative structure
   - Modular segment system
   - Hub UI with parent/child segments
 
