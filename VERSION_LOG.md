@@ -31,17 +31,28 @@
 - ✅ **Unified Narrative Engine:** All expansions merged into cohesive structure with namespaced node IDs
 - ✅ **UI/UX Consolidation:** Streamlined component architecture, removed legacy StartScreen, integrated navigation
 
+**Latest Enhancements (v1.3.1-dev):**
+- ✅ **StartScreen Restoration:** Unified entry point with boxed layout and SideMenu integration
+- ✅ **SideMenu UI Polish:** Gradient theme consistency, icons, backdrop blur, and enhanced UX
+- ✅ **Narrative Beginning:** Story starts at proper beginning (journal discovery) for Forgotten Truth
+- ✅ **Visual Brand Consistency:** SideMenu matches app's indigo/purple gradient aesthetic
+
 **Technical Achievements:**
 - 🎯 **Accessibility First:** Both SideMenu and Tutorial system include comprehensive ARIA support and keyboard navigation
 - 📊 **Analytics Integration:** Tutorial engagement tracking for user behavior insights
 - 🔧 **Developer Experience:** Enhanced debug overlays, consolidated feedback systems
 - 🎨 **Visual Polish:** Consistent Tailwind CSS styling, responsive design, smooth animations
+- 🎨 **UI/UX Excellence:** Professional gradient themes, proper icons, improved spacing and interactivity
 
 **Branches Merged:**
 - `feature/button-menu` → `develop` (SideMenu implementation)
 - `feature/tutorial-enhancement` → `develop` (Enhanced tutorial system)
 
+**In Progress:**
+- `feature/startscreen-integration` (StartScreen restoration + SideMenu polish)
+
 **Next Steps:**
+- 🔄 Merge `feature/startscreen-integration` into `develop`
 - 🧪 User acceptance testing of integrated features
 - 📈 Analytics monitoring for tutorial engagement
 - 🎮 Feature refinement based on user feedback
