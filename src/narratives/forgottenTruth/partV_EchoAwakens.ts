@@ -67,7 +67,9 @@ The situation was spiraling beyond anyone's ability to control, and at the cente
 
 As Dr. Evasco processed these options, she realized that the choice was not really hers to make. The Fragment was broadcasting the same offer to every Echo-Aware individual on the planet simultaneously. Humanity's future would be decided not by governments or secret societies, but by the collective unconscious decision of those capable of hearing the Shapers' final transmission.
 
-The age of passive observation was over. The moment of choice had arrived.`,
+The age of passive observation was over. The moment of choice had arrived.
+
+*(More chapters unlocking soon — stay tuned!)*`,
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_finalChoice' }]
   }
 ];

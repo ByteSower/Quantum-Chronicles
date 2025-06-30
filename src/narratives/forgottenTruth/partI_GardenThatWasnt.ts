@@ -63,7 +63,9 @@ The result was catastrophic beyond measure. The system collapsed in a cascade of
 
 But the Mechanism of Eden was not entirely destroyed. Fragments remained, buried deep within the Earth, hidden in the quantum structure of reality itself. And with them, a failsafe protocol began to pulse—a warning, a guide, and perhaps a second chance.
 
-The proto-humans survived, but their memories of that time became fractured, distorted. What remained filtered down through generations as mythology, religion, and half-remembered dreams of a garden lost.`,
+The proto-humans survived, but their memories of that time became fractured, distorted. What remained filtered down through generations as mythology, religion, and half-remembered dreams of a garden lost.
+
+*(More chapters unlocking soon — stay tuned!)*`,
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_echoProtocolIntro' }]
   }
 ];
