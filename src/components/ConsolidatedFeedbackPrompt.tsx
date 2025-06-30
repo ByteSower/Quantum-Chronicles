@@ -14,7 +14,7 @@ interface ConsolidatedFeedbackPromptProps {
       quickOptions: string[];
     };
   };
-  sessionData: {
+  sessionData: Partial<{
     choiceCount: number;
     sessionDuration: number;
     segmentsReached: string[];
@@ -24,7 +24,7 @@ interface ConsolidatedFeedbackPromptProps {
       disruption: number;
       synchrony: number;
     };
-  };
+  }>;
   onSubmit: (feedback: ConsolidatedFeedbackData) => void;
   onDismiss: () => void;
 }
@@ -86,9 +86,9 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
       comments,
       quickResponses: selectedQuickOptions,
       milestone: milestone.id,
-      sessionDuration: sessionData.sessionDuration,
-      choiceCount: sessionData.choiceCount,
-      segmentsReached: sessionData.segmentsReached,
+      sessionDuration: sessionData.sessionDuration || 0,
+      choiceCount: sessionData.choiceCount || 0,
+      segmentsReached: sessionData.segmentsReached || [],
       timestamp: Date.now(),
       qnceVariables: sessionData.qnceVariables
     };

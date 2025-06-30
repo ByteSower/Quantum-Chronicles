@@ -1,6 +1,19 @@
 import { useState, useCallback, useRef } from 'react';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
+// Quick star rating feedback data
+export interface StarRatingFeedbackData {
+  rating: number;
+  comment?: string;
+  milestone: string;
+  timestamp: number;
+  sessionData?: {
+    nodeId: string;
+    choiceCount: number;
+    sessionDuration: number;
+  };
+}
+
 // Enhanced feedback data for consolidated system
 export interface ConsolidatedFeedbackData {
   // Overall experience rating
@@ -178,6 +191,10 @@ class ConsolidatedFeedbackManager {
       ratings: {},
       comments: {}
     };
+  }
+
+  public getSessionData() {
+    return this.feedbackData;
   }
 
   /**
@@ -379,6 +396,7 @@ export function useConsolidatedFeedbackManager() {
   const [manager] = useState(() => new ConsolidatedFeedbackManager());
   const [currentMilestone, setCurrentMilestone] = useState<FeedbackMilestone | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [sessionData, setSessionData] = useState(manager.getSessionData());
   
   // Tracking refs for session data
   const choiceCountRef = useRef(0);
@@ -393,6 +411,7 @@ export function useConsolidatedFeedbackManager() {
     
     if (milestoneData) {
       setCurrentMilestone(milestoneData);
+      setSessionData(manager.getSessionData());
       setIsVisible(true);
     }
   }, [manager]);
@@ -424,6 +443,7 @@ export function useConsolidatedFeedbackManager() {
     manager,
     currentMilestone,
     isVisible,
+    sessionData,
     checkForFeedback,
     handleFeedbackSubmit,
     handleFeedbackDismiss,

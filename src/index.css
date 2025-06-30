@@ -423,6 +423,15 @@ button:focus-visible {
     backdrop-filter: blur(8px);
     animation: subtleGlow 4s ease-in-out infinite;
   }
+  
+  /* Tutorial highlight styles */
+  .tutorial-highlight {
+    position: relative;
+    z-index: 30;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6) !important;
+    border-radius: 8px !important;
+    animation: tutorialPulse 2s ease-in-out infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -501,4 +510,18 @@ button:focus-visible {
   50% {
     box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
   }
+}
+
+@keyframes tutorialPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 1), 0 0 40px rgba(139, 92, 246, 0.8);
+  }
+}
+
+/* Keyboard hint styling */
+kbd {
+  @apply bg-slate-700 text-slate-300 px-1 py-0.5 rounded text-xs font-mono border border-slate-600;
 }
