@@ -83,6 +83,40 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     return () => window.removeEventListener('beforeunload', handleSessionEnd);
   }, [checkForFeedback]);
 
+  // Handle automatic completion for terminal nodes with story_completion feedbackHook
+  useEffect(() => {
+    if (currentNode.feedbackHook?.milestone === 'story_completion' && 
+        (!currentNode.choices || currentNode.choices.length === 0) &&
+        onComplete) {
+      const delay = currentNode.feedbackHook.delay || 3000; // Default 3s if no delay specified
+      console.log('🎯 Terminal completion node detected, triggering onComplete in', delay, 'ms');
+      
+      const completionTimer = setTimeout(() => {
+        console.log('🎯 Calling onComplete() for terminal node:', currentNode.nodeId);
+        onComplete();
+      }, delay);
+
+      return () => clearTimeout(completionTimer);
+    }
+  }, [currentNode, onComplete]);
+
+  // Handle feedbackHook when entering a node (not just when making choices)
+  useEffect(() => {
+    if (currentNode.feedbackHook) {
+      console.log('🎯 FeedbackHook detected on node entry:', currentNode.feedbackHook, 'on node:', currentNode.nodeId);
+      checkForFeedback(currentNode.feedbackHook.milestone);
+      
+      // Also check for star rating feedback at story completion
+      if (currentNode.feedbackHook.milestone === 'story_completion') {
+        console.log('⭐ Star rating feedback should trigger in', currentNode.feedbackHook.delay || 1000, 'ms');
+        setTimeout(() => {
+          console.log('⭐ Triggering star rating feedback now');
+          checkForStarRating(currentNode.feedbackHook!.milestone, currentNode.nodeId, history.length);
+        }, currentNode.feedbackHook.delay || 1000);
+      }
+    }
+  }, [currentNode, checkForFeedback, checkForStarRating, history.length]);
+
   const handleChoice = (choice: any) => {
     const choiceIndex = getAvailableChoices().indexOf(choice);
     if (choiceIndex < 0) return;
@@ -105,20 +139,6 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
       setTimeout(() => {
         onComplete();
       }, 1000); // Small delay to allow text to be read
-    }
-
-    if (currentNode.feedbackHook) {
-      console.log('🎯 FeedbackHook detected:', currentNode.feedbackHook, 'on node:', currentNode.nodeId);
-      checkForFeedback(currentNode.feedbackHook.milestone);
-      
-      // Also check for star rating feedback at story completion
-      if (currentNode.feedbackHook.milestone === 'story_completion') {
-        console.log('⭐ Star rating feedback should trigger in', currentNode.feedbackHook.delay || 1000, 'ms');
-        setTimeout(() => {
-          console.log('⭐ Triggering star rating feedback now');
-          checkForStarRating(currentNode.feedbackHook!.milestone, currentNode.nodeId, history.length);
-        }, currentNode.feedbackHook.delay || 1000);
-      }
     }
 
     if (isFirstChoice) {
