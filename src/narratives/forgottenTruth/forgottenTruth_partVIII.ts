@@ -52,7 +52,22 @@ The Forgotten Truth had been remembered, not as history to be restored, but as w
 The Echo Protocol still broadcasts, but its message has changed. Where once it warned of dangers and offered choices, now it simply says: "Welcome to the garden. Here is how we tend it together."
 
 *(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_finalTranscendence' }]
+    choices: [{ choiceText: 'Complete Your Journey', nextNodeId: 'partVIII:storyComplete' }]
+  },
+  {
+    nodeId: 'partVIII:storyComplete',
+    text: `**Journey Complete**
+
+You have experienced the full span of "The Forgotten Truth" - from the initial discovery of quantum consciousness manipulation to humanity's transformation into cosmic gardeners. Your choices have shaped not just your path through the story, but the very nature of humanity's future.
+
+Thank you for experiencing this quantum narrative. Your journey continues to resonate through the choice matrices, influencing future iterations of the story.
+
+*More stories and expanded chapters are coming soon to Quantum Chronicles!*`,
+    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_finalTranscendence' }],
+    feedbackHook: {
+      milestone: 'story_completion',
+      delay: 2000
+    }
   }
 ];
 

@@ -204,43 +204,27 @@ const realmConvergenceNodes: NarrativeNode[] = [];
 const catalystRevelationNodes: NarrativeNode[] = [];
 const quantumLegacyNodes: NarrativeNode[] = [];
 
-// Story completion/exit nodes with feedback hooks
+// Story completion/exit nodes (feedbackHooks removed to prevent conflicts with navigation)
 const exitNodes: NarrativeNode[] = [
   {
     nodeId: 'ft_exit_revelation_complete',
     text: 'You have uncovered the full truth behind the consciousness experiments. The revelation has changed not just your understanding, but your very nature. As you contemplate what comes next, you realize this is only the beginning of a new chapter in human evolution. The quantum threads of your choices will echo through time.',
-    choices: [],
-    feedbackHook: {
-      milestone: 'story_completion',
-      delay: 2000
-    }
+    choices: []
   },
   {
     nodeId: 'ft_exit_coalition_formed', 
     text: 'Your coalition of enhanced individuals has laid the groundwork for humanity\'s conscious evolution. The network of allies you\'ve built spans the globe, ready to guide the species through this transition. Your journey of discovery becomes the foundation for countless others who will follow.',
-    choices: [],
-    feedbackHook: {
-      milestone: 'story_completion',
-      delay: 2000
-    }
+    choices: []
   },
   {
     nodeId: 'ft_exit_sacrifice_made',
     text: 'Your sacrifice has protected humanity from the dangerous extremes of consciousness manipulation. Though the cost was high, your actions have ensured that the future of human awareness will be shaped by wisdom rather than reckless ambition. The quantum echoes of your choices will resonate through generations.',
-    choices: [],
-    feedbackHook: {
-      milestone: 'story_completion', 
-      delay: 2000
-    }
+    choices: []
   },
   {
     nodeId: 'ft_exit_transcendence',
     text: 'You have transcended the boundaries between individual and collective consciousness. No longer bound by the limitations of a single mind, you exist as a bridge between humanity\'s past and its quantum future. Your transformation opens pathways that others will one day follow.',
-    choices: [],
-    feedbackHook: {
-      milestone: 'story_completion',
-      delay: 2000
-    }
+    choices: []
   }
 ];
 

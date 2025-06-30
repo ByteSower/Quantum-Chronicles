@@ -8,7 +8,11 @@ export const nodes: NarrativeNode[] = [
 As the three Keeper factions converged on Antarctica, something unprecedented began to happen. The Echo Protocol, dormant for millennia, suddenly erupted into full activity. Around the world, Echo-Aware individuals experienced simultaneous visions of staggering clarity and intensity.
 
 The Fragment beneath the ice was not just awakening—it was calling out, sending a signal that transcended time and space to reach every human consciousness capable of receiving it. The age of passive observation was ending. The age of choice had begun.`,
-    choices: [{ choiceText: 'Continue...', nextNodeId: 'partV:globalAwakening' }]
+    choices: [{ choiceText: 'Continue...', nextNodeId: 'partV:globalAwakening' }],
+    feedbackHook: {
+      milestone: 'deep_engagement',
+      delay: 1000
+    }
   },
   {
     nodeId: 'partV:globalAwakening',

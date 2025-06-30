@@ -83,13 +83,12 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     return () => window.removeEventListener('beforeunload', handleSessionEnd);
   }, [checkForFeedback]);
 
-  // Handle automatic completion for terminal nodes with story_completion feedbackHook
+  // Handle automatic completion for terminal nodes (no choices) only
   useEffect(() => {
-    if (currentNode.feedbackHook?.milestone === 'story_completion' && 
-        (!currentNode.choices || currentNode.choices.length === 0) &&
-        onComplete) {
-      const delay = currentNode.feedbackHook.delay || 3000; // Default 3s if no delay specified
-      console.log('🎯 Terminal completion node detected, triggering onComplete in', delay, 'ms');
+    if ((!currentNode.choices || currentNode.choices.length === 0) && onComplete) {
+      // Terminal nodes without choices should auto-complete after a delay
+      const delay = 3000; // Default 3s for terminal nodes
+      console.log('🎯 Terminal node detected, triggering onComplete in', delay, 'ms');
       
       const completionTimer = setTimeout(() => {
         console.log('🎯 Calling onComplete() for terminal node:', currentNode.nodeId);

@@ -26,6 +26,7 @@ function App() {
   const [showAboutQNCE, setShowAboutQNCE] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showVariables, setShowVariables] = useState(false);
+  const [showMoreComingSoon, setShowMoreComingSoon] = useState(false);
   const [storyKey, setStoryKey] = useState(0);
   const [settings, setSettings] = useState({
     developerMode: false,
@@ -79,6 +80,14 @@ function App() {
     if (activeStory && activeChapter) {
       const updatedStories = markChapterComplete(storyData, activeStory, activeChapter);
       setStoryData(updatedStories);
+      
+      // Check if this is Chapter 8 completion for "More Coming Soon" popup
+      if (activeChapter === 'partVIII') {
+        console.log('🎉 Chapter 8 completed! Showing More Coming Soon popup');
+        setTimeout(() => {
+          setShowMoreComingSoon(true);
+        }, 1500); // Small delay to let feedback complete first
+      }
       
       // Return to chapter screen
       setView('chapters');
@@ -203,6 +212,38 @@ function App() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        )}
+
+        {showMoreComingSoon && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-xl max-w-md border border-purple-500/30 text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🌌</div>
+                <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                  More Adventures Await!
+                </h3>
+                <p className="mb-6 text-gray-300 leading-relaxed">
+                  You've completed "The Forgotten Truth"! More quantum narratives and expanded chapters are being crafted. 
+                  Each new story will offer deeper choice mechanics and mind-bending adventures.
+                </p>
+                <div className="bg-purple-900/30 rounded-lg p-4 mb-6 border border-purple-500/20">
+                  <div className="text-sm text-purple-300 font-semibold mb-2">Coming Soon:</div>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <div>• New storylines in multiple genres</div>
+                    <div>• Enhanced choice consequences</div>
+                    <div>• Character progression systems</div>
+                    <div>• Multiplayer narrative experiences</div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowMoreComingSoon(false)}
+                  className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white px-6 py-3 rounded-lg transition-all duration-300 font-semibold"
+                >
+                  Continue Exploring
+                </button>
+              </div>
             </div>
           </div>
         )}
