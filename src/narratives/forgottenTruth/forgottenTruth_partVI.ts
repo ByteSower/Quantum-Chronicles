@@ -42,3 +42,5 @@ As this realization crystallized across the fractured timelines, reality began t
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_synthesis' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partVI';

@@ -79,3 +79,5 @@ Each faction has positioned their most capable agents near the discovery site. T
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_antarcticaDiscovery' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partIII';

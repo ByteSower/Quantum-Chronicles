@@ -55,3 +55,5 @@ The Echo Protocol still broadcasts, but its message has changed. Where once it w
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_finalTranscendence' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partVIII';

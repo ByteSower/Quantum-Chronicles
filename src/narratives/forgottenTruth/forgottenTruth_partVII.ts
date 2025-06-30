@@ -42,3 +42,5 @@ The age of human isolation was ending. The age of cosmic gardening had begun.
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_cosmicGardeners' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partVII';

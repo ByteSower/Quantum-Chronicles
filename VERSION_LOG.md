@@ -56,7 +56,8 @@
 - 🌌 **Cosmic Scope:** From ancient civilizations to universal consciousness evolution
 - 🔄 **Smart Navigation:** "Coming Soon" teasers maintain engagement without dead-ends
 
-**Recent Commits (feature/narrative-8part):**
+**Recent Commits (Merged from feature/narrative-8part):**
+- `32f3fe9` - feat(narrative): Complete 8-Part Epic merge with navigation fixes
 - `bb4d42c` - feat(narrative): Expand Forgotten Truth into 8-Part Epic (40+ nodes, full integration)
 - `7ae6948` - feat(narrative): add 'coming soon' teaser to all Part finals (UX enhancement)
 
@@ -65,6 +66,7 @@
 - ✅ **Dev Server:** Functional testing completed on localhost
 - ✅ **Navigation Flow:** All epic parts have clear return paths to core story
 - ✅ **User Experience:** Engaging content with proper future expectations set
+- ✅ **Merge Complete:** Successfully merged into develop branch and deployed
 
 **Technical Achievements:**
 - 🎯 **Accessibility First:** Both SideMenu and Tutorial system include comprehensive ARIA support and keyboard navigation
@@ -78,16 +80,14 @@
 - `feature/button-menu` → `develop` (SideMenu implementation)
 - `feature/tutorial-enhancement` → `develop` (Enhanced tutorial system)
 - `feature/startscreen-integration` → `develop` (StartScreen + SideMenu polish)
-
-**Ready for Merge:**
-- `feature/narrative-8part` (8-part epic expansion + coming soon teasers) ✅ COMPLETE
+- `feature/narrative-8part` → `develop` (8-part epic expansion) ✅ MERGED
 
 **Next Steps:**
-- 🔄 Merge `feature/narrative-8part` into `develop` 
-- 🧪 User acceptance testing of integrated features and epic narrative
-- 📈 Analytics monitoring for tutorial engagement and epic part completion
-- 🎮 Feature refinement based on user feedback
-- 🚀 Prepare for production deployment of expanded narrative
+- 🎮 User acceptance testing of integrated 8-part epic narrative
+- � Begin Story→Chapter→Flow UI refactor (feature/story-chapters)
+- 📊 Analytics monitoring for epic part completion rates
+- 🧪 A/B testing of new narrative structure
+- 🚀 Prepare for production deployment of complete narrative expansion
 
 ---
 
@@ -120,6 +120,52 @@
   - StarRatingOverlay now appears correctly at all exit nodes after 2s delay
   - Verified in both development and production builds
   - All four exit paths working: revelation_complete, coalition_formed, sacrifice_made, transcendence
+
+---
+
+### v1.3.2-dev (Feature/Story-Chapters Branch) - UI REFACTOR COMPLETE  
+**Base Commit:** `develop`  
+**Date:** June 30, 2025  
+**Status:** 🟢 Story→Chapter→Flow Navigation Complete
+
+**Major UI Restructure - Three-Layer Navigation:**
+- ✅ **StartScreen:** Story selection with progress tracking and thumbnails
+- ✅ **ChapterScreen:** Chapter-based navigation with unlock/completion states  
+- ✅ **StoryFlow:** Individual chapter playback with back navigation
+- ✅ **Persistent Progress:** localStorage integration with automatic save/load
+- ✅ **SideMenu Integration:** Dynamic progress tab with chapter jumping
+
+**Technical Implementation:**
+- ✅ **Data Layer:** `src/data/stories.ts` with StoryMeta/ChapterMeta interfaces
+- ✅ **Storage System:** `src/utils/storage.ts` with progress persistence helpers
+- ✅ **Component Updates:** StartScreen refactored, ChapterScreen created, StoryFlow enhanced
+- ✅ **App Navigation:** Complete App.tsx refactor with three-view state management
+- ✅ **File Restructure:** Narrative parts renamed to `forgottenTruth_partX.ts` with segmentId exports
+
+**User Experience Enhancements:**
+- 🎮 **Visual Progress:** Progress bars, completion badges, and status indicators
+- 🔒 **Smart Unlocking:** Chapters unlock sequentially as previous ones complete
+- 📊 **Progress Tracking:** Real-time chapter completion with persistent storage
+- 🎯 **Quick Navigation:** SideMenu progress tab allows jumping to unlocked chapters
+- 📱 **Responsive Design:** Mobile-friendly grid layouts and touch interactions
+
+**Files Created/Modified:**
+- `src/data/stories.ts` (new)
+- `src/utils/storage.ts` (new)  
+- `src/components/ChapterScreen.tsx` (new)
+- `src/components/StartScreen.tsx` (refactored)
+- `src/components/StoryFlow.tsx` (enhanced with back navigation)
+- `src/components/SideMenu.tsx` (added progress tab)
+- `src/App.tsx` (complete navigation refactor)
+- `src/narratives/types.ts` (added story/chapter types)
+- Renamed: `partX_*.ts` → `forgottenTruth_partX.ts` (all 8 parts)
+
+**Quality Assurance:**
+- ✅ **Build Tests:** TypeScript compilation successful  
+- ✅ **Dev Server:** All navigation flows functional
+- ✅ **Progress Persistence:** localStorage save/load working correctly
+- ✅ **Chapter Unlocking:** Sequential progression system operational
+- ✅ **SideMenu Navigation:** Progress tab and chapter jumping functional
 
 ---
 
