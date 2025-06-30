@@ -65,6 +65,14 @@ export function useStarRatingFeedback() {
 
   const checkForFeedback = useCallback((milestone: string, nodeId: string, choiceCount: number) => {
     console.log('⭐ checkForFeedback called:', { milestone, nodeId, choiceCount });
+    
+    // Check if any feedback popup is already active to prevent conflicts
+    const feedbackStatus = JSON.parse(localStorage.getItem('qnce_feedback_system_status') || '{}');
+    if (feedbackStatus.isPopupActive) {
+      console.log('⭐ Star rating feedback blocked - another feedback popup is active');
+      return;
+    }
+    
     if (manager.shouldShowFeedback(milestone)) {
       console.log('⭐ Setting star rating visible!');
       setCurrentMilestone(milestone);

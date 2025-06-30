@@ -60,7 +60,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     handleFeedbackSubmit,
     handleFeedbackDismiss,
     updateSessionData,
-    sessionData
+    sessionData,
+    forceReleasePopupLock
   } = useConsolidatedFeedbackManager();
 
   // Star rating feedback for story completion
@@ -116,6 +117,17 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     }
   }, [currentNode, checkForFeedback, checkForStarRating, history.length]);
 
+  // Cleanup feedback locks when component unmounts or navigates away
+  useEffect(() => {
+    return () => {
+      // Force release any feedback locks when StoryFlow unmounts
+      if (forceReleasePopupLock) {
+        forceReleasePopupLock();
+        console.log('🚨 StoryFlow cleanup: Released feedback popup lock');
+      }
+    };
+  }, [forceReleasePopupLock]);
+
   const handleChoice = (choice: any) => {
     const choiceIndex = getAvailableChoices().indexOf(choice);
     if (choiceIndex < 0) return;
@@ -153,7 +165,14 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
       {onBack && (
         <div className="absolute top-4 left-4 z-10">
           <button
-            onClick={onBack}
+            onClick={() => {
+              // Clean up any active feedback locks before navigating back
+              if (forceReleasePopupLock) {
+                forceReleasePopupLock();
+                console.log('🚨 Navigation back: Released feedback popup lock');
+              }
+              onBack();
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -76,7 +76,7 @@ class ConsolidatedFeedbackManager {
   private sessionStartTime = Date.now();
   private feedbackData: Partial<ConsolidatedFeedbackData> = {};
   private isEnabled = true;
-  private hasShownFeedback = false; // Ensures only one feedback per session
+  private shownMilestones = new Set<string>(); // Track which milestones have been shown
   
   // Debounce rapid interactions
   private lastTriggerTime = 0;
@@ -239,9 +239,9 @@ class ConsolidatedFeedbackManager {
     }
     this.lastTriggerTime = now;
 
-    // Only show feedback once per session
-    if (this.hasShownFeedback) {
-      console.log('🚫 Feedback already shown this session');
+    // Check if this specific milestone has already been shown
+    if (this.shownMilestones.has(milestone)) {
+      console.log('🚫 Feedback already shown for milestone:', milestone);
       return null;
     }
 
@@ -327,7 +327,7 @@ class ConsolidatedFeedbackManager {
         milestone: feedback.milestone
       });
 
-      this.hasShownFeedback = true;
+      this.shownMilestones.add(feedback.milestone); // Mark this milestone as completed
       console.log('✅ Consolidated feedback submitted successfully');
       
     } catch (error) {
@@ -338,7 +338,7 @@ class ConsolidatedFeedbackManager {
   }
 
   /**
-   * Dismiss feedback and release popup lock
+   * Dismiss feedback and release popup lock (without blocking future feedback)
    */
   public dismissFeedback(milestone: string) {
     analyticsWrapper.trackFeedbackEvent('feedback_prompt_dismissed', {
@@ -346,7 +346,7 @@ class ConsolidatedFeedbackManager {
       milestone: milestone
     });
     
-    this.hasShownFeedback = true; // Don't show again this session
+    // Don't set hasShownFeedback = true here, allow feedback to appear again later
     this.releasePopupLock();
     console.log('🚫 Consolidated feedback dismissed for:', milestone);
   }
@@ -366,7 +366,7 @@ class ConsolidatedFeedbackManager {
     return {
       isPopupActive: this.isPopupActive,
       pendingMilestone: this.pendingMilestone,
-      hasShownFeedback: this.hasShownFeedback,
+      shownMilestones: Array.from(this.shownMilestones), // Convert Set to Array for debugging
       isEnabled: this.isEnabled,
       sessionDuration: Date.now() - this.sessionStartTime,
       lastTriggerTime: this.lastTriggerTime
@@ -384,7 +384,7 @@ class ConsolidatedFeedbackManager {
   }
 
   public resetSession() {
-    this.hasShownFeedback = false;
+    this.shownMilestones.clear(); // Reset the set of shown milestones
     this.releasePopupLock();
     this.sessionStartTime = Date.now();
     this.loadSessionData();

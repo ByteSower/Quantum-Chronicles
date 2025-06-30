@@ -39,7 +39,7 @@ export const StarRatingOverlay: React.FC<StarRatingOverlayProps> = ({
     return [1, 2, 3, 4, 5].map((star) => (
       <button
         key={star}
-        className={`text-4xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 rounded ${
+        className={`text-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 rounded p-1 ${
           star <= (hoveredRating || rating) 
             ? 'text-yellow-400' 
             : 'text-gray-400'
