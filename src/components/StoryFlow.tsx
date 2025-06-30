@@ -8,10 +8,22 @@ import { useQNCE } from '../hooks/useQNCE';
 import { useConsolidatedFeedbackManager } from '../utils/ConsolidatedFeedbackManager';
 import { useStarRatingFeedback } from '../utils/StarRatingFeedbackManager';
 
+// Chapter entry point mapping
+const CHAPTER_ENTRY_POINTS: Record<string, string> = {
+  'partI': 'ft_journalDiscovery',    // Chapter 1: The Garden That Wasn't
+  'partII': 'partII:intro',          // Chapter 2: The Echo Protocol  
+  'partIII': 'partIII:intro',        // Chapter 3: The Keepers
+  'partIV': 'partIV:intro',          // Chapter 4: The Antarctic Discovery
+  'partV': 'partV:intro',            // Chapter 5: The Echo Awakens
+  'partVI': 'partVI:intro',          // Chapter 6: The Fractured Timeline
+  'partVII': 'partVII:intro',        // Chapter 7: The New Guardians
+  'partVIII': 'partVIII:intro',      // Chapter 8: The Ones Who Shaped
+};
+
 interface StoryFlowProps {
-  segmentId?: string;
-  onComplete?: () => void;
-  onBack?: () => void;
+  segmentId: string;
+  onComplete: () => void;
+  onBack: () => void;
   settings: {
     developerMode: boolean;
     showVariableDashboard: boolean;
@@ -25,8 +37,11 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   onBack,
   settings,
 }) => {
-  // Log props for now (TODO: implement proper segmentId support)
-  console.log('StoryFlow loaded with segmentId:', segmentId);
+  // Extract chapter from segmentId (format: "forgottenTruth_partII")
+  const chapterId = segmentId.split('_')[1] || 'partI';
+  const startNodeId = CHAPTER_ENTRY_POINTS[chapterId] || 'ft_journalDiscovery';
+  
+  console.log('StoryFlow loaded with segmentId:', segmentId, 'Starting at:', startNodeId);
   
   const { 
     currentNode, 
@@ -34,7 +49,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     history, 
     makeChoice, 
     getAvailableChoices,
-  } = useQNCE();
+  } = useQNCE(undefined, startNodeId); // Pass startNodeId to useQNCE
   const [showDebug, setShowDebug] = useState(false);
   const [isFirstChoice, setIsFirstChoice] = useState(true);
 

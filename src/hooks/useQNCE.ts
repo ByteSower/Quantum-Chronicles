@@ -22,21 +22,23 @@ export interface QNCEReturn {
   isChoiceAvailable: (choice: Choice) => boolean;
 }
 
-export const useQNCE = (narrative: NarrativeSegment = forgottenTruth): QNCEReturn => {
-  const [currentNodeId, setCurrentNodeId] = useState(narrative.startNodeId);
+export const useQNCE = (narrative: NarrativeSegment = forgottenTruth, startNodeId?: string): QNCEReturn => {
+  const initialStartNode = startNodeId || narrative.startNodeId;
+  const [currentNodeId, setCurrentNodeId] = useState(initialStartNode);
   const [flags, setFlags] = useState<Record<string, boolean | number | string>>(narrative.initialFlags);
-  const [history, setHistory] = useState<string[]>([narrative.startNodeId]);
+  const [history, setHistory] = useState<string[]>([initialStartNode]);
   const [variables, setVariables] = useState<QNCEVariables>(narrative.initialVariables);
 
   const NODES = narrative.nodes;
 
   const reset = useCallback(() => {
-    setCurrentNodeId(narrative.startNodeId);
+    const resetStartNode = startNodeId || narrative.startNodeId;
+    setCurrentNodeId(resetStartNode);
     setFlags(narrative.initialFlags);
-    setHistory([narrative.startNodeId]);
+    setHistory([resetStartNode]);
     setVariables(narrative.initialVariables);
     trackStoryEvent.reset(narrative.segmentId);
-  }, [narrative]);
+  }, [narrative, startNodeId]);
 
   const isChoiceAvailable = useCallback((choice: Choice): boolean => {
     if (!choice.conditions || choice.conditions.length === 0) {
