@@ -106,7 +106,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
       console.log('🎯 FeedbackHook detected on node entry:', currentNode.feedbackHook, 'on node:', currentNode.nodeId);
       checkForFeedback(currentNode.feedbackHook.milestone);
       
-      // Also check for star rating feedback at story completion
+      // Only trigger star rating for story completion milestones
       if (currentNode.feedbackHook.milestone === 'story_completion') {
         console.log('⭐ Star rating feedback should trigger in', currentNode.feedbackHook.delay || 1000, 'ms');
         setTimeout(() => {

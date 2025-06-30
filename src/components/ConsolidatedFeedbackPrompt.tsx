@@ -76,7 +76,12 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
   const isFirstSection = currentSection === 0;
 
   const handleSubmit = async () => {
-    if (overallRating === 0) return;
+    console.log('🎯 Feedback submit attempted - overallRating:', overallRating, 'isSubmitting:', isSubmitting);
+    
+    if (overallRating === 0) {
+      console.log('❌ Submit blocked: No overall rating selected');
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -94,6 +99,7 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
     };
 
     try {
+      console.log('🎯 Calling onSubmit with feedback data:', feedbackData);
       onSubmit(feedbackData);
       accessibilityManager.announce('Thank you for your comprehensive feedback!', 'polite');
     } catch (error) {
@@ -128,7 +134,10 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
-            onClick={() => onChange(star)}
+            onClick={() => {
+              console.log('⭐ Star clicked:', star, 'for', label);
+              onChange(star);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowLeft' && star > 1) onChange(star - 1);
               if (e.key === 'ArrowRight' && star < 5) onChange(star + 1);
@@ -415,6 +424,7 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
                 onClick={handleSubmit}
                 disabled={isSubmitting || overallRating === 0}
                 className="px-6 py-2 text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                title={overallRating === 0 ? 'Please select a star rating first' : ''}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
               </button>
