@@ -272,7 +272,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ stories, onSelectStory }) => 
         {/* Attribution with Version */}
         <div className="mt-12 text-xs text-slate-500">
           <p>Created by ByteSower • Follow us for more interactive experiences!</p>
-          <p className="mt-1">v0.3.0-beta.1</p>
+          <p className="mt-1">v1.2.1-beta.1</p>
         </div>
       </div>
     </div>
