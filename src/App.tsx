@@ -108,8 +108,10 @@ function App() {
   };
 
   const handleBackToChapters = () => {
+    console.log('handleBackToChapters called - current view:', view);
     setView('chapters');
     setActiveChapter('');
+    console.log('handleBackToChapters - set view to chapters, cleared activeChapter');
     trackUIEvent.feature('navigation', 'back_to_chapters');
   };
 
