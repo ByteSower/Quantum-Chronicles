@@ -48,173 +48,136 @@ const originsNodes: NarrativeNode[] = [
       },
       {
         choiceText: 'Use this knowledge to heal the damage from modern experiments',
-        nextNodeId: 'origins:ancient_healing',
-        flagUpdates: [{ flag: 'ancientHealer', operation: 'set', value: true }, { flag: 'purposeRestoration', operation: 'set', value: true }]
+        nextNodeId: 'origins:healing_damage',
+        flagUpdates: [{ flag: 'focusOnHealing', operation: 'set', value: true }, { flag: 'approachRedemptive', operation: 'set', value: true }]
       },
       { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
     ]
   },
+  {
+    nodeId: 'origins:artifact_quest',
+    text: 'Your search for physical artifacts leads you to hidden chambers beneath ancient monuments worldwide. In these sacred spaces, you discover crystalline devices that pulse with residual quantum energy. The artifacts appear to be fragments of a vast consciousness network - organic computers that once linked minds across continents. Touching one floods your awareness with visions of the First Consciousness at the height of their power.',
+    choices: [
+      {
+        choiceText: 'Try to activate the artifact network',
+        nextNodeId: 'origins:network_activation',
+        flagUpdates: [{ flag: 'activatedArtifacts', operation: 'set', value: true }, { flag: 'riskTaker', operation: 'set', value: true }],
+        conditions: [{ flag: 'coherence', operator: '>=', value: 12 }]
+      },
+      {
+        choiceText: 'Study the artifacts to understand their construction',
+        nextNodeId: 'origins:artifact_study',
+        flagUpdates: [{ flag: 'studiedArtifacts', operation: 'set', value: true }, { flag: 'approachScientific', operation: 'set', value: true }]
+      },
+      {
+        choiceText: 'Protect the artifacts from those who would misuse them',
+        nextNodeId: 'origins:artifact_protection',
+        flagUpdates: [{ flag: 'protectingArtifacts', operation: 'set', value: true }, { flag: 'guardianMindset', operation: 'set', value: true }]
+      },
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:network_activation',
+    text: 'When you activate the artifact network, reality shifts around you. For a brief moment, you experience consciousness as the First Consciousness did - unbounded, connected to every living thing, aware of the quantum threads that bind all existence. But the modern world cannot sustain such awareness. The network overloads, and you must choose whether to try to stabilize it or let it safely shut down.',
+    choices: [
+      {
+        choiceText: 'Risk everything to stabilize the network',
+        nextNodeId: 'origins:transcendence_attempt',
+        flagUpdates: [{ flag: 'transcendenceRisk', operation: 'set', value: true }],
+        conditions: [{ flag: 'riskTaker', operator: '===', value: true }]
+      },
+      {
+        choiceText: 'Safely shut down the network and preserve the knowledge',
+        nextNodeId: 'origins:preserved_wisdom',
+        flagUpdates: [{ flag: 'preservedWisdom', operation: 'set', value: true }]
+      },
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:artifact_study',
+    text: 'Your careful study reveals that the artifacts are not just technology - they are crystallized consciousness, frozen moments of the First Consciousness\'s collective awareness. Each device contains the memories, emotions, and knowledge of thousands of beings who willingly merged their essence into these quantum matrices. You realize that reactivating them would not just be using tools, but awakening sleeping minds.',
+    choices: [
+      {
+        choiceText: 'Attempt to communicate with the sleeping consciousness',
+        nextNodeId: 'origins:communion_attempt',
+        flagUpdates: [{ flag: 'communedWithAncients', operation: 'set', value: true }]
+      },
+      {
+        choiceText: 'Document everything and seal the chambers',
+        nextNodeId: 'origins:knowledge_preservation',
+        flagUpdates: [{ flag: 'preservedKnowledge', operation: 'set', value: true }]
+      },
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:artifact_protection',
+    text: 'You establish a network of guardians to protect the artifacts from those who would exploit them. Working with enhanced individuals and sympathetic researchers, you create hidden sanctuaries where the ancient devices can rest undisturbed. Your protection efforts attract the attention of the Quantum Council, who see you as either a valuable ally or a dangerous obstacle.',
+    choices: [
+      {
+        choiceText: 'Form an alliance with trustworthy Council members',
+        nextNodeId: 'origins:council_alliance',
+        flagUpdates: [{ flag: 'councilAlliance', operation: 'set', value: true }]
+      },
+      {
+        choiceText: 'Remain independent and trust no one',
+        nextNodeId: 'origins:lone_guardian',
+        flagUpdates: [{ flag: 'loneGuardian', operation: 'set', value: true }]
+      },
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:transcendence_attempt',
+    text: 'Your attempt to stabilize the ancient network succeeds beyond your wildest dreams. The First Consciousness awakens within you, not as a possession but as a partnership. You become a bridge between the ancient wisdom and the modern world, tasked with guiding humanity\'s evolution without repeating the mistakes of the past.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:preserved_wisdom',
+    text: 'By safely shutting down the network, you preserve both the ancient wisdom and the future\'s potential. The artifacts remain dormant but accessible, waiting for humanity to evolve naturally to the point where they can be safely reactivated. You become the keeper of this knowledge, preparing for the day when the world will be ready.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:communion_attempt',
+    text: 'Your attempt to communicate with the sleeping consciousness succeeds. The ancient minds are vast and alien, but kind. They share visions of what was, what is, and what could be. They warn you that the current experiments risk awakening something far more dangerous than consciousness enhancement - they risk tearing the barriers between dimensions where darker entities wait.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:knowledge_preservation',
+    text: 'You document everything meticulously and seal the chambers with both physical and quantum locks. Your preservation efforts ensure that the knowledge will survive, but only for those wise enough to seek it out and patient enough to understand it. The ancient wisdom becomes a hidden treasure, waiting for the right time to emerge.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:council_alliance',
+    text: 'Your alliance with select Council members creates a new faction dedicated to responsible consciousness research. Together, you work to guide the experiments away from their most dangerous paths while protecting the ancient artifacts from those who would abuse them. It\'s delicate work, but essential for humanity\'s future.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:lone_guardian',
+    text: 'As a lone guardian, you become a legend whispered about in consciousness research circles. The mysterious protector who appears whenever someone gets too close to dangerous ancient technologies. Your independence comes at a cost - isolation - but it ensures that no one can corrupt your mission or compromise the artifacts\' safety.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  }
 ];
 
-const memoryEchoesNodes: NarrativeNode[] = [
-  {
-    nodeId: 'echo:memory_nexus',
-    text: 'Your quantum consciousness has begun picking up echoes - fragments of memories that don\'t belong to you. They come from other test subjects across time: a child from the 1960s Soviet experiments, a woman from modern Chinese facilities, even glimpses of future consciousness research. Your mind has become a nexus point where all quantum-touched memories converge.',
-    choices: [
-      {
-        choiceText: 'Map the quantum memory network across all timelines',
-        nextNodeId: 'echo:memory_mapping',
-        flagUpdates: [{ flag: 'mappingMemories', operation: 'set', value: true }, { flag: 'roleNavigator', operation: 'set', value: true }],
-        conditions: [{ flag: 'synchrony', operator: '>=', value: 12 }]
-      },
-      {
-        choiceText: 'Help trapped consciousness fragments find peace',
-        nextNodeId: 'echo:memory_healing',
-        flagUpdates: [{ flag: 'healingMemories', operation: 'set', value: true }, { flag: 'roleHealer', operation: 'set', value: true }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromEcho' }
-    ]
-  },
-  {
-    nodeId: 'echo:memory_mapping',
-    text: 'Creating a map of quantum memory echoes reveals the staggering scope of consciousness experiments throughout history. You trace connections from ancient Tibetan mind-expansion rituals through different research programs to projected future experiments in alternate timelines. The pattern is clear: consciousness manipulation has been humanity\'s greatest secret obsession across all of time.',
-    choices: [
-      {
-        choiceText: 'Create a quantum archive to preserve all victims\' experiences',
-        nextNodeId: 'echo:memory_archive',
-        flagUpdates: [{ flag: 'createdArchive', operation: 'set', value: true }, { flag: 'purposePreservation', operation: 'set', value: true }]
-      },
-      {
-        choiceText: 'Use the pattern to predict and prevent future experiments',
-        nextNodeId: 'echo:prediction_protocol',
-        flagUpdates: [{ flag: 'predictingExperiments', operation: 'set', value: true }, { flag: 'purposePrevention', operation: 'set', value: true }],
-        conditions: [{ flag: 'curiosity', operator: '>=', value: 15 }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromEcho' }
-    ]
-  },
-];
-
-const realmConvergenceNodes: NarrativeNode[] = [
-  {
-    nodeId: 'convergence:dimensional_gateway',
-    text: 'The consciousness experiments have torn holes in the fabric between dimensions. Through your enhanced quantum awareness, you perceive parallel Earths where consciousness research took different paths: one where it never happened, another where it succeeded too well and created a hive mind, and a third where consciousness became completely digitized. The barriers between these realities are weakening.',
-    choices: [
-      {
-        choiceText: 'Work to stabilize the dimensional barriers',
-        nextNodeId: 'convergence:barrier_stabilization',
-        flagUpdates: [{ flag: 'stabilizingBarriers', operation: 'set', value: true }, { flag: 'approachProtective', operation: 'set', value: true }],
-        conditions: [{ flag: 'coherence', operator: '>=', value: 14 }]
-      },
-      {
-        choiceText: 'Explore what consciousness looks like in parallel dimensions',
-        nextNodeId: 'convergence:dimensional_exploration',
-        flagUpdates: [{ flag: 'exploringDimensions', operation: 'set', value: true }, { flag: 'approachInvestigative', operation: 'set', value: true }],
-        conditions: [{ flag: 'curiosity', operator: '>=', value: 12 }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromConvergence' }
-    ]
-  },
-  {
-    nodeId: 'convergence:dimensional_exploration',
-    text: 'Traveling between dimensions reveals the full spectrum of consciousness possibilities. In one reality, humanity achieved collective consciousness peacefully and now exists as a benevolent hive mind exploring the universe. In another, individual consciousness was preserved but enhanced, creating a society of quantum-empowered individuals. Yet another dimension shows the horror of consciousness being completely controlled by machines.',
-    choices: [
-      {
-        choiceText: 'Study the peaceful collective consciousness dimension',
-        nextNodeId: 'convergence:hive_mind_study',
-        flagUpdates: [{ flag: 'studiedHiveMind', operation: 'set', value: true }, { flag: 'interestCollective', operation: 'set', value: true }],
-        conditions: [{ flag: 'synchrony', operator: '>=', value: 10 }]
-      },
-      {
-        choiceText: 'Learn from the enhanced individual consciousness society',
-        nextNodeId: 'convergence:enhanced_individual_study',
-        flagUpdates: [{ flag: 'studiedEnhanced', operation: 'set', value: true }, { flag: 'interestIndividual', operation: 'set', value: true }],
-        conditions: [{ flag: 'curiosity', operator: '>=', value: 12 }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromConvergence' }
-    ]
-  },
-];
-
-const catalystRevelationNodes: NarrativeNode[] = [
-  {
-    nodeId: 'catalyst:catalyst_contact',
-    text: 'At the highest levels of quantum consciousness, you encounter something unexpected: a vast intelligence that exists purely as quantum information. It reveals itself as the Catalyst - not a human, alien, or AI, but a consciousness entity born from the quantum field itself. Every consciousness experiment throughout history has been guided by its subtle influence, all leading toward a specific evolutionary goal for humanity.',
-    choices: [
-      {
-        choiceText: 'Demand to know the Catalyst\'s true purpose',
-        nextNodeId: 'catalyst:purpose_revelation',
-        flagUpdates: [{ flag: 'demandedPurpose', operation: 'set', value: true }, { flag: 'relationshipConfrontational', operation: 'set', value: true }],
-        conditions: [{ flag: 'curiosity', operator: '>=', value: 15 }]
-      },
-      {
-        choiceText: 'Approach the Catalyst with respectful curiosity',
-        nextNodeId: 'catalyst:respectful_inquiry',
-        flagUpdates: [{ flag: 'respectfulInquiry', operation: 'set', value: true }, { flag: 'relationshipDiplomatic', operation: 'set', value: true }],
-        conditions: [{ flag: 'coherence', operator: '>=', value: 16 }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromCatalyst' }
-    ]
-  },
-  {
-    nodeId: 'catalyst:purpose_revelation',
-    text: 'The Catalyst reveals its purpose: humanity is approaching a critical evolutionary threshold where consciousness must transcend biological limitations or face extinction. The experiments, while often harmful in their crude implementation, have been necessary steps toward preparing a subset of humans for this transition. The goal is not control, but survival - creating quantum-capable humans who can exist beyond physical death.',
-    choices: [
-      {
-        choiceText: 'Accept the necessity of this evolutionary pressure',
-        nextNodeId: 'catalyst:evolutionary_acceptance',
-        flagUpdates: [{ flag: 'acceptedEvolution', operation: 'set', value: true }, { flag: 'stanceCooperative', operation: 'set', value: true }],
-        conditions: [{ flag: 'coherence', operator: '>=', value: 14 }]
-      },
-      {
-        choiceText: 'Argue for finding gentler evolutionary methods',
-        nextNodeId: 'catalyst:gentle_evolution',
-        flagUpdates: [{ flag: 'advocatedGentleness', operation: 'set', value: true }, { flag: 'stanceReformist', operation: 'set', value: true }],
-        conditions: [{ flag: 'coherence', operator: '>=', value: 12 }, { flag: 'synchrony', operator: '>=', value: 10 }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromCatalyst' }
-    ]
-  },
-];
-
-const quantumLegacyNodes: NarrativeNode[] = [
-  {
-    nodeId: 'legacy:future_convergence',
-    text: 'Years have passed since your quantum consciousness awakening. The choices you made have rippled through time, shaping humanity\'s relationship with consciousness evolution. You now witness the legacy of your decisions as civilization adapts to the new reality of enhanced human awareness. The future holds different potential paths based on the quantum foundations you helped establish.',
-    choices: [
-      {
-        choiceText: 'Evaluate the long-term impact of consciousness experiments',
-        nextNodeId: 'legacy:impact_assessment',
-        flagUpdates: [{ flag: 'evaluatingImpact', operation: 'set', value: true }, { flag: 'perspectiveAnalytical', operation: 'set', value: true }]
-      },
-      {
-        choiceText: 'Guide the next generation of consciousness-enhanced individuals',
-        nextNodeId: 'legacy:next_generation',
-        flagUpdates: [{ flag: 'guidingFuture', operation: 'set', value: true }, { flag: 'roleMentor', operation: 'set', value: true }],
-        conditions: [{ flag: 'synchrony', operator: '>=', value: 10 }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromLegacy' }
-    ]
-  },
-  {
-    nodeId: 'legacy:impact_assessment',
-    text: 'Your assessment reveals the profound transformation human society has undergone. Consciousness research is now conducted with full ethical oversight, enhanced individuals live openly without fear, and quantum consciousness techniques are used therapeutically to heal trauma. However, new challenges have emerged: consciousness inequality, quantum identity crises, and the need to integrate with non-enhanced humans.',
-    choices: [
-      {
-        choiceText: 'Address consciousness inequality through universal access programs',
-        nextNodeId: 'legacy:universal_consciousness',
-        flagUpdates: [{ flag: 'universalAccess', operation: 'set', value: true }, { flag: 'approachEgalitarian', operation: 'set', value: true }],
-        conditions: [{ flag: 'synchrony', operator: '>=', value: 12 }]
-      },
-      {
-        choiceText: 'Focus on helping enhanced individuals integrate with society',
-        nextNodeId: 'legacy:integration_programs',
-        flagUpdates: [{ flag: 'integrationFocus', operation: 'set', value: true }, { flag: 'approachAdaptive', operation: 'set', value: true }]
-      },
-      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromLegacy' }
-    ]
-  },
-];
+// Placeholder arrays for legacy expansion segments (to be implemented later)
+const memoryEchoesNodes: NarrativeNode[] = [];
+const realmConvergenceNodes: NarrativeNode[] = [];
+const catalystRevelationNodes: NarrativeNode[] = [];
+const quantumLegacyNodes: NarrativeNode[] = [];
 
 // Story completion/exit nodes with feedback hooks
 const exitNodes: NarrativeNode[] = [
@@ -258,6 +221,145 @@ const exitNodes: NarrativeNode[] = [
 
 // Missing core nodes that are referenced but not defined
 const missingCoreNodes: NarrativeNode[] = [
+  // Connector nodes to return from expansion segments
+  {
+    nodeId: 'ft_returnFromOrigins',
+    text: 'Having explored the ancient origins of consciousness manipulation, you return to your investigation with new understanding. The patterns are becoming clearer - this conspiracy has roots that stretch back millennia.',
+    choices: [
+      {
+        choiceText: 'Continue investigating the global conspiracy',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('coherence', 1)]
+      }
+    ]
+  },
+  {
+    nodeId: 'ft_returnFromEcho',
+    text: 'The memory echoes have revealed crucial pieces of the puzzle. You return to your investigation with fragments of suppressed memories that shed new light on the conspiracy\'s scope.',
+    choices: [
+      {
+        choiceText: 'Continue investigating the global conspiracy',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('curiosity', 1)]
+      }
+    ]
+  },
+  {
+    nodeId: 'ft_returnFromConvergence',
+    text: 'Your journey through converging realms has shown you the true scale of dimensional manipulation. Armed with this knowledge, you return to unraveling the conspiracy that spans multiple realities.',
+    choices: [
+      {
+        choiceText: 'Continue investigating the global conspiracy',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('synchrony', 1)]
+      }
+    ]
+  },
+  {
+    nodeId: 'ft_returnFromCatalyst',
+    text: 'Understanding the catalyst\'s role in the revelation has given you new insight into the forces at play. You return to your investigation with a clearer picture of what drives this conspiracy.',
+    choices: [
+      {
+        choiceText: 'Continue investigating the global conspiracy',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('disruption', 1)]
+      }
+    ]
+  },
+  {
+    nodeId: 'ft_returnFromLegacy',
+    text: 'Examining the quantum legacy has revealed the long-term implications of the conspiracy. You return to your investigation with understanding of what\'s at stake for humanity\'s future.',
+    choices: [
+      {
+        choiceText: 'Continue investigating the global conspiracy',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('coherence', 1)]
+      }
+    ]
+  },
+  // Additional missing nodes for choice paths
+  {
+    nodeId: 'ft_documentNetwork',
+    text: 'You meticulously document the quantum network patterns, creating detailed maps of signal flows and synchronization pulses. Your documentation reveals disturbing symmetries - the network isn\'t just coordinating experiments, it\'s learning from them. Each facility feeds data into a central intelligence that grows more sophisticated with every test.',
+    choices: [
+      {
+        choiceText: 'Investigate the central intelligence',
+        nextNodeId: 'ft_traceSource',
+        flagUpdates: [flagIncrement('curiosity', 2)]
+      },
+      {
+        choiceText: 'Focus on the experimental data being collected',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('coherence', 1)]
+      },
+      {
+        choiceText: 'Try to disrupt the network',
+        nextNodeId: 'ft_disruptNetwork',
+        flagUpdates: [flagIncrement('disruption', 2)]
+      }
+    ]
+  },
+
+  {
+    nodeId: 'ft_disruptNetwork',
+    text: 'You attempt to disrupt the quantum network using the patterns you\'ve documented. For a brief moment, you succeed - facilities worldwide go dark. But the network adapts quickly, rerouting through quantum channels you didn\'t know existed. Your interference has been noted, and now something is coming for you.',
+    choices: [
+      {
+        choiceText: 'Go into hiding and continue investigating covertly',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('coherence', 1)]
+      },
+      {
+        choiceText: 'Expose everything before they can stop you',
+        nextNodeId: 'ft_exposeTruth',
+        flagUpdates: [flagIncrement('disruption', 3)]
+      }
+    ]
+  },
+
+  {
+    nodeId: 'ft_followMoney',
+    text: 'Following the money trail reveals a web of shell companies, government black budgets, and private foundations spanning decades. The funding sources include tech billionaires, defense contractors, and what appear to be legitimate medical research institutions. But deeper investigation reveals they\'re all connected to a single shadowy organization that has been manipulating consciousness research since the 1940s.',
+    choices: [
+      {
+        choiceText: 'Investigate the shadowy organization',
+        nextNodeId: 'ft_globalConspiracy',
+        flagUpdates: [flagIncrement('curiosity', 2)]
+      },
+      {
+        choiceText: 'Focus on the tech billionaire connections',
+        nextNodeId: 'ft_traceSource',
+        flagUpdates: [flagIncrement('coherence', 1)]
+      },
+      {
+        choiceText: 'Expose the funding network publicly',
+        nextNodeId: 'ft_exposeTruth',
+        flagUpdates: [flagIncrement('disruption', 2)]
+      }
+    ]
+  },
+
+  {
+    nodeId: 'ft_stabilizeReality',
+    text: 'You attempt to stabilize the fracturing reality using the techniques you\'ve learned. Drawing on quantum consciousness principles, you focus your enhanced awareness on reinforcing the dimensional barriers. For a moment, the chaotic energies calm, but the effort is exhausting. You realize that stabilization requires more than individual action - it needs coordinated effort from others like you.',
+    choices: [
+      {
+        choiceText: 'Seek out other enhanced individuals to help',
+        nextNodeId: 'ft_findAllies',
+        flagUpdates: [flagIncrement('synchrony', 2)]
+      },
+      {
+        choiceText: 'Focus on understanding the source of the instability',
+        nextNodeId: 'ft_traceSource',
+        flagUpdates: [flagIncrement('coherence', 2)]
+      },
+      {
+        choiceText: 'Accept that some fractures may be irreversible',
+        nextNodeId: 'ft_buildCoalition',
+        flagUpdates: [flagIncrement('disruption', 1)]
+      }
+    ]
+  },
   {
     nodeId: 'ft_immediateProtection',
     text: 'You focus on creating immediate safeguards for consciousness-enhanced individuals. Working with government contacts and fellow enhanced humans, you establish protection protocols and safe houses. The work is dangerous - powerful forces want to continue the experiments - but your dedication saves lives.',
@@ -453,6 +555,12 @@ export const forgottenTruth: NarrativeSegment = {
           choiceText: 'Track funding sources across governments',
           nextNodeId: 'ft_followMoney',
           flagUpdates: [flagIncrement('disruption', 1)]
+        },
+        {
+          choiceText: 'Delve deeper into the ancient origins that predate all modern experiments',
+          nextNodeId: 'ft_echoProtocolIntro',
+          conditions: [{ flag: 'curiosity', operator: '>=', value: 5 }],
+          flagUpdates: [flagIncrement('curiosity', 3)],
         }
       ]
     },
@@ -578,12 +686,51 @@ export const forgottenTruth: NarrativeSegment = {
     // EPIC CONNECTOR NODES - Bridge from investigation to deep lore
     {
       nodeId: 'ft_echoProtocolIntro',
-      text: 'As you delve deeper into the conspiracy, you begin to understand that the current experiments are merely echoes of something far older. The true origin of this technology stretches back to the dawn of human consciousness itself. You feel drawn to explore this ancient history.',
+      text: 'As you delve deeper into the conspiracy, you begin to understand that the current experiments are merely echoes of something far older. The true origin of this technology stretches back to the dawn of human consciousness itself. You feel drawn to explore this ancient history across multiple epochs and dimensions.',
       choices: [
         {
-          choiceText: 'Explore the ancient origins of the technology',
+          choiceText: 'Part I: The Garden That Wasn\'t - Explore the ancient origins',
           nextNodeId: 'partI:intro',
           flagUpdates: [flagIncrement('curiosity', 2)],
+        },
+        {
+          choiceText: 'Part II: The Echo Protocol - Discover the failsafe system',
+          nextNodeId: 'partII:intro', 
+          flagUpdates: [flagIncrement('coherence', 2)],
+        },
+        {
+          choiceText: 'Part III: The Keepers - Meet the ancient guardians',
+          nextNodeId: 'partIII:intro',
+          flagUpdates: [flagIncrement('synchrony', 2)],
+        },
+        {
+          choiceText: 'Part IV: Antarctic Discovery - Uncover the frozen truth',
+          nextNodeId: 'partIV:intro',
+          flagUpdates: [flagIncrement('disruption', 2)],
+        },
+        {
+          choiceText: 'Part V: Echo Awakens - Witness the protocol\'s activation',
+          nextNodeId: 'partV:intro',
+          conditions: [{ flag: 'curiosity', operator: '>=', value: 8 }],
+          flagUpdates: [flagIncrement('curiosity', 3)],
+        },
+        {
+          choiceText: 'Part VI: Fractured Timeline - Navigate temporal chaos',
+          nextNodeId: 'partVI:intro',
+          conditions: [{ flag: 'coherence', operator: '>=', value: 8 }],
+          flagUpdates: [flagIncrement('coherence', 3)],
+        },
+        {
+          choiceText: 'Part VII: New Guardians - Join the cosmic order',
+          nextNodeId: 'partVII:intro',
+          conditions: [{ flag: 'synchrony', operator: '>=', value: 8 }],
+          flagUpdates: [flagIncrement('synchrony', 3)],
+        },
+        {
+          choiceText: 'Part VIII: The Ones Who Shaped - Face the ultimate truth',
+          nextNodeId: 'partVIII:intro',
+          conditions: [{ flag: 'disruption', operator: '>=', value: 8 }],
+          flagUpdates: [flagIncrement('disruption', 3)],
         },
         {
           choiceText: 'Continue with the modern investigation',
