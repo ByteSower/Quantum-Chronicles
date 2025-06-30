@@ -18,7 +18,7 @@ export const stories: StoryMeta[] = [
     storyId: 'forgottenTruth',
     title: 'The Forgotten Truth',
     description: 'Uncover ancient secrets that reshape reality itself. A journey through quantum mysteries, cosmic conspiracies, and the true nature of human consciousness.',
-    thumbnail: '/Quantum-Chronicles/images/ft-thumb.png',
+    thumbnail: '/Quantum-Chronicles/images/thumbnails/TFT-Thumbnail.png',
     chapters: [
       { chapterId: 'partI', title: 'I. The Garden That Wasn\'t', unlocked: true, completed: false },
       { chapterId: 'partII', title: 'II. The Echo Protocol', unlocked: false, completed: false },

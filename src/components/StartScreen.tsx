@@ -46,21 +46,36 @@ const StartScreen: React.FC<StartScreenProps> = ({ stories, onSelectStory, onSho
               <button
                 key={story.storyId}
                 onClick={() => onSelectStory(story.storyId)}
-                className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-indigo-500/30 rounded-xl p-6 text-left hover:from-slate-700/80 hover:to-slate-800/80 hover:border-indigo-400/50 transition-all duration-300 transform hover:scale-105 group min-h-[300px] flex flex-col"
+                className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-xl overflow-hidden hover:from-slate-700/80 hover:to-slate-800/80 transition-all duration-300 transform hover:scale-105 group min-h-[300px] flex flex-col shadow-lg hover:shadow-xl"
               >
-                {/* Thumbnail area (placeholder for now) */}
-                <div className="w-full h-32 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-lg mb-4 flex items-center justify-center border border-indigo-500/20">
-                  <svg className="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.832 18.477 19.246 18 17.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
+                {/* Large Thumbnail - takes up most of the card */}
+                <div className="w-full flex-1 relative overflow-hidden">
+                  {story.thumbnail ? (
+                    <img 
+                      src={story.thumbnail} 
+                      alt={`${story.title} thumbnail`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to gradient if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                  ) : null}
+                  <div className={`w-full h-full bg-gradient-to-br from-indigo-600/20 to-purple-600/20 flex items-center justify-center ${story.thumbnail ? 'hidden' : ''}`}>
+                    <svg className="w-16 h-16 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.832 18.477 19.246 18 17.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
                 </div>
 
-                {/* Story Info */}
-                <div className="flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold mb-2 text-indigo-300 group-hover:text-indigo-200">
+                {/* Content Footer */}
+                <div className="p-4 bg-gradient-to-br from-slate-800/95 to-purple-900/95 backdrop-blur-sm">
+                  <h3 className="text-lg font-bold mb-1 text-indigo-300 group-hover:text-indigo-200">
                     {story.title}
                   </h3>
-                  <p className="text-slate-300 mb-4 text-sm leading-relaxed flex-1">
+                  <p className="text-slate-300 mb-3 text-sm leading-relaxed line-clamp-2">
                     {story.description}
                   </p>
 
