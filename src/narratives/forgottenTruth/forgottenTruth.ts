@@ -1,5 +1,13 @@
 import type { NarrativeSegment, NarrativeNode } from '../types';
 import { flagIncrement } from '../../utils/narrativeUtils';
+import { nodes as partI } from './partI_GardenThatWasnt';
+import { nodes as partII } from './partII_EchoProtocol';
+import { nodes as partIII } from './partIII_TheKeepers';
+import { nodes as partIV } from './partIV_AntarcticDiscovery';
+import { nodes as partV } from './partV_EchoAwakens';
+import { nodes as partVI } from './partVI_FracturedTimeline';
+import { nodes as partVII } from './partVII_NewGuardians';
+import { nodes as partVIII } from './partVIII_OnesWhoShaped';
 
 // Node definitions for each expansion, converted to the new format
 // (These would be the full lists of nodes from the deleted files)
@@ -567,72 +575,153 @@ export const forgottenTruth: NarrativeSegment = {
       ]
     },
 
-    // Placeholder nodes for return bridges from expansions
+    // EPIC CONNECTOR NODES - Bridge from investigation to deep lore
     {
-      nodeId: 'ft_returnFromOrigins',
-      text: 'Armed with ancient wisdom about the true nature of consciousness, you return to the modern conspiracy with new understanding. The patterns become clearer, the purpose more evident.',
+      nodeId: 'ft_echoProtocolIntro',
+      text: 'As you delve deeper into the conspiracy, you begin to understand that the current experiments are merely echoes of something far older. The true origin of this technology stretches back to the dawn of human consciousness itself. You feel drawn to explore this ancient history.',
       choices: [
         {
-          choiceText: 'Continue investigating the quantum network',
-          nextNodeId: 'ft_quantumNetwork',
-          flagUpdates: [flagIncrement('coherence', 1)],
+          choiceText: 'Explore the ancient origins of the technology',
+          nextNodeId: 'partI:intro',
+          flagUpdates: [flagIncrement('curiosity', 2)],
         },
-      ],
+        {
+          choiceText: 'Continue with the modern investigation',
+          nextNodeId: 'ft_globalConspiracy',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        }
+      ]
     },
 
     {
-      nodeId: 'ft_returnFromEcho',
-      text: 'The memory fragments have shown you the scope of consciousness experimentation across time. You understand now that this isn\'t just about the present - it\'s about the entire future of human awareness.',
+      nodeId: 'ft_keepersReveal',
+      text: 'Your investigation has uncovered references to ancient secret societies that have been guarding knowledge for millennia. These "Keepers" seem to be the true power behind modern consciousness research. Understanding their factions might be key to stopping them.',
       choices: [
         {
-          choiceText: 'Trace the source of the network',
+          choiceText: 'Learn about the secret Keeper factions',
+          nextNodeId: 'partIII:intro',
+          flagUpdates: [flagIncrement('coherence', 2)],
+        },
+        {
+          choiceText: 'Focus on their recent activities',
           nextNodeId: 'ft_traceSource',
-          flagUpdates: [flagIncrement('coherence', 1)],
-        },
-      ],
+          flagUpdates: [flagIncrement('disruption', 1)],
+        }
+      ]
     },
 
     {
-      nodeId: 'ft_returnFromConvergence',
-      text: 'Having witnessed the fractures between realities, you realize the true scope of what\'s at stake. This isn\'t just about one world - it\'s about all possible worlds.',
+      nodeId: 'ft_antarcticaDiscovery',
+      text: 'Intelligence reports suggest something significant has been discovered in Antarctica - something that has all the secret factions mobilizing simultaneously. This discovery may be the key to understanding everything.',
       choices: [
         {
-          choiceText: 'Seek allies who understand the dimensional threat',
-          nextNodeId: 'ft_findAllies',
-          flagUpdates: [flagIncrement('synchrony', 1)],
+          choiceText: 'Investigate the Antarctic discovery',
+          nextNodeId: 'partIV:intro',
+          flagUpdates: [flagIncrement('curiosity', 3)],
         },
-      ],
-    },
-
-    {
-      nodeId: 'ft_returnFromCatalyst',
-      text: 'Your encounter with the orchestrating entity has changed everything. You now understand the true purpose behind the experiments, and your role in what comes next.',
-      choices: [
         {
-          choiceText: 'Build a coalition to shape the future',
-          nextNodeId: 'ft_buildCoalition',
-          flagUpdates: [flagIncrement('coherence', 1)],
-        },
-      ],
-    },
-
-    {
-      nodeId: 'ft_returnFromLegacy',
-      text: 'Having glimpsed the far future of consciousness evolution, you return to the present with clarity about your mission. The choices you make now will echo through time.',
-      choices: [
-        {
-          choiceText: 'Focus on immediate action',
+          choiceText: 'Stay focused on local threats',
           nextNodeId: 'ft_immediateProtection',
           flagUpdates: [flagIncrement('coherence', 1)],
-        },
-      ],
+        }
+      ]
     },
+
+    {
+      nodeId: 'ft_characterFocus',
+      text: 'The convergence of events has brought three key individuals to your attention: Dr. Lian Evasco, Amari Kessler, and Elias Soriat. Understanding their roles in this cosmic drama may be crucial.',
+      choices: [
+        {
+          choiceText: 'Follow the unfolding events with these key players',
+          nextNodeId: 'partV:intro',
+          flagUpdates: [flagIncrement('synchrony', 2)],
+        },
+        {
+          choiceText: 'Focus on your own role in events',
+          nextNodeId: 'ft_buildCoalition',
+          flagUpdates: [flagIncrement('coherence', 1)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_finalChoice',
+      text: 'The moment of ultimate decision has arrived. The fate of human consciousness hangs in the balance, and you must choose how to proceed.',
+      choices: [
+        {
+          choiceText: 'Witness the final convergence',
+          nextNodeId: 'partV:intro',
+          flagUpdates: [flagIncrement('synchrony', 3)],
+        },
+        {
+          choiceText: 'Take direct action',
+          nextNodeId: 'ft_immediateProtection',
+          flagUpdates: [flagIncrement('disruption', 2)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_synthesis',
+      text: 'Through the fracturing of time itself, you witness the ultimate synthesis - humanity choosing a path neither of power nor avoidance, but of conscious responsibility.',
+      choices: [
+        {
+          choiceText: 'Explore the new paradigm',
+          nextNodeId: 'partVII:intro',
+          flagUpdates: [flagIncrement('coherence', 3)],
+        },
+        {
+          choiceText: 'Focus on immediate implications',
+          nextNodeId: 'ft_buildCoalition',
+          flagUpdates: [flagIncrement('disruption', 1)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_cosmicGardeners',
+      text: 'Humanity has evolved into something unprecedented - cosmic gardeners tending the growth of consciousness throughout the universe. The implications are staggering.',
+      choices: [
+        {
+          choiceText: 'Learn about the Shapers who came before',
+          nextNodeId: 'partVIII:intro',
+          flagUpdates: [flagIncrement('curiosity', 4)],
+        },
+        {
+          choiceText: 'Return to your personal journey',
+          nextNodeId: 'ft_finalTranscendence',
+          flagUpdates: [flagIncrement('coherence', 2)],
+        }
+      ]
+    },
+
+    {
+      nodeId: 'ft_finalTranscendence',
+      text: 'Having witnessed the full scope of humanity\'s cosmic destiny, you understand your role in this vast tapestry. The forgotten truth has been remembered, and the future is bright with possibility.',
+      choices: [
+        {
+          choiceText: 'Complete your journey',
+          nextNodeId: 'ft_exit_transcendence',
+          flagUpdates: [flagIncrement('coherence', 5)],
+        }
+      ]
+    },
+
+    // EXISTING EXPANSION NODES START HERE
     ...originsNodes,
     ...memoryEchoesNodes,
     ...realmConvergenceNodes,
     ...catalystRevelationNodes,
     ...quantumLegacyNodes,
     ...missingCoreNodes,
+    ...partI,
+    ...partII,
+    ...partIII,
+    ...partIV,
+    ...partV,
+    ...partVI,
+    ...partVII,
+    ...partVIII,
     ...exitNodes,
   ],
 };
