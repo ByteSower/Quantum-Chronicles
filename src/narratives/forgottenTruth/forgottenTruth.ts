@@ -173,6 +173,31 @@ const originsNodes: NarrativeNode[] = [
   }
 ];
 
+// Missing Origins Nodes - Added to fix navigation issues
+const missingOriginNodes: NarrativeNode[] = [
+  {
+    nodeId: 'origins:council_origins',
+    text: 'You discover that the Quantum Council\'s knowledge didn\'t originate with them. They found these techniques in ancient texts, artifacts, and sites that predate recorded history. The trail leads to something far older and more dangerous than modern science.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:natural_evolution',
+    text: 'Following the ancient methods, you begin to understand that consciousness evolution was meant to be gradual, organic, and consensual. Modern experiments violate this natural process, creating dangerous instabilities that threaten the fabric of reality itself.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  },
+  {
+    nodeId: 'origins:healing_damage',
+    text: 'Using ancient wisdom, you work to heal the damage caused by forced consciousness manipulation. The process is slow but profound, teaching you that some knowledge comes with the responsibility to repair what has been broken.',
+    choices: [
+      { choiceText: 'Return to the main investigation.', nextNodeId: 'ft_returnFromOrigins' }
+    ]
+  }
+];
+
 // Placeholder arrays for legacy expansion segments (to be implemented later)
 const memoryEchoesNodes: NarrativeNode[] = [];
 const realmConvergenceNodes: NarrativeNode[] = [];
@@ -323,7 +348,8 @@ const missingCoreNodes: NarrativeNode[] = [
     choices: [
       {
         choiceText: 'Investigate the shadowy organization',
-        nextNodeId: 'ft_globalConspiracy',
+        nextNodeId: 'ft_traceSource',
+        conditions: [{ flag: 'investigatedMoney', operator: '===', value: true }],
         flagUpdates: [flagIncrement('curiosity', 2)]
       },
       {
@@ -351,7 +377,8 @@ const missingCoreNodes: NarrativeNode[] = [
       {
         choiceText: 'Focus on understanding the source of the instability',
         nextNodeId: 'ft_traceSource',
-        flagUpdates: [flagIncrement('coherence', 2)]
+        conditions: [{ flag: 'tracedSource', operator: '!==', value: true }],
+        flagUpdates: [flagIncrement('coherence', 2), { flag: 'tracedSource', operation: 'set', value: true }]
       },
       {
         choiceText: 'Accept that some fractures may be irreversible',
@@ -554,13 +581,14 @@ export const forgottenTruth: NarrativeSegment = {
         {
           choiceText: 'Track funding sources across governments',
           nextNodeId: 'ft_followMoney',
-          flagUpdates: [flagIncrement('disruption', 1)]
+          conditions: [{ flag: 'investigatedMoney', operator: '!==', value: true }],
+          flagUpdates: [flagIncrement('disruption', 1), { flag: 'investigatedMoney', operation: 'set', value: true }]
         },
         {
           choiceText: 'Delve deeper into the ancient origins that predate all modern experiments',
           nextNodeId: 'ft_echoProtocolIntro',
-          conditions: [{ flag: 'curiosity', operator: '>=', value: 5 }],
-          flagUpdates: [flagIncrement('curiosity', 3)],
+          conditions: [{ flag: 'curiosity', operator: '>=', value: 5 }, { flag: 'exploredHistory', operator: '!==', value: true }],
+          flagUpdates: [flagIncrement('curiosity', 3), { flag: 'exploredHistory', operation: 'set', value: true }],
         }
       ]
     },
@@ -572,7 +600,7 @@ export const forgottenTruth: NarrativeSegment = {
       choices: [
         {
           choiceText: 'Open yourself to the memory fragments',
-          nextNodeId: 'echo:memory_nexus',
+          nextNodeId: 'partII:intro',
           conditions: [{ flag: 'coherence', operator: '>=', value: 2 }],
           flagUpdates: [flagIncrement('synchrony', 3)],
         },
@@ -596,7 +624,7 @@ export const forgottenTruth: NarrativeSegment = {
       choices: [
         {
           choiceText: 'Investigate the dimensional fractures',
-          nextNodeId: 'convergence:dimensional_gateway',
+          nextNodeId: 'partIII:intro',
           conditions: [{ flag: 'disruption', operator: '>=', value: 4 }],
           flagUpdates: [
             flagIncrement('synchrony', 2),
@@ -606,6 +634,7 @@ export const forgottenTruth: NarrativeSegment = {
         {
           choiceText: 'Focus on stabilizing your own reality',
           nextNodeId: 'ft_stabilizeReality',
+          conditions: [{ flag: 'tracedSource', operator: '===', value: true }],
           flagUpdates: [flagIncrement('coherence', 3)]
         },
         {
@@ -623,7 +652,7 @@ export const forgottenTruth: NarrativeSegment = {
       choices: [
         {
           choiceText: 'Confront the orchestrating entity directly',
-          nextNodeId: 'catalyst:catalyst_contact',
+          nextNodeId: 'partIV:intro',
           conditions: [{ flag: 'synchrony', operator: '>=', value: 6 }],
           flagUpdates: [
             flagIncrement('synchrony', 3),
@@ -657,7 +686,7 @@ export const forgottenTruth: NarrativeSegment = {
         {
           choiceText:
             'Focus on the long-term future of consciousness evolution',
-          nextNodeId: 'legacy:future_convergence',
+          nextNodeId: 'partV:intro',
           conditions: [{ flag: 'coherence', operator: '>=', value: 8 }],
           flagUpdates: [
             flagIncrement('synchrony', 4),
@@ -673,7 +702,8 @@ export const forgottenTruth: NarrativeSegment = {
         {
           choiceText: 'Establish immediate protections for enhanced individuals',
           nextNodeId: 'ft_immediateProtection',
-          flagUpdates: [flagIncrement('coherence', 3)]
+          conditions: [{ flag: 'protectionBuilt', operator: '!==', value: true }],
+          flagUpdates: [flagIncrement('coherence', 3), { flag: 'protectionBuilt', operation: 'set', value: true }]
         },
         {
           choiceText: 'Work to expose the truth to the world',
@@ -734,7 +764,7 @@ export const forgottenTruth: NarrativeSegment = {
         },
         {
           choiceText: 'Continue with the modern investigation',
-          nextNodeId: 'ft_globalConspiracy',
+          nextNodeId: 'ft_exposeTruth',
           flagUpdates: [flagIncrement('coherence', 1)],
         }
       ]
@@ -856,6 +886,7 @@ export const forgottenTruth: NarrativeSegment = {
 
     // EXISTING EXPANSION NODES START HERE
     ...originsNodes,
+    ...missingOriginNodes,
     ...memoryEchoesNodes,
     ...realmConvergenceNodes,
     ...catalystRevelationNodes,

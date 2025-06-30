@@ -6,6 +6,7 @@ interface SideMenuProps {
   onHome?: () => void;
   onTutorial?: () => void;
   onSettings?: () => void;
+  onShowAbout?: () => void;
   onRestart?: () => void;
   onToggleVariables?: () => void;
   onJumpToChapter?: (chapterId: string) => void;
@@ -17,6 +18,7 @@ export function SideMenu({
   onHome, 
   onTutorial, 
   onSettings, 
+  onShowAbout,
   onRestart, 
   onToggleVariables,
   onJumpToChapter,
@@ -187,6 +189,20 @@ export function SideMenu({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       <span className="font-medium">Settings</span>
+                    </div>
+                  </button>
+                </li>
+                <li role="listitem">
+                  <button 
+                    className="w-full text-left p-4 text-white hover:bg-gradient-to-r hover:from-indigo-600/20 hover:to-purple-600/20 rounded-xl transition-all duration-200 focus:bg-gradient-to-r focus:from-indigo-600/20 focus:to-purple-600/20 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 group border border-transparent hover:border-indigo-500/30"
+                    onClick={() => handleMenuAction(onShowAbout, 'about')}
+                    aria-label="About Quantum Chronicles"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <svg className="w-5 h-5 text-indigo-300 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="font-medium">About</span>
                     </div>
                   </button>
                 </li>

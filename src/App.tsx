@@ -143,6 +143,7 @@ function App() {
         onHome={handleHome}
         onTutorial={() => setShowTutorial(true)}
         onSettings={() => setShowSettings(true)}
+        onShowAbout={() => setShowAbout(true)}
         onRestart={handleRestart}
         onToggleVariables={handleToggleVariables}
         onJumpToChapter={handleJumpToChapter}
@@ -154,8 +155,6 @@ function App() {
         <StartScreen
           stories={storyData}
           onSelectStory={handleSelectStory}
-          onShowAbout={() => setShowAbout(true)}
-          onShowSettings={() => setShowSettings(true)}
         />
       )}
       

@@ -4,11 +4,9 @@ import type { StoryMeta } from '../narratives/types';
 interface StartScreenProps {
   stories: StoryMeta[];
   onSelectStory: (storyId: string) => void;
-  onShowAbout: () => void;
-  onShowSettings: () => void;
 }
 
-const StartScreen: React.FC<StartScreenProps> = ({ stories, onSelectStory, onShowAbout, onShowSettings }) => {
+const StartScreen: React.FC<StartScreenProps> = ({ stories, onSelectStory }) => {
   const getStoryProgress = (story: StoryMeta) => {
     const completedChapters = story.chapters.filter(c => c.completed).length;
     const totalChapters = story.chapters.length;
@@ -271,25 +269,10 @@ const StartScreen: React.FC<StartScreenProps> = ({ stories, onSelectStory, onSho
           </div>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-wrap justify-center gap-4">
-          <button
-            onClick={onShowAbout}
-            className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
-          >
-            About Quantum Chronicles
-          </button>
-          <button
-            onClick={onShowSettings}
-            className="px-6 py-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
-          >
-            Settings
-          </button>
-        </div>
-
-        {/* Attribution */}
+        {/* Attribution with Version */}
         <div className="mt-12 text-xs text-slate-500">
           <p>Created by ByteSower • Follow us for more interactive experiences!</p>
+          <p className="mt-1">v0.3.0-beta.1</p>
         </div>
       </div>
     </div>
