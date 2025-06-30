@@ -7,13 +7,11 @@ interface SettingsModalProps {
     developerMode: boolean;
     showVariableDashboard: boolean;
     showDebugInfo: boolean;
-    animationSpeed: 'slow' | 'normal' | 'fast';
   };
   onUpdateSettings: (settings: {
     developerMode: boolean;
     showVariableDashboard: boolean;
     showDebugInfo: boolean;
-    animationSpeed: 'slow' | 'normal' | 'fast';
   }) => void;
   // New props for consolidated actions
   onRestartStory?: () => void;
@@ -45,13 +43,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     });
   };
 
-  const handleSpeedChange = (speed: 'slow' | 'normal' | 'fast') => {
-    onUpdateSettings({
-      ...settings,
-      animationSpeed: speed
-    });
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
       <div className="max-w-2xl w-full mx-4 bg-gradient-to-b from-slate-800 to-slate-900 p-6 rounded-lg shadow-2xl border border-indigo-500/30">
@@ -72,8 +63,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <div className="border-b border-slate-700 pb-4">
             <h3 className="text-lg font-semibold text-white mb-4">Display Mode</h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                <div className="flex-1">
                   <p className="text-slate-300 font-medium">Developer Mode</p>
                   <p className="text-xs text-slate-500">Show technical information and debug features</p>
                 </div>
@@ -84,23 +75,24 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   aria-label={`Developer Mode ${settings.developerMode ? 'enabled' : 'disabled'}`}
                   className={`
                     relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
-                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
-                    ${settings.developerMode ? 'bg-indigo-600' : 'bg-slate-600'}
+                    transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
+                    hover:scale-105 active:scale-95
+                    ${settings.developerMode ? 'bg-indigo-600 shadow-lg shadow-indigo-500/30' : 'bg-slate-600 hover:bg-slate-500'}
                   `}
                 >
                   <span className="sr-only">Toggle Developer Mode</span>
                   <span
                     className={`
-                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
-                      transition duration-200 ease-in-out
-                      ${settings.developerMode ? 'translate-x-6' : 'translate-x-0'}
+                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 
+                      transition-all duration-300 ease-in-out
+                      ${settings.developerMode ? 'translate-x-6 shadow-indigo-200/50' : 'translate-x-0'}
                     `}
                   />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                <div className="flex-1">
                   <p className="text-slate-300 font-medium">Variable Dashboard</p>
                   <p className="text-xs text-slate-500">Display real-time narrative variables</p>
                 </div>
@@ -111,24 +103,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   aria-label={`Variable Dashboard ${settings.showVariableDashboard ? 'enabled' : 'disabled'}`}
                   className={`
                     relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
-                    transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
-                    ${settings.showVariableDashboard ? 'bg-indigo-600' : 'bg-slate-600'}
+                    transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
+                    hover:scale-105 active:scale-95
+                    ${settings.showVariableDashboard ? 'bg-indigo-600 shadow-lg shadow-indigo-500/30' : 'bg-slate-600 hover:bg-slate-500'}
                   `}
                 >
                   <span className="sr-only">Toggle Variable Dashboard</span>
                   <span
                     className={`
-                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
-                      transition duration-200 ease-in-out
-                      ${settings.showVariableDashboard ? 'translate-x-6' : 'translate-x-0'}
+                      pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 
+                      transition-all duration-300 ease-in-out
+                      ${settings.showVariableDashboard ? 'translate-x-6 shadow-indigo-200/50' : 'translate-x-0'}
                     `}
                   />
                 </button>
               </div>
 
               {settings.developerMode && (
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                  <div className="flex-1">
                     <p className="text-slate-300 font-medium">Debug Information</p>
                     <p className="text-xs text-slate-500">Show internal state and flags (Dev Mode only)</p>
                   </div>
@@ -139,41 +132,22 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     aria-label={`Debug Information ${settings.showDebugInfo ? 'enabled' : 'disabled'}`}
                     className={`
                       relative inline-flex h-6 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
-                      transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
-                      ${settings.showDebugInfo ? 'bg-indigo-600' : 'bg-slate-600'}
+                      transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900
+                      hover:scale-105 active:scale-95
+                      ${settings.showDebugInfo ? 'bg-indigo-600 shadow-lg shadow-indigo-500/30' : 'bg-slate-600 hover:bg-slate-500'}
                     `}
                   >
                     <span className="sr-only">Toggle Debug Information</span>
                     <span
                       className={`
-                        pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 
-                        transition duration-200 ease-in-out
-                        ${settings.showDebugInfo ? 'translate-x-6' : 'translate-x-0'}
+                        pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 
+                        transition-all duration-300 ease-in-out
+                        ${settings.showDebugInfo ? 'translate-x-6 shadow-indigo-200/50' : 'translate-x-0'}
                       `}
                     />
                   </button>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Animation Settings */}
-          <div className="border-b border-slate-700 pb-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Animation Speed</h3>
-            <div className="flex gap-3">
-              {(['slow', 'normal', 'fast'] as const).map((speed) => (
-                <button
-                  key={speed}
-                  onClick={() => handleSpeedChange(speed)}
-                  className={`px-4 py-2 rounded-lg transition-colors capitalize ${
-                    settings.animationSpeed === speed
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-                >
-                  {speed}
-                </button>
-              ))}
             </div>
           </div>
 

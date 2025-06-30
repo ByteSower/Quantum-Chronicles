@@ -30,8 +30,7 @@ function App() {
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
-    showDebugInfo: false,
-    animationSpeed: 'normal' as 'slow' | 'normal' | 'fast'
+    showDebugInfo: false
   });
 
   // Load saved progress on app start

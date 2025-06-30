@@ -16,7 +16,6 @@ interface StoryFlowProps {
     developerMode: boolean;
     showVariableDashboard: boolean;
     showDebugInfo: boolean;
-    animationSpeed: 'slow' | 'normal' | 'fast';
   };
 }
 
