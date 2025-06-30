@@ -69,3 +69,5 @@ The proto-humans survived, but their memories of that time became fractured, dis
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_echoProtocolIntro' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partI';

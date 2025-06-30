@@ -9,6 +9,9 @@ import { useConsolidatedFeedbackManager } from '../utils/ConsolidatedFeedbackMan
 import { useStarRatingFeedback } from '../utils/StarRatingFeedbackManager';
 
 interface StoryFlowProps {
+  segmentId?: string;
+  onComplete?: () => void;
+  onBack?: () => void;
   settings: {
     developerMode: boolean;
     showVariableDashboard: boolean;
@@ -18,8 +21,14 @@ interface StoryFlowProps {
 }
 
 const StoryFlow: React.FC<StoryFlowProps> = ({
+  segmentId,
+  onComplete,
+  onBack,
   settings,
 }) => {
+  // Log props for now (TODO: implement proper segmentId support)
+  console.log('StoryFlow loaded with segmentId:', segmentId);
+  
   const { 
     currentNode, 
     variables, 
@@ -64,10 +73,25 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     const choiceIndex = getAvailableChoices().indexOf(choice);
     if (choiceIndex < 0) return;
 
+    // Check if this choice leads to completion
+    const nextNodeId = choice.nextNodeId;
+    const isCompletionChoice = nextNodeId && (
+      nextNodeId.includes('_finale') || 
+      nextNodeId.includes('_complete') ||
+      nextNodeId.includes('Return to the Core Story')
+    );
+
     // useQNCE hook already tracks the choice via trackStoryEvent.choice
     makeChoice(choiceIndex);
 
     updateSessionData({ choiceCount: history.length });
+
+    // If this is a completion choice, trigger the onComplete callback
+    if (isCompletionChoice && onComplete) {
+      setTimeout(() => {
+        onComplete();
+      }, 1000); // Small delay to allow text to be read
+    }
 
     if (currentNode.feedbackHook) {
       console.log('🎯 FeedbackHook detected:', currentNode.feedbackHook, 'on node:', currentNode.nodeId);
@@ -92,6 +116,21 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 relative">
+      {/* Back button */}
+      {onBack && (
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Chapters
+          </button>
+        </div>
+      )}
+      
       <div className="w-full max-w-3xl mx-auto flex-grow flex flex-col justify-center">
         <NarrativeDisplay 
           text={currentNode.dynTextFunction ? currentNode.dynTextFunction(variables) : (currentNode.text || 'Error: Node has no text')} 

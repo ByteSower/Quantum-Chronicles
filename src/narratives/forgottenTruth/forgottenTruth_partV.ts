@@ -73,3 +73,5 @@ The age of passive observation was over. The moment of choice had arrived.
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_finalChoice' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partV';

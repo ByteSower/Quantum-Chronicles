@@ -1,13 +1,13 @@
 import type { NarrativeSegment, NarrativeNode } from '../types';
 import { flagIncrement } from '../../utils/narrativeUtils';
-import { nodes as partI } from './partI_GardenThatWasnt';
-import { nodes as partII } from './partII_EchoProtocol';
-import { nodes as partIII } from './partIII_TheKeepers';
-import { nodes as partIV } from './partIV_AntarcticDiscovery';
-import { nodes as partV } from './partV_EchoAwakens';
-import { nodes as partVI } from './partVI_FracturedTimeline';
-import { nodes as partVII } from './partVII_NewGuardians';
-import { nodes as partVIII } from './partVIII_OnesWhoShaped';
+import { nodes as partI } from './forgottenTruth_partI';
+import { nodes as partII } from './forgottenTruth_partII';
+import { nodes as partIII } from './forgottenTruth_partIII';
+import { nodes as partIV } from './forgottenTruth_partIV';
+import { nodes as partV } from './forgottenTruth_partV';
+import { nodes as partVI } from './forgottenTruth_partVI';
+import { nodes as partVII } from './forgottenTruth_partVII';
+import { nodes as partVIII } from './forgottenTruth_partVIII';
 
 // Node definitions for each expansion, converted to the new format
 // (These would be the full lists of nodes from the deleted files)

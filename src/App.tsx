@@ -1,25 +1,32 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import StartScreen from './components/StartScreen';
+import ChapterScreen from './components/ChapterScreen';
 import StoryFlow from './components/StoryFlow';
 import { SideMenu } from './components/SideMenu';
+import { stories as initialStories } from './data/stories';
+import { loadStories, saveStories, markChapterComplete } from './utils/storage';
+import type { StoryMeta } from './narratives/types';
+
 // Lazy load modal components
 const AboutModal = lazy(() => import('./components/AboutModal'));
 const SettingsModal = lazy(() => import('./components/SettingsModal'));
 const AboutQNCEModal = lazy(() => import('./components/AboutQNCEModal'));
 import { analytics, trackUIEvent } from './utils/analytics';
-import type { StartingPoint } from './components/StartScreen';
 import './index.css';
 
-type AppMode = 'start' | 'story';
+type AppView = 'stories' | 'chapters' | 'flow';
 
 function App() {
-  const [mode, setMode] = useState<AppMode>('start');
+  const [view, setView] = useState<AppView>('stories');
+  const [activeStory, setActiveStory] = useState<string>('');
+  const [activeChapter, setActiveChapter] = useState<string>('');
+  const [storyData, setStoryData] = useState<StoryMeta[]>(initialStories);
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showAboutQNCE, setShowAboutQNCE] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showVariables, setShowVariables] = useState(false);
-  const [storyKey, setStoryKey] = useState(0); // Add a key to force re-mount StoryFlow
+  const [storyKey, setStoryKey] = useState(0);
   const [settings, setSettings] = useState({
     developerMode: false,
     showVariableDashboard: true,
@@ -27,27 +34,96 @@ function App() {
     animationSpeed: 'normal' as 'slow' | 'normal' | 'fast'
   });
 
-  // Initialize analytics and send app start event
+  // Load saved progress on app start
   useEffect(() => {
+    const savedStories = loadStories();
+    if (savedStories) {
+      // Merge saved progress with initial stories
+      const mergedStories = initialStories.map(initialStory => {
+        const savedStory = savedStories.find(s => s.storyId === initialStory.storyId);
+        if (savedStory) {
+          // Merge chapter progress
+          const mergedChapters = initialStory.chapters.map(initialChapter => {
+            const savedChapter = savedStory.chapters.find(c => c.chapterId === initialChapter.chapterId);
+            return savedChapter ? { ...initialChapter, ...savedChapter } : initialChapter;
+          });
+          return { ...initialStory, chapters: mergedChapters };
+        }
+        return initialStory;
+      });
+      setStoryData(mergedStories);
+    }
+
+    // Initialize analytics
     trackUIEvent.feature('app', 'initialized');
-    // Track session start
-    analytics.trackEvent('session_start', 'engagement', 'forgottenTruth');
+    analytics.trackEvent('session_start', 'engagement', 'story_chapters_navigation');
   }, []);
 
-  const handleSelectStart = (startingPoint: StartingPoint) => {
-    console.log('Starting with:', startingPoint); // For now, just log it
-    setMode('story');
+  // Save progress whenever story data changes
+  useEffect(() => {
+    saveStories(storyData);
+  }, [storyData]);
+
+  const handleSelectStory = (storyId: string) => {
+    setActiveStory(storyId);
+    setView('chapters');
+    trackUIEvent.feature('navigation', 'select_story');
   };
 
-  const handleRestart = () => {
-    setStoryKey(prevKey => prevKey + 1); // Increment key to re-mount StoryFlow
-    // Track restart event
-    trackUIEvent.feature('navigation', 'restart_story');
+  const handleSelectChapter = (chapterId: string) => {
+    setActiveChapter(chapterId);
+    setView('flow');
+    trackUIEvent.feature('navigation', 'select_chapter');
+  };
+
+  const handleChapterComplete = () => {
+    if (activeStory && activeChapter) {
+      const updatedStories = markChapterComplete(storyData, activeStory, activeChapter);
+      setStoryData(updatedStories);
+      
+      // Return to chapter screen
+      setView('chapters');
+      setActiveChapter('');
+      
+      trackUIEvent.feature('narrative', 'chapter_complete');
+    }
+  };
+
+  const handleJumpToChapter = (chapterId: string) => {
+    const story = storyData.find(s => s.storyId === activeStory);
+    const chapter = story?.chapters.find(c => c.chapterId === chapterId);
+    
+    if (chapter && chapter.unlocked) {
+      setActiveChapter(chapterId);
+      setView('flow');
+      trackUIEvent.feature('navigation', 'jump_to_chapter');
+    }
   };
 
   const handleHome = () => {
-    setMode('start');
-    setStoryKey(prevKey => prevKey + 1); // Reset story state
+    setView('stories');
+    setActiveStory('');
+    setActiveChapter('');
+    setStoryKey(prevKey => prevKey + 1);
+    trackUIEvent.feature('navigation', 'home');
+  };
+
+  const handleBackToChapters = () => {
+    setView('chapters');
+    setActiveChapter('');
+    trackUIEvent.feature('navigation', 'back_to_chapters');
+  };
+
+  const handleBackToStories = () => {
+    setView('stories');
+    setActiveStory('');
+    setActiveChapter('');
+    trackUIEvent.feature('navigation', 'back_to_stories');
+  };
+
+  const handleRestart = () => {
+    setStoryKey(prevKey => prevKey + 1);
+    trackUIEvent.feature('navigation', 'restart_story');
   };
 
   const handleToggleVariables = () => {
@@ -58,6 +134,9 @@ function App() {
     }));
   };
 
+  // Get current story data for SideMenu
+  const currentStory = storyData.find(s => s.storyId === activeStory);
+
   return (
     <>
       <SideMenu
@@ -66,19 +145,38 @@ function App() {
         onSettings={() => setShowSettings(true)}
         onRestart={handleRestart}
         onToggleVariables={handleToggleVariables}
+        onJumpToChapter={handleJumpToChapter}
+        activeStory={currentStory}
+        view={view}
       />
-      {mode === 'start' ? (
+      
+      {view === 'stories' && (
         <StartScreen
-          onSelectStart={handleSelectStart}
+          stories={storyData}
+          onSelectStory={handleSelectStory}
           onShowAbout={() => setShowAbout(true)}
           onShowSettings={() => setShowSettings(true)}
         />
-      ) : (
-        <StoryFlow
-          key={storyKey} // Use key to ensure component re-mounts on restart
-          settings={settings}
+      )}
+      
+      {view === 'chapters' && currentStory && (
+        <ChapterScreen
+          story={currentStory}
+          onSelectChapter={handleSelectChapter}
+          onBack={handleBackToStories}
         />
       )}
+      
+      {view === 'flow' && activeStory && activeChapter && (
+        <StoryFlow
+          key={storyKey}
+          segmentId={`${activeStory}_${activeChapter}`}
+          settings={settings}
+          onComplete={handleChapterComplete}
+          onBack={handleBackToChapters}
+        />
+      )}
+
       <Suspense fallback={<div>Loading...</div>}>
         <AboutModal
           isOpen={showAbout}
@@ -94,7 +192,7 @@ function App() {
           isOpen={showAboutQNCE}
           onClose={() => setShowAboutQNCE(false)}
         />
-        {/* Tutorial modal placeholder - will be implemented in next feature */}
+        
         {showTutorial && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg max-w-md">
@@ -109,7 +207,7 @@ function App() {
             </div>
           </div>
         )}
-        {/* Variables dashboard placeholder - will show current value */}
+        
         {showVariables && (
           <div className="fixed top-20 right-4 bg-white p-4 rounded-lg shadow-lg z-40 max-w-xs">
             <h4 className="font-bold mb-2">Variables Dashboard</h4>

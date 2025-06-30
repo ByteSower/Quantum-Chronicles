@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { trackSideMenuEvent } from '../utils/analytics';
+import type { StoryMeta } from '../narratives/types';
 
 interface SideMenuProps {
   onHome?: () => void;
@@ -7,6 +8,9 @@ interface SideMenuProps {
   onSettings?: () => void;
   onRestart?: () => void;
   onToggleVariables?: () => void;
+  onJumpToChapter?: (chapterId: string) => void;
+  activeStory?: StoryMeta;
+  view?: string;
 }
 
 export function SideMenu({ 
@@ -14,7 +18,10 @@ export function SideMenu({
   onTutorial, 
   onSettings, 
   onRestart, 
-  onToggleVariables 
+  onToggleVariables,
+  onJumpToChapter,
+  activeStory,
+  view
 }: SideMenuProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -197,6 +204,61 @@ export function SideMenu({
                     </div>
                   </button>
                 </li>
+                {/* Progress Tab - Only show when in a story */}
+                {activeStory && view === 'flow' && (
+                  <li role="listitem">
+                    <div className="mb-2">
+                      <div className="px-4 py-2 text-indigo-300 text-sm font-semibold">
+                        Story Progress
+                      </div>
+                      <div className="px-4 text-xs text-slate-400 mb-3">
+                        {activeStory.title}
+                      </div>
+                      <div className="space-y-1 max-h-48 overflow-y-auto">
+                        {activeStory.chapters.map((chapter, index) => (
+                          <button
+                            key={chapter.chapterId}
+                            onClick={() => {
+                              if (chapter.unlocked && onJumpToChapter) {
+                                handleMenuAction(() => onJumpToChapter(chapter.chapterId), 'jump_to_chapter');
+                              }
+                            }}
+                            disabled={!chapter.unlocked}
+                            className={`
+                              w-full text-left px-4 py-2 text-sm rounded-lg transition-all duration-200 flex items-center gap-2
+                              ${chapter.unlocked 
+                                ? 'text-white hover:bg-indigo-600/20 focus:bg-indigo-600/20 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 cursor-pointer' 
+                                : 'text-slate-500 cursor-not-allowed'
+                              }
+                            `}
+                          >
+                            <div className="flex items-center gap-2 flex-1">
+                              <span className={`
+                                w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold
+                                ${chapter.completed 
+                                  ? 'bg-green-500 text-white' 
+                                  : chapter.unlocked 
+                                    ? 'bg-blue-500 text-white' 
+                                    : 'bg-slate-600 text-slate-400'
+                                }
+                              `}>
+                                {chapter.completed ? '✓' : index + 1}
+                              </span>
+                              <span className="truncate">
+                                {chapter.title.replace(/^(I{1,3}V?|IV|V|VI{1,3}|IX|X)\.\s*/, '')}
+                              </span>
+                            </div>
+                            {!chapter.unlocked && (
+                              <svg className="w-4 h-4 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </li>
+                )}
                 <li role="listitem">
                   <button 
                     className="w-full text-left p-4 text-white hover:bg-gradient-to-r hover:from-indigo-600/20 hover:to-purple-600/20 rounded-xl transition-all duration-200 focus:bg-gradient-to-r focus:from-indigo-600/20 focus:to-purple-600/20 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 group border border-transparent hover:border-indigo-500/30"

@@ -65,6 +65,24 @@ export interface NarrativeSegment {
 }
 
 /**
+ * Story and Chapter metadata for navigation UI
+ */
+export interface ChapterMeta {
+  chapterId: string;
+  title: string;
+  unlocked: boolean;
+  completed: boolean;
+}
+
+export interface StoryMeta {
+  storyId: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  chapters: ChapterMeta[];
+}
+
+/**
  * Utility function to replace dynamic variables in text templates
  * Example: "Your {{variableName}} is {{value}}" with variables {variableName: "curiosity", value: 15}
  */

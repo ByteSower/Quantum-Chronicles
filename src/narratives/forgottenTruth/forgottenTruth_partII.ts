@@ -61,3 +61,5 @@ Soon, the Echo-Aware will be forced to choose: Will they attempt to restore Eden
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_keepersReveal' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partII';

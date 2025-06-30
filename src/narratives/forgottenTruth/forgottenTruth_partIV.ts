@@ -67,3 +67,5 @@ As these forces converged on the most remote place on Earth, the Fragment's puls
     choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_characterFocus' }]
   }
 ];
+
+export const segmentId = 'forgottenTruth_partIV';

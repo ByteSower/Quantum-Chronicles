@@ -123,6 +123,52 @@
 
 ---
 
+### v1.3.2-dev (Feature/Story-Chapters Branch) - UI REFACTOR COMPLETE  
+**Base Commit:** `develop`  
+**Date:** June 30, 2025  
+**Status:** 🟢 Story→Chapter→Flow Navigation Complete
+
+**Major UI Restructure - Three-Layer Navigation:**
+- ✅ **StartScreen:** Story selection with progress tracking and thumbnails
+- ✅ **ChapterScreen:** Chapter-based navigation with unlock/completion states  
+- ✅ **StoryFlow:** Individual chapter playback with back navigation
+- ✅ **Persistent Progress:** localStorage integration with automatic save/load
+- ✅ **SideMenu Integration:** Dynamic progress tab with chapter jumping
+
+**Technical Implementation:**
+- ✅ **Data Layer:** `src/data/stories.ts` with StoryMeta/ChapterMeta interfaces
+- ✅ **Storage System:** `src/utils/storage.ts` with progress persistence helpers
+- ✅ **Component Updates:** StartScreen refactored, ChapterScreen created, StoryFlow enhanced
+- ✅ **App Navigation:** Complete App.tsx refactor with three-view state management
+- ✅ **File Restructure:** Narrative parts renamed to `forgottenTruth_partX.ts` with segmentId exports
+
+**User Experience Enhancements:**
+- 🎮 **Visual Progress:** Progress bars, completion badges, and status indicators
+- 🔒 **Smart Unlocking:** Chapters unlock sequentially as previous ones complete
+- 📊 **Progress Tracking:** Real-time chapter completion with persistent storage
+- 🎯 **Quick Navigation:** SideMenu progress tab allows jumping to unlocked chapters
+- 📱 **Responsive Design:** Mobile-friendly grid layouts and touch interactions
+
+**Files Created/Modified:**
+- `src/data/stories.ts` (new)
+- `src/utils/storage.ts` (new)  
+- `src/components/ChapterScreen.tsx` (new)
+- `src/components/StartScreen.tsx` (refactored)
+- `src/components/StoryFlow.tsx` (enhanced with back navigation)
+- `src/components/SideMenu.tsx` (added progress tab)
+- `src/App.tsx` (complete navigation refactor)
+- `src/narratives/types.ts` (added story/chapter types)
+- Renamed: `partX_*.ts` → `forgottenTruth_partX.ts` (all 8 parts)
+
+**Quality Assurance:**
+- ✅ **Build Tests:** TypeScript compilation successful  
+- ✅ **Dev Server:** All navigation flows functional
+- ✅ **Progress Persistence:** localStorage save/load working correctly
+- ✅ **Chapter Unlocking:** Sequential progression system operational
+- ✅ **SideMenu Navigation:** Progress tab and chapter jumping functional
+
+---
+
 ## Development Guidelines
 
 ### Feature Branch Naming
