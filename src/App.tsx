@@ -108,10 +108,9 @@ function App() {
   };
 
   const handleBackToChapters = () => {
-    console.log('handleBackToChapters called - current view:', view);
     setView('chapters');
     setActiveChapter('');
-    console.log('handleBackToChapters - set view to chapters, cleared activeChapter');
+    setStoryKey(prevKey => prevKey + 1); // Force StoryFlow remount to reset narrative state
     trackUIEvent.feature('navigation', 'back_to_chapters');
   };
 
