@@ -36,10 +36,11 @@ Most either destroyed themselves in pursuit of power, or transcended physical ex
 
 The Fragment transmitted coordinates to other Mechanism sites throughout the galaxy, each one a test that other species had failed. Humanity's new mission became clear: serve as consciousness midwives for emerging civilizations, helping them navigate the same choice that had nearly destroyed both the Shapers and humanity itself.
 
-The age of human isolation was ending. The age of cosmic gardening had begun.
-
-*(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_cosmicGardeners' }]
+The age of human isolation was ending. The age of cosmic gardening had begun.`,
+    choices: [
+      { choiceText: 'Continue to Part VIII: The Ones Who Shaped', nextNodeId: 'partVIII:intro' },
+      { choiceText: 'Return to the Core Story', nextNodeId: 'ft_cosmicGardeners' }
+    ]
   }
 ];
 

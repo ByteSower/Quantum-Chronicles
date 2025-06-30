@@ -36,10 +36,11 @@ Together, they realized that the Shapers' final lesson was about synthesis rathe
 
 Humanity could restore, destroy, and transcend simultaneously by choosing to become guardians of cosmic evolution rather than its victims or its masters. The Fragment wasn't offering power—it was offering responsibility on a cosmic scale.
 
-As this realization crystallized across the fractured timelines, reality began to reconvene around a new possibility that the Shapers themselves had never imagined.
-
-*(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_synthesis' }]
+As this realization crystallized across the fractured timelines, reality began to reconvene around a new possibility that the Shapers themselves had never imagined.`,
+    choices: [
+      { choiceText: 'Continue to Part VII: The New Guardians', nextNodeId: 'partVII:intro' },
+      { choiceText: 'Return to the Core Story', nextNodeId: 'ft_synthesis' }
+    ]
   }
 ];
 
