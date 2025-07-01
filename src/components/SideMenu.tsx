@@ -92,7 +92,7 @@ export function SideMenu({
         ref={buttonRef}
         aria-label="Open menu"
         aria-expanded={open}
-        className="p-3 fixed top-4 right-4 z-50 bg-gradient-to-br from-indigo-600 to-purple-700 text-white rounded-xl hover:from-indigo-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm"
+        className="p-3 fixed top-4 right-4 z-[60] bg-gradient-to-br from-indigo-600 to-purple-700 text-white rounded-xl hover:from-indigo-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm"
         onClick={toggleMenu}
       >
         <svg 
@@ -111,7 +111,7 @@ export function SideMenu({
       </button>
       {open && (
         <nav 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
           aria-label="Main navigation"
         >
           <div 

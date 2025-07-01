@@ -87,16 +87,9 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
   // Handle automatic completion for terminal nodes (no choices) only
   useEffect(() => {
     if ((!currentNode.choices || currentNode.choices.length === 0) && onComplete) {
-      // Terminal nodes without choices should auto-complete after a delay
-      const delay = 3000; // Default 3s for terminal nodes
-      console.log('🎯 Terminal node detected, triggering onComplete in', delay, 'ms');
-      
-      const completionTimer = setTimeout(() => {
-        console.log('🎯 Calling onComplete() for terminal node:', currentNode.nodeId);
-        onComplete();
-      }, delay);
-
-      return () => clearTimeout(completionTimer);
+      // Terminal nodes without choices should show a "Continue" button instead of auto-completing
+      // This prevents users from being redirected before they can read the ending
+      console.log('🎯 Terminal node detected:', currentNode.nodeId, '- will show Continue button');
     }
   }, [currentNode, onComplete]);
 
@@ -192,6 +185,8 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
           choices={availableChoices} 
           onSelect={handleChoice} 
           isFirstChoice={isFirstChoice}
+          isTerminalNode={(!currentNode.choices || currentNode.choices.length === 0)}
+          onComplete={onComplete}
         />
       </div>
 

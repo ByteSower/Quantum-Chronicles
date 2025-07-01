@@ -7,13 +7,17 @@ interface ChoiceSelectorProps {
   onSelect: (choice: Choice) => void;
   showOnboardingHints?: boolean;
   isFirstChoice?: boolean;
+  isTerminalNode?: boolean;
+  onComplete?: () => void;
 }
 
 const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({ 
   choices, 
   onSelect, 
   showOnboardingHints = false,
-  isFirstChoice = false
+  isFirstChoice = false,
+  isTerminalNode = false,
+  onComplete
 }) => {
   const [hoveredChoice, setHoveredChoice] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,8 +30,12 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
       accessibilityManager.announceContentChange('choice', 
         `${choices.length} choice${choices.length > 1 ? 's' : ''} available: ${choiceTexts}`
       );
+    } else if (isTerminalNode) {
+      accessibilityManager.announceContentChange('choice', 
+        'Chapter complete. Continue button available.'
+      );
     }
-  }, [choices]);
+  }, [choices, isTerminalNode]);
 
   // Handle keyboard navigation between choices
   const handleKeyDown = (event: KeyboardEvent, choice: Choice, index: number) => {
@@ -62,9 +70,34 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
       aria-labelledby={choicesListId}
     >
       <div id={choicesListId} className="sr-only">
-        Story choices: {choices.length} option{choices.length > 1 ? 's' : ''} available
+        {isTerminalNode ? 'Chapter complete' : `Story choices: ${choices.length} option${choices.length > 1 ? 's' : ''} available`}
       </div>
-      {choices.map((choice, idx) => (
+      
+      {/* Show Continue button for terminal nodes */}
+      {isTerminalNode && onComplete && (
+        <div className="w-full max-w-md">
+          <button
+            className="
+              choice-button
+              text-white rounded-lg shadow-lg px-6 py-3 
+              transition-all duration-300 
+              focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 
+              w-full text-lg font-semibold 
+              transform hover:scale-105
+              bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500
+            "
+            onClick={onComplete}
+            tabIndex={0}
+            aria-label="Continue to chapter selection"
+            role="button"
+          >
+            Continue
+          </button>
+        </div>
+      )}
+      
+      {/* Show regular choices if not terminal node */}
+      {!isTerminalNode && choices.map((choice, idx) => (
         <div key={idx} className="relative w-full max-w-md">
           <button
             className={`

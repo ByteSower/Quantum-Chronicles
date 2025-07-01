@@ -78,11 +78,6 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
   const handleSubmit = async () => {
     console.log('🎯 Feedback submit attempted - overallRating:', overallRating, 'isSubmitting:', isSubmitting);
     
-    if (overallRating === 0) {
-      console.log('❌ Submit blocked: No overall rating selected');
-      return;
-    }
-
     setIsSubmitting(true);
 
     const feedbackData: ConsolidatedFeedbackData = {
@@ -167,7 +162,7 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
             {renderStarRating(
               overallRating,
               setOverallRating,
-              'How would you rate your overall experience',
+              'How would you rate your overall experience (optional)',
               'overall'
             )}
             
@@ -308,7 +303,7 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="consolidated-feedback-title"
@@ -422,9 +417,9 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
             {isLastSection ? (
               <button
                 onClick={handleSubmit}
-                disabled={isSubmitting || overallRating === 0}
+                disabled={isSubmitting}
                 className="px-6 py-2 text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                title={overallRating === 0 ? 'Please select a star rating first' : ''}
+                title="Submit your feedback - ratings are optional but helpful!"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
               </button>

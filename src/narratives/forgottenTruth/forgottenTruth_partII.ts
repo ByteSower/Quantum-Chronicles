@@ -55,10 +55,8 @@ Modern archaeology has discovered inexplicable acoustic properties in these site
 
 The Protocol has been patient, waiting through millennia for the right moment, the right individuals, the right alignment of cosmic forces. That moment is now approaching, and the Echo grows stronger with each passing day.
 
-Soon, the Echo-Aware will be forced to choose: Will they attempt to restore Eden's perfection, guard against its dangers, or transcend both options to become something new?
-
-*(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_keepersReveal' }]
+Soon, the Echo-Aware will be forced to choose: Will they attempt to restore Eden's perfection, guard against its dangers, or transcend both options to become something new?`,
+    choices: []  // Terminal node - will trigger onComplete via StoryFlow
   }
 ];
 

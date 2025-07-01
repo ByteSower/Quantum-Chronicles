@@ -49,9 +49,7 @@ Humanity had not regained the garden of Eden. They had become the gardeners of a
 
 The Forgotten Truth had been remembered, not as history to be restored, but as wisdom to be applied. And in that remembering, the universe itself had begun to evolve toward something unprecedented: a cosmic community of conscious gardeners, each species learning from and teaching the others in an endless dance of growth and transformation.
 
-The Echo Protocol still broadcasts, but its message has changed. Where once it warned of dangers and offered choices, now it simply says: "Welcome to the garden. Here is how we tend it together."
-
-*(More chapters unlocking soon — stay tuned!)*`,
+The Echo Protocol still broadcasts, but its message has changed. Where once it warned of dangers and offered choices, now it simply says: "Welcome to the garden. Here is how we tend it together."`,
     choices: [{ choiceText: 'Complete Your Journey', nextNodeId: 'partVIII:storyComplete' }]
   },
   {

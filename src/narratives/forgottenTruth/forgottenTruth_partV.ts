@@ -8,11 +8,7 @@ export const nodes: NarrativeNode[] = [
 As the three Keeper factions converged on Antarctica, something unprecedented began to happen. The Echo Protocol, dormant for millennia, suddenly erupted into full activity. Around the world, Echo-Aware individuals experienced simultaneous visions of staggering clarity and intensity.
 
 The Fragment beneath the ice was not just awakening—it was calling out, sending a signal that transcended time and space to reach every human consciousness capable of receiving it. The age of passive observation was ending. The age of choice had begun.`,
-    choices: [{ choiceText: 'Continue...', nextNodeId: 'partV:globalAwakening' }],
-    feedbackHook: {
-      milestone: 'deep_engagement',
-      delay: 1000
-    }
+    choices: [{ choiceText: 'Continue...', nextNodeId: 'partV:globalAwakening' }]
   },
   {
     nodeId: 'partV:globalAwakening',
@@ -71,10 +67,21 @@ The situation was spiraling beyond anyone's ability to control, and at the cente
 
 As Dr. Evasco processed these options, she realized that the choice was not really hers to make. The Fragment was broadcasting the same offer to every Echo-Aware individual on the planet simultaneously. Humanity's future would be decided not by governments or secret societies, but by the collective unconscious decision of those capable of hearing the Shapers' final transmission.
 
-The age of passive observation was over. The moment of choice had arrived.
+The age of passive observation was over. The moment of choice had arrived.`,
+    choices: [{ choiceText: 'Reflect on your journey so far', nextNodeId: 'partV:completion' }],
+    feedbackHook: {
+      milestone: 'deep_engagement',
+      delay: 1500
+    }
+  },
+  {
+    nodeId: 'partV:completion',
+    text: `Having witnessed the pivotal moment when humanity's three paths were revealed, you understand that this is just the beginning of a much larger cosmic drama.
 
-*(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_finalChoice' }]
+The choices made at this crossroads will echo through time, shaping not just humanity's future, but the fate of consciousness itself across the galaxy.
+
+**Chapter 5 Complete**`,
+    choices: []  // Terminal node - will trigger onComplete via StoryFlow
   }
 ];
 

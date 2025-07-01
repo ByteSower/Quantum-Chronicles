@@ -14,6 +14,15 @@ const AboutQNCEModal = lazy(() => import('./components/AboutQNCEModal'));
 import { analytics, trackUIEvent } from './utils/analytics';
 import './index.css';
 
+/*
+ * Z-INDEX HIERARCHY (to prevent overlay conflicts):
+ * z-[60]: SideMenu button (always accessible)
+ * z-50: SideMenu backdrop, modals, overlays
+ * z-40: Secondary overlays, notifications
+ * z-10: Content elements that need to stay above base content
+ * z-0: Base content
+ */
+
 type AppView = 'stories' | 'chapters' | 'flow';
 
 function App() {
@@ -67,6 +76,9 @@ function App() {
   const handleSelectStory = (storyId: string) => {
     setActiveStory(storyId);
     setView('chapters');
+    // Clear any modal states when navigating to chapters
+    setShowMoreComingSoon(false);
+    setShowVariables(false);
     trackUIEvent.feature('navigation', 'select_story');
   };
 
@@ -109,6 +121,14 @@ function App() {
   };
 
   const handleHome = () => {
+    // Clear all modal states to prevent overlay conflicts
+    setShowAbout(false);
+    setShowSettings(false);
+    setShowAboutQNCE(false);
+    setShowTutorial(false);
+    setShowVariables(false);
+    setShowMoreComingSoon(false);
+    
     setView('stories');
     setActiveStory('');
     setActiveChapter('');
@@ -117,6 +137,10 @@ function App() {
   };
 
   const handleBackToChapters = () => {
+    // Clear any modal states that might interfere
+    setShowMoreComingSoon(false);
+    setShowVariables(false);
+    
     setView('chapters');
     setActiveChapter('');
     setStoryKey(prevKey => prevKey + 1); // Force StoryFlow remount to reset narrative state
@@ -124,6 +148,14 @@ function App() {
   };
 
   const handleBackToStories = () => {
+    // Clear all modal states to prevent overlay conflicts
+    setShowAbout(false);
+    setShowSettings(false);
+    setShowAboutQNCE(false);
+    setShowTutorial(false);
+    setShowVariables(false);
+    setShowMoreComingSoon(false);
+    
     setView('stories');
     setActiveStory('');
     setActiveChapter('');

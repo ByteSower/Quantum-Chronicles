@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { StoryMeta, ChapterMeta } from '../narratives/types';
 
 interface ChapterScreenProps {
@@ -8,19 +8,37 @@ interface ChapterScreenProps {
 }
 
 const ChapterScreen: React.FC<ChapterScreenProps> = ({ story, onSelectChapter, onBack }) => {
+  
+  useEffect(() => {
+    console.log('ChapterScreen mounted for story:', story.title);
+    return () => {
+      console.log('ChapterScreen unmounting');
+    };
+  }, [story.title]);
+
   const handleChapterClick = (chapter: ChapterMeta) => {
     if (!chapter.unlocked) return;
     onSelectChapter(chapter.chapterId);
   };
 
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Back to Stories button clicked'); // Debug log
+    onBack();
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative">
+      <div className="container mx-auto px-4 py-8 relative z-0">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 relative z-10">
           <button
-            onClick={onBack}
-            className="mb-4 text-indigo-300 hover:text-white transition-colors flex items-center gap-2"
+            onClick={handleBackClick}
+            className="mb-4 text-indigo-300 hover:text-white transition-colors flex items-center gap-2 relative z-10 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-50 rounded-lg p-2 -m-2"
+            type="button"
+            tabIndex={0}
+            aria-label="Go back to stories selection"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

@@ -73,10 +73,8 @@ Dr. Lian Evasco, though unaware of her heritage, represents their greatest succe
 
 But that balance is breaking down. The quantum anomalies detected worldwide, the satellite desynchronizations, the shared dreams of researchers—all point to something stirring in the depths of the Antarctic ice. The Heart Fragment buried beneath the Vostok region is not dormant, and its awakening pulse is drawing all three factions into inevitable collision.
 
-Each faction has positioned their most capable agents near the discovery site. The final game has begun, and this time, there may be no middle ground between salvation and annihilation.
-
-*(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_antarcticaDiscovery' }]
+Each faction has positioned their most capable agents near the discovery site. The final game has begun, and this time, there may be no middle ground between salvation and annihilation.`,
+    choices: []  // Terminal node - will trigger onComplete via StoryFlow
   }
 ];
 

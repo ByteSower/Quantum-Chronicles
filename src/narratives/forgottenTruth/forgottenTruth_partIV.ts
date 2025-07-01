@@ -61,10 +61,8 @@ Within seventy-two hours of the Fragment's exposure, all three Keeper factions h
 
 The Ordo Aeturnum, having financed the discovery, claimed primary research rights. The Veil demanded immediate containment protocols. The Choir sent Dr. Lian Evasco herself, believing her unique linguistic abilities might allow direct communication with the Fragment.
 
-As these forces converged on the most remote place on Earth, the Fragment's pulse rate continued to increase, and the boundary between dream and reality began to blur for everyone within a hundred-kilometer radius.
-
-*(More chapters unlocking soon — stay tuned!)*`,
-    choices: [{ choiceText: 'Return to the Core Story', nextNodeId: 'ft_characterFocus' }]
+As these forces converged on the most remote place on Earth, the Fragment's pulse rate continued to increase, and the boundary between dream and reality began to blur for everyone within a hundred-kilometer radius.`,
+    choices: []  // Terminal node - will trigger onComplete via StoryFlow
   }
 ];
 
