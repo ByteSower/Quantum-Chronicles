@@ -71,6 +71,10 @@ internal-*.md
 # Exception: Public security policy is allowed
 !SECURITY.md
 
+# Exception: Public release documentation allowed
+!RELEASE_SUMMARY.md
+!RELEASE_NOTES_*.md
+
 # Microsoft/Platform specific documents
 MICROSOFT_*.md
 GOOGLE_*.md
