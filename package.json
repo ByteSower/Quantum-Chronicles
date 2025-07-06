@@ -1,7 +1,7 @@
 {
   "name": "quantum-chronicles",
   "private": true,
-  "version": "1.2.1-beta.2",
+  "version": "1.2.1-beta.3",
   "type": "module",
   "homepage": "https://bytesower.github.io/Quantum-Chronicles",
   "scripts": {
