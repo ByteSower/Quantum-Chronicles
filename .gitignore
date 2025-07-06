@@ -52,3 +52,39 @@ INTERNAL_FEEDBACK_TIMING.md
 *IMPLEMENTATION_COMPLETE*.md
 *_COMPLETE.md
 INTERNAL_*.md
+
+# SECURITY: Sensitive documents - NEVER commit to public repo
+*BRAIN*.md
+*APPEAL*.md
+*REAPPEAL*.md
+*PRIVACY*.md
+*COPILOT*.md
+*INTERNAL*.md
+*SENSITIVE*.md
+*CONFIDENTIAL*.md
+*AUDIT*.md
+security-*.md
+appeal-*.md
+privacy-*.md
+internal-*.md
+
+# Exception: Public security policy is allowed
+!SECURITY.md
+
+# Microsoft/Platform specific documents
+MICROSOFT_*.md
+GOOGLE_*.md
+PLATFORM_*.md
+
+# Development and debugging
+*.local.md
+*.private.md
+*.secret.md
+debug-*.md
+test-*.md
+
+# Backup sensitive files
+*.backup.md
+*_backup.md
+.env*
+!.env.example
