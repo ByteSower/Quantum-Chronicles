@@ -54,5 +54,6 @@ export const TEMPLATE_SEGMENT: NarrativeSegment = {
     coherence: 5,
     disruption: 3,
     synchrony: 7
-  }
+  },
+  globalFlagDecay: 0.95
 };

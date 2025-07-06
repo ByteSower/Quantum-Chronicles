@@ -13,7 +13,6 @@ export const convergenceOfRealms: NarrativeSegment = {
   segmentId: 'convergenceOfRealms',
   title: 'The Convergence of Realms',
   description: 'Navigate parallel realities and master reality manipulation before facing the Catalyst.',
-  parentId: 'forgottenTruth',
   startNodeId: 'ft_parallelEntry',
   exitPoints: ['ft_catalystGateway'],
   initialFlags: { curiosity: 0, coherence: 0, synchrony: 0, disruption: 0, reality_stability: 100 },
