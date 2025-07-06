@@ -1,111 +1,116 @@
-// Simple analytics utilities for Google Analytics integration
+// Disabled analytics utilities - all tracking disabled for policy compliance
 
-// Declare gtag function for TypeScript
-declare global {
-  interface Window {
-    gtag: (...args: unknown[]) => void;
-    dataLayer: unknown[];
-  }
-}
-
+// No-op implementation - all analytics functions disabled
 class SimpleAnalytics {
-  private isEnabled: boolean = false;
-
   constructor() {
-    // Check if Google Analytics is loaded
-    this.isEnabled = typeof window !== 'undefined' && 
-                    typeof window.gtag === 'function';
+    // Analytics permanently disabled for policy compliance
   }
 
-  // Track basic events
-  trackEvent(action: string, category: string, label?: string) {
-    if (this.isEnabled) {
-      try {
-        window.gtag('event', action, {
-          event_category: category,
-          event_label: label
-        });
-      } catch (error) {
-        console.warn('Analytics tracking error:', error);
-      }
-    }
+  // No-op tracking functions
+  trackEvent(..._args: unknown[]): void {
+    // Analytics disabled - no tracking performed
   }
 }
 
-// Export singleton instance
+// Export analytics instance
 export const analytics = new SimpleAnalytics();
 
-// Simple tracking helpers
 export const trackUIEvent = {
-  feature: (feature: string, action: string) => 
-    analytics.trackEvent(`feature_${action}`, 'user_interface', feature),
-  
-  help: (topic: string) => 
-    analytics.trackEvent('help_accessed', 'education', topic)
+  feature: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  help: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  }
 };
 
 export const trackStoryEvent = {
-  progress: (nodeId: string) => 
-    analytics.trackEvent('story_progress', 'narrative', nodeId),
-  
-  choice: (choiceId: string) => 
-    analytics.trackEvent('choice_made', 'narrative', choiceId)
+  progress: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  choice: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  reset: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  }
 };
 
-// Enhanced tracking for QNCE expansion features
 export const trackExpansionEvent = {
-  segmentEntry: (segmentName: string, nodeId: string) => 
-    analytics.trackEvent('expansion_segment_entered', 'narrative_expansion', `${segmentName}:${nodeId}`),
-  
-  originsDiscovery: (discoveryType: string) =>
-    analytics.trackEvent('origins_discovery', 'narrative_expansion', discoveryType),
-  
-  quantumMemoryRevelation: (memoryType: string) =>
-    analytics.trackEvent('quantum_memory_accessed', 'narrative_expansion', memoryType),
-  
-  realmConvergence: (dimensionType: string) =>
-    analytics.trackEvent('realm_convergence', 'narrative_expansion', dimensionType),
-  
-  catalystIdentity: (revelationType: string) =>
-    analytics.trackEvent('catalyst_revealed', 'narrative_expansion', revelationType),
-  
-  legacyChoices: (legacyPath: string) =>
-    analytics.trackEvent('legacy_path_chosen', 'narrative_expansion', legacyPath),
-  
-  // QNCE variable milestone tracking
-  variableMilestone: (variable: string, threshold: number, currentValue: number) =>
-    analytics.trackEvent('qnce_milestone', 'game_progression', `${variable}_${threshold}_value_${currentValue}`),
-  
-  // Dynamic text interpolation usage
-  dynamicTextRendered: (nodeId: string, variableCount: number) =>
-    analytics.trackEvent('dynamic_text_rendered', 'narrative_enhancement', `${nodeId}_vars_${variableCount}`)
+  segmentEntry: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  originsDiscovery: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  quantumMemoryRevelation: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  realmConvergence: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  catalystIdentity: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  legacyChoices: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  variableMilestone: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  dynamicTextRendered: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  }
 };
 
-// Feedback hook implementations matching our expansion segments
 export const FEEDBACK_HOOKS = {
-  ORIGINS_DISCOVERY: (data: Record<string, unknown>) => {
-    trackExpansionEvent.originsDiscovery(String(data.discoveryType || 'unknown'));
-    console.log('🔍 Origins Discovery:', data);
+  ORIGINS_DISCOVERY: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
   },
-  
-  QUANTUM_MEMORY_REVELATION: (data: Record<string, unknown>) => {
-    trackExpansionEvent.quantumMemoryRevelation(String(data.memoryType || 'unknown'));
-    console.log('🧠 Quantum Memory Accessed:', data);
+  QUANTUM_MEMORY_REVELATION: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
   },
-  
-  REALM_CONVERGENCE: (data: Record<string, unknown>) => {
-    trackExpansionEvent.realmConvergence(String(data.dimensionType || 'unknown'));
-    console.log('🌌 Realm Convergence Event:', data);
+  REALM_CONVERGENCE: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
   },
-  
-  CATALYST_IDENTITY: (data: Record<string, unknown>) => {
-    trackExpansionEvent.catalystIdentity(String(data.revelationType || 'unknown'));
-    console.log('✨ Catalyst Identity Revealed:', data);
+  CATALYST_IDENTITY: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
   },
-  
-  LEGACY_CHOICES: (data: Record<string, unknown>) => {
-    trackExpansionEvent.legacyChoices(String(data.legacyPath || 'unknown'));
-    console.log('🔮 Legacy Path Chosen:', data);
+  LEGACY_CHOICES: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  }
+};
+
+export const trackTutorialEvent = {
+  start: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  step: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  complete: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  skip: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  exit: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  }
+};
+
+export const trackSideMenuEvent = {
+  open: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  close: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  navigate: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
+  },
+  keyboardNavigation: (..._args: unknown[]): void => {
+    // Analytics disabled - no tracking performed
   }
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { Choice } from '../hooks/useQNCE';
+import type { Choice } from '../narratives/types';
 import { accessibilityManager, a11y } from '../utils/accessibility';
 
 interface ChoiceSelectorProps {
@@ -7,13 +7,17 @@ interface ChoiceSelectorProps {
   onSelect: (choice: Choice) => void;
   showOnboardingHints?: boolean;
   isFirstChoice?: boolean;
+  isTerminalNode?: boolean;
+  onComplete?: () => void;
 }
 
 const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({ 
   choices, 
   onSelect, 
   showOnboardingHints = false,
-  isFirstChoice = false
+  isFirstChoice = false,
+  isTerminalNode = false,
+  onComplete
 }) => {
   const [hoveredChoice, setHoveredChoice] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,12 +26,16 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
   // Announce when new choices are available
   useEffect(() => {
     if (choices.length > 0) {
-      const choiceTexts = choices.map(c => c.text).join(', ');
+      const choiceTexts = choices.map(c => c.choiceText).join(', ');
       accessibilityManager.announceContentChange('choice', 
         `${choices.length} choice${choices.length > 1 ? 's' : ''} available: ${choiceTexts}`
       );
+    } else if (isTerminalNode) {
+      accessibilityManager.announceContentChange('choice', 
+        'Chapter complete. Continue button available.'
+      );
     }
-  }, [choices]);
+  }, [choices, isTerminalNode]);
 
   // Handle keyboard navigation between choices
   const handleKeyDown = (event: KeyboardEvent, choice: Choice, index: number) => {
@@ -57,14 +65,39 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
   return (
     <div 
       ref={containerRef}
-      className="flex flex-col gap-3 mt-4 items-center w-full"
+      className="choice-selector flex flex-col gap-3 mt-4 items-center w-full"
       role="group"
       aria-labelledby={choicesListId}
     >
       <div id={choicesListId} className="sr-only">
-        Story choices: {choices.length} option{choices.length > 1 ? 's' : ''} available
+        {isTerminalNode ? 'Chapter complete' : `Story choices: ${choices.length} option${choices.length > 1 ? 's' : ''} available`}
       </div>
-      {choices.map((choice, idx) => (
+      
+      {/* Show Continue button for terminal nodes */}
+      {isTerminalNode && onComplete && (
+        <div className="w-full max-w-md">
+          <button
+            className="
+              choice-button
+              text-white rounded-lg shadow-lg px-6 py-3 
+              transition-all duration-300 
+              focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 
+              w-full text-lg font-semibold 
+              transform hover:scale-105
+              bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500
+            "
+            onClick={onComplete}
+            tabIndex={0}
+            aria-label="Continue to chapter selection"
+            role="button"
+          >
+            Continue
+          </button>
+        </div>
+      )}
+      
+      {/* Show regular choices if not terminal node */}
+      {!isTerminalNode && choices.map((choice, idx) => (
         <div key={idx} className="relative w-full max-w-md">
           <button
             className={`
@@ -94,11 +127,11 @@ const ChoiceSelector: React.FC<ChoiceSelectorProps> = ({
             onBlur={() => setHoveredChoice(null)}
             tabIndex={0}
             data-choice-index={idx}
-            aria-label={a11y.getChoiceLabel(choice.text, idx, true)}
+            aria-label={a11y.getChoiceLabel(choice.choiceText, idx, true)}
             aria-describedby={showOnboardingHints && isFirstChoice ? `choice-hint-${idx}` : undefined}
             role="button"
           >
-            {choice.text}
+            {choice.choiceText}
           </button>
           
           {/* Tooltip for guidance */}

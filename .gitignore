@@ -22,4 +22,33 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-VERSION_LOG.md
+
+# Internal development tools - DO NOT COMMIT TO PUBLIC REPO
+dev-tools/
+**/dev-tools/
+internal-tools/
+**/internal-tools/
+*test*.js
+*TEST*.js
+*INTERNAL*.md
+*internal*.md
+*SUMMARY*.md
+*STATUS*.md
+*REPORT*.md
+*TASK*.md
+*task*.md
+feedback-data-access.*
+
+# Team communication and strategy documents - KEEP PRIVATE
+COPILOT_MEMORY_CONTEXT.md
+RECENT_WORK_SUMMARY.md
+FEEDBACK_IMPLEMENTATION_COMPLETE.md
+FEEDBACK_SYSTEM_COMPLETE.md
+FEEDBACK_TIMING_IMPROVEMENTS.md
+INTERNAL_FEEDBACK_TIMING.md
+*MEMORY*.md
+*TEAM*.md
+*STRATEGY*.md
+*IMPLEMENTATION_COMPLETE*.md
+*_COMPLETE.md
+INTERNAL_*.md

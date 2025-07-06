@@ -272,15 +272,6 @@ const VisualBranchTracker: React.FC<VisualBranchTrackerProps> = ({
           <div className="flex items-center"><div className="w-3 h-3 rounded-full bg-gray-500 mr-1"></div>Locked</div>
         </div>
       </div>
-      
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `
-      }} />
     </div>
   );
 };

@@ -1,6 +1,33 @@
 import { useState, useCallback, useRef } from 'react';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
+// Type definitions for better type safety
+export type FeedbackMetadata = Record<string, string | number | boolean>;
+
+export interface SessionMetadata {
+  choiceCount?: number;
+  currentSegment?: string;
+  qnceVariables?: {
+    curiosity: number;
+    coherence: number;
+    disruption: number;
+    synchrony: number;
+  };
+}
+
+// Quick star rating feedback data
+export interface StarRatingFeedbackData {
+  rating: number;
+  comment?: string;
+  milestone: string;
+  timestamp: number;
+  sessionData?: {
+    nodeId: string;
+    choiceCount: number;
+    sessionDuration: number;
+  };
+}
+
 // Enhanced feedback data for consolidated system
 export interface ConsolidatedFeedbackData {
   // Overall experience rating
@@ -63,7 +90,7 @@ class ConsolidatedFeedbackManager {
   private sessionStartTime = Date.now();
   private feedbackData: Partial<ConsolidatedFeedbackData> = {};
   private isEnabled = true;
-  private hasShownFeedback = false; // Ensures only one feedback per session
+  private shownMilestones = new Set<string>(); // Track which milestones have been shown
   
   // Debounce rapid interactions
   private lastTriggerTime = 0;
@@ -180,6 +207,10 @@ class ConsolidatedFeedbackManager {
     };
   }
 
+  public getSessionData() {
+    return this.feedbackData;
+  }
+
   /**
    * Single popup enforcement - only one feedback popup can be active at a time
    */
@@ -213,7 +244,7 @@ class ConsolidatedFeedbackManager {
   /**
    * Debounced trigger checking to prevent rapid-fire feedback requests
    */
-  public checkForFeedback(milestone: string, metadata?: any): FeedbackMilestone | null {
+  public checkForFeedback(milestone: string, metadata?: FeedbackMetadata): FeedbackMilestone | null {
     // Debounce rapid triggers
     const now = Date.now();
     if (now - this.lastTriggerTime < this.DEBOUNCE_MS) {
@@ -222,9 +253,9 @@ class ConsolidatedFeedbackManager {
     }
     this.lastTriggerTime = now;
 
-    // Only show feedback once per session
-    if (this.hasShownFeedback) {
-      console.log('🚫 Feedback already shown this session');
+    // Check if this specific milestone has already been shown
+    if (this.shownMilestones.has(milestone)) {
+      console.log('🚫 Feedback already shown for milestone:', milestone);
       return null;
     }
 
@@ -267,7 +298,7 @@ class ConsolidatedFeedbackManager {
     return milestoneData;
   }
 
-  private updateSessionMetadata(metadata?: any) {
+  private updateSessionMetadata(metadata?: SessionMetadata) {
     if (metadata) {
       this.feedbackData.sessionDuration = Date.now() - this.sessionStartTime;
       
@@ -310,7 +341,7 @@ class ConsolidatedFeedbackManager {
         milestone: feedback.milestone
       });
 
-      this.hasShownFeedback = true;
+      this.shownMilestones.add(feedback.milestone); // Mark this milestone as completed
       console.log('✅ Consolidated feedback submitted successfully');
       
     } catch (error) {
@@ -321,7 +352,7 @@ class ConsolidatedFeedbackManager {
   }
 
   /**
-   * Dismiss feedback and release popup lock
+   * Dismiss feedback and release popup lock (without blocking future feedback)
    */
   public dismissFeedback(milestone: string) {
     analyticsWrapper.trackFeedbackEvent('feedback_prompt_dismissed', {
@@ -329,7 +360,7 @@ class ConsolidatedFeedbackManager {
       milestone: milestone
     });
     
-    this.hasShownFeedback = true; // Don't show again this session
+    // Don't set hasShownFeedback = true here, allow feedback to appear again later
     this.releasePopupLock();
     console.log('🚫 Consolidated feedback dismissed for:', milestone);
   }
@@ -349,7 +380,7 @@ class ConsolidatedFeedbackManager {
     return {
       isPopupActive: this.isPopupActive,
       pendingMilestone: this.pendingMilestone,
-      hasShownFeedback: this.hasShownFeedback,
+      shownMilestones: Array.from(this.shownMilestones), // Convert Set to Array for debugging
       isEnabled: this.isEnabled,
       sessionDuration: Date.now() - this.sessionStartTime,
       lastTriggerTime: this.lastTriggerTime
@@ -367,7 +398,7 @@ class ConsolidatedFeedbackManager {
   }
 
   public resetSession() {
-    this.hasShownFeedback = false;
+    this.shownMilestones.clear(); // Reset the set of shown milestones
     this.releasePopupLock();
     this.sessionStartTime = Date.now();
     this.loadSessionData();
@@ -379,12 +410,13 @@ export function useConsolidatedFeedbackManager() {
   const [manager] = useState(() => new ConsolidatedFeedbackManager());
   const [currentMilestone, setCurrentMilestone] = useState<FeedbackMilestone | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [sessionData, setSessionData] = useState(manager.getSessionData());
   
   // Tracking refs for session data
   const choiceCountRef = useRef(0);
   const currentSegmentRef = useRef('');
 
-  const checkForFeedback = useCallback((milestone: string, metadata?: any) => {
+  const checkForFeedback = useCallback((milestone: string, metadata?: FeedbackMetadata) => {
     const milestoneData = manager.checkForFeedback(milestone, {
       ...metadata,
       choiceCount: choiceCountRef.current,
@@ -393,6 +425,7 @@ export function useConsolidatedFeedbackManager() {
     
     if (milestoneData) {
       setCurrentMilestone(milestoneData);
+      setSessionData(manager.getSessionData());
       setIsVisible(true);
     }
   }, [manager]);
@@ -424,6 +457,7 @@ export function useConsolidatedFeedbackManager() {
     manager,
     currentMilestone,
     isVisible,
+    sessionData,
     checkForFeedback,
     handleFeedbackSubmit,
     handleFeedbackDismiss,

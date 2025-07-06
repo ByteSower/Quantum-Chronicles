@@ -14,7 +14,7 @@ interface ConsolidatedFeedbackPromptProps {
       quickOptions: string[];
     };
   };
-  sessionData: {
+  sessionData: Partial<{
     choiceCount: number;
     sessionDuration: number;
     segmentsReached: string[];
@@ -24,7 +24,7 @@ interface ConsolidatedFeedbackPromptProps {
       disruption: number;
       synchrony: number;
     };
-  };
+  }>;
   onSubmit: (feedback: ConsolidatedFeedbackData) => void;
   onDismiss: () => void;
 }
@@ -76,8 +76,8 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
   const isFirstSection = currentSection === 0;
 
   const handleSubmit = async () => {
-    if (overallRating === 0) return;
-
+    console.log('🎯 Feedback submit attempted - overallRating:', overallRating, 'isSubmitting:', isSubmitting);
+    
     setIsSubmitting(true);
 
     const feedbackData: ConsolidatedFeedbackData = {
@@ -86,14 +86,15 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
       comments,
       quickResponses: selectedQuickOptions,
       milestone: milestone.id,
-      sessionDuration: sessionData.sessionDuration,
-      choiceCount: sessionData.choiceCount,
-      segmentsReached: sessionData.segmentsReached,
+      sessionDuration: sessionData.sessionDuration || 0,
+      choiceCount: sessionData.choiceCount || 0,
+      segmentsReached: sessionData.segmentsReached || [],
       timestamp: Date.now(),
       qnceVariables: sessionData.qnceVariables
     };
 
     try {
+      console.log('🎯 Calling onSubmit with feedback data:', feedbackData);
       onSubmit(feedbackData);
       accessibilityManager.announce('Thank you for your comprehensive feedback!', 'polite');
     } catch (error) {
@@ -128,7 +129,10 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
-            onClick={() => onChange(star)}
+            onClick={() => {
+              console.log('⭐ Star clicked:', star, 'for', label);
+              onChange(star);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowLeft' && star > 1) onChange(star - 1);
               if (e.key === 'ArrowRight' && star < 5) onChange(star + 1);
@@ -158,7 +162,7 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
             {renderStarRating(
               overallRating,
               setOverallRating,
-              'How would you rate your overall experience',
+              'How would you rate your overall experience (optional)',
               'overall'
             )}
             
@@ -299,7 +303,7 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="consolidated-feedback-title"
@@ -413,8 +417,9 @@ const ConsolidatedFeedbackPrompt: React.FC<ConsolidatedFeedbackPromptProps> = ({
             {isLastSection ? (
               <button
                 onClick={handleSubmit}
-                disabled={isSubmitting || overallRating === 0}
+                disabled={isSubmitting}
                 className="px-6 py-2 text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Submit your feedback - ratings are optional but helpful!"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
               </button>

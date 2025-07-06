@@ -1,45 +1,22 @@
 /**
- * QNCE Narrative Schema - Brain's Reference Structure
- * 
- * Clean, modular narrative structure for consistent, QNCE-integrated storytelling.
- * Follows Brain's original schema design for maximum clarity and reusability.
+ * QNCE Narrative Types - Shared interface definitions for modular narratives
  */
 
-export interface NarrativeSegment {
-  segmentId: string; // Changed from id for clarity
-  title: string;
-  description: string;
-  startNodeId: string; // Added startNodeId
-  exitPoints: string[]; // Added exitPoints for segment routing
-  parentId?: string; // Optional parent segment for organization
-  nodes: NarrativeNode[];
-  initialFlags: Record<string, boolean | number | string>;
-  initialVariables: QNCEVariables;
-  globalFlagDecay?: number; // Simplified decay rate
+// Import feedback hook functions from analytics
+import { FEEDBACK_HOOKS as ANALYTICS_FEEDBACK_HOOKS } from '../utils/analytics';
+
+export type QNCEVariables = Record<string, number | boolean>;
+
+export interface FlagUpdate {
+  flag: string;
+  operation: 'increment' | 'decrement' | 'set';
+  value: number | boolean;
 }
 
-export interface NarrativeNode {
-  nodeId: string;
-  text: string;
-  dynTextFunction?: (variables: QNCEVariables) => string;
-  textAfter?: (variables: QNCEVariables) => string;
-  choices?: Choice[];
-  flagConditions?: FlagCondition[];
-  assetPlaceholders?: {
-    visualCue?: string;
-    audioCue?: string;
-    hapticCue?: string;
-  };
-  feedbackHook?: FeedbackHook;
-}
-
-export interface Choice {
-  choiceText: string;
-  nextNodeId: string;
-  nextSegmentId?: string; // For hopping between narrative segments
-  flagUpdates?: FlagUpdate[];
-  conditions?: FlagCondition[];
-  feedbackHook?: (context: { nodeId: string; choiceText: string; nextNodeId: string; currentFlags: Record<string, any>; currentVariables: QNCEVariables; timestamp: number }) => void;
+export interface VariableUpdate {
+  variable: keyof QNCEVariables;
+  operation: 'add' | 'subtract' | 'set';
+  value: number;
 }
 
 export interface FlagCondition {
@@ -48,42 +25,104 @@ export interface FlagCondition {
   value: number | boolean;
 }
 
-export interface FlagUpdate {
-  flag: string;
-  operation: 'set' | 'increment' | 'decrement';
-  value: number | boolean;
-}
-
 export interface FeedbackHook {
-  milestone: 'story_completion' | 'branch_completion' | 'deep_engagement';
-  delay: number; // Delay before feedback prompt in milliseconds
+  milestone: 'branch_completion' | 'deep_engagement' | 'story_completion';
+  delay: number;
 }
 
-export interface QNCEVariables {
-  [key: string]: number | string | boolean;
+export interface Choice {
+  choiceText: string;
+  nextNodeId: string; // namespaced ID like 'origins:ft_scanFragments'
+  flagUpdates?: FlagUpdate[];
+  variableUpdates?: VariableUpdate[];
+  conditions?: FlagCondition[];
+}
+
+export interface NarrativeNode {
+  nodeId: string;
+  text?: string;
+  dynTextFunction?: (vars: QNCEVariables) => string;
+  textAfter?: (vars: QNCEVariables) => string;
+  assetPlaceholders?: {
+    visualCue?: string;
+    audioCue?: string;
+    hapticCue?: string;
+  };
+  choices?: Choice[];
+  feedbackHook?: FeedbackHook;
+}
+
+export interface NarrativeSegment {
+  segmentId: string;
+  title: string;
+  description: string;
+  startNodeId: string;
+  exitPoints: string[];
+  initialFlags: Record<string, number | boolean>;
+  initialVariables: QNCEVariables;
+  globalFlagDecay: number;
+  nodes: NarrativeNode[];
 }
 
 /**
- * Utility functions for working with the narrative schema
+ * Story and Chapter metadata for navigation UI
  */
+export interface ChapterMeta {
+  chapterId: string;
+  title: string;
+  unlocked: boolean;
+  completed: boolean;
+}
 
-export function interpolateText(template: string, variables: QNCEVariables): string {
-  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-    return variables[key]?.toString() || match;
+export interface StoryMeta {
+  storyId: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  chapters: ChapterMeta[];
+}
+
+/**
+ * Utility function to replace dynamic variables in text templates
+ * Example: "Your {{variableName}} is {{value}}" with variables {variableName: "curiosity", value: 15}
+ */
+export function interpolateText(
+  template: string, 
+  variables: Record<string, number | boolean | string>
+): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (match, varName) => {
+    return variables[varName] !== undefined ? String(variables[varName]) : match;
   });
 }
 
-export function checkConditions(conditions: FlagCondition[], variables: QNCEVariables): boolean {
-  return conditions.every(condition => {
-    const value = variables[condition.flag];
-    switch (condition.operator) {
-      case '>': return (value as number) > (condition.value as number);
-      case '<': return (value as number) < (condition.value as number);
-      case '>=': return (value as number) >= (condition.value as number);
-      case '<=': return (value as number) <= (condition.value as number);
-      case '===': return value === condition.value;
-      case '!==': return value !== condition.value;
-      default: return false;
-    }
-  });
-}
+/**
+ * Beta testing feedback collection points
+ */
+export const FEEDBACK_HOOKS = ANALYTICS_FEEDBACK_HOOKS;
+
+/**
+ * Asset placeholder categories for future development
+ */
+export const ASSET_PLACEHOLDERS = {
+  VISUALS: {
+    ANCIENT_SYMBOLS: 'ancient_quantum_symbols.webp',
+    MEMORY_FRAGMENTS: 'floating_memory_fragments.webp',
+    DIMENSIONAL_PORTAL: 'swirling_dimensional_portal.webp',
+    CATALYST_REVEAL: 'mysterious_catalyst_figure.webp',
+    FUTURE_LEGACY: 'quantum_enhanced_civilization.webp',
+  },
+  AUDIO: {
+    WHISPERS_OF_TIME: 'whispers_of_ancient_time.ogg',
+    QUANTUM_RESONANCE: 'quantum_field_resonance.ogg',
+    DIMENSIONAL_SHIFT: 'reality_fabric_shifting.ogg',
+    REVELATION_CHORD: 'truth_revelation_chord.ogg',
+    LEGACY_HARMONY: 'quantum_consciousness_harmony.ogg',
+  },
+  MUSIC: {
+    ORIGINS_THEME: 'deep_time_exploration_theme.ogg',
+    MEMORY_ECHO_THEME: 'fragmented_memory_melody.ogg',
+    CONVERGENCE_THEME: 'dimensional_convergence_symphony.ogg',
+    CATALYST_THEME: 'mysterious_orchestration.ogg',
+    LEGACY_THEME: 'transcendent_future_anthem.ogg',
+  }
+} as const;

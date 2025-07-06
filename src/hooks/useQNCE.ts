@@ -1,205 +1,160 @@
-/**
- * QNCE Hook - Brain's Reference Implementation
- * 
- * Clean implementation following Brain's narrative schema.
- * Handles segment loading, nextSegmentId transitions, global decay, and resets.
- */
-
 import { useState, useCallback } from 'react';
-import type { NarrativeSegment, NarrativeNode, Choice, QNCEVariables } from '../narratives/types';
-import { checkConditions, interpolateText } from '../narratives/types';
-import { applyFlagUpdates } from '../utils/narrativeUtils';
-import { TEMPLATE_SEGMENT } from '../narratives/templateSegment';
-import { ORIGINS_UNVEILED } from '../narratives/forgottenTruth/originsUnveiled';
-
-// Available narrative segments registry
-export const NARRATIVE_SEGMENTS: NarrativeSegment[] = [
-  TEMPLATE_SEGMENT,
-  ORIGINS_UNVEILED
-];
-
-// Flatten all nodes from all segments for lookup
-const getAllNodes = (): NarrativeNode[] => NARRATIVE_SEGMENTS.flatMap(segment => segment.nodes);
+import { trackStoryEvent } from '../utils/analytics';
+import { forgottenTruth } from '../narratives/forgottenTruth';
+import type {
+  NarrativeNode,
+  Choice,
+  QNCEVariables,
+  FlagUpdate,
+  VariableUpdate,
+  FlagCondition,
+  NarrativeSegment,
+} from '../narratives/types';
 
 export interface QNCEReturn {
-  currentNode: NarrativeNode | null;
+  currentNode: NarrativeNode;
   flags: Record<string, boolean | number | string>;
   history: string[];
   variables: QNCEVariables;
-  currentSegmentId: string | null;
   makeChoice: (choiceIndex: number) => void;
   reset: () => void;
-  initializeFromStartingPoint: (segmentId: string, initialVariables: QNCEVariables) => void;
   getAvailableChoices: () => Choice[];
   isChoiceAvailable: (choice: Choice) => boolean;
-  getCurrentNodeText: () => string;
 }
 
-export const useQNCE = (initialSegmentId?: string): QNCEReturn => {
-  // Find initial segment or default to first available
-  const getInitialSegment = () => {
-    if (initialSegmentId) {
-      return NARRATIVE_SEGMENTS.find(s => s.segmentId === initialSegmentId) || NARRATIVE_SEGMENTS[0];
-    }
-    return NARRATIVE_SEGMENTS[0] || null;
-  };
+export const useQNCE = (narrative: NarrativeSegment = forgottenTruth, startNodeId?: string): QNCEReturn => {
+  const initialStartNode = startNodeId || narrative.startNodeId;
+  const [currentNodeId, setCurrentNodeId] = useState(initialStartNode);
+  const [flags, setFlags] = useState<Record<string, boolean | number | string>>(narrative.initialFlags);
+  const [history, setHistory] = useState<string[]>([initialStartNode]);
+  const [variables, setVariables] = useState<QNCEVariables>(narrative.initialVariables);
 
-  const initialSegment = getInitialSegment();
-  
-  const [currentSegmentId, setCurrentSegmentId] = useState<string | null>(
-    initialSegment?.segmentId || null
-  );
-  const [currentNodeId, setCurrentNodeId] = useState<string | null>(
-    initialSegment?.startNodeId || null
-  );
-  const [flags, setFlags] = useState<Record<string, boolean | number | string>>(
-    initialSegment?.initialFlags || {}
-  );
-  const [history, setHistory] = useState<string[]>(
-    initialSegment?.startNodeId ? [initialSegment.startNodeId] : []
-  );
-  const [variables, setVariables] = useState<QNCEVariables>(
-    initialSegment?.initialVariables || {}
-  );
+  const NODES = narrative.nodes;
 
-  // Get current node from all available nodes
-  const getCurrentNode = useCallback((): NarrativeNode | null => {
-    if (!currentNodeId) return null;
-    return getAllNodes().find(node => node.nodeId === currentNodeId) || null;
-  }, [currentNodeId]);
-
-  const currentNode = getCurrentNode();
+  const reset = useCallback(() => {
+    const resetStartNode = startNodeId || narrative.startNodeId;
+    setCurrentNodeId(resetStartNode);
+    setFlags(narrative.initialFlags);
+    setHistory([resetStartNode]);
+    setVariables(narrative.initialVariables);
+    trackStoryEvent.reset(narrative.segmentId);
+  }, [narrative, startNodeId]);
 
   const isChoiceAvailable = useCallback((choice: Choice): boolean => {
-    if (!choice.conditions) return true;
-    return checkConditions(choice.conditions, { ...flags, ...variables });
-  }, [flags, variables]);
-
-  const getCurrentNodeText = useCallback((): string => {
-    if (!currentNode) return "Loading...";
-    
-    // Use dynamic text function if available, otherwise static text
-    if (currentNode.dynTextFunction) {
-      return currentNode.dynTextFunction({ ...flags, ...variables });
+    if (!choice.conditions || choice.conditions.length === 0) {
+      return true;
     }
-    
-    return interpolateText(currentNode.text, { ...flags, ...variables });
-  }, [currentNode, flags, variables]);
 
-  const getAvailableChoices = useCallback((): Choice[] => {
-    if (!currentNode) return [];
-    return currentNode.choices?.filter(isChoiceAvailable) || [];
-  }, [currentNode, isChoiceAvailable]);
+    return choice.conditions.every((condition: FlagCondition) => {
+      const currentValue = flags[condition.flag];
+      if (currentValue === undefined) return false;
 
-  const makeChoice = useCallback((choiceIndex: number) => {
-    if (!currentNode) return;
+      switch (condition.operator) {
+        case '===':
+          return currentValue === condition.value;
+        case '!==':
+          return currentValue !== condition.value;
+        case '>':
+          return typeof currentValue === 'number' && typeof condition.value === 'number' && currentValue > condition.value;
+        case '<':
+          return typeof currentValue === 'number' && typeof condition.value === 'number' && currentValue < condition.value;
+        case '>=':
+          return typeof currentValue === 'number' && typeof condition.value === 'number' && currentValue >= condition.value;
+        case '<=':
+          return typeof currentValue === 'number' && typeof condition.value === 'number' && currentValue <= condition.value;
+        default:
+          return false;
+      }
+    });
+  }, [flags]);
 
-    const availableChoices = getAvailableChoices();
+  const makeChoice = (choiceIndex: number) => {
+    const currentNode = NODES.find(node => node.nodeId === currentNodeId);
+    if (!currentNode || !currentNode.choices) return;
+
+    const availableChoices = currentNode.choices.filter(isChoiceAvailable);
     const choice = availableChoices[choiceIndex];
     if (!choice) return;
 
-    // Handle segment hopping
-    if (choice.nextSegmentId) {
-      const nextSegment = NARRATIVE_SEGMENTS.find(s => s.segmentId === choice.nextSegmentId);
-      if (nextSegment) {
-        // Apply choice effects first
-        const { newFlags, newVariables } = applyFlagUpdates(choice.flagUpdates, flags, variables);
-        
-        // Merge with new segment's initial state
-        setFlags({ ...newFlags, ...nextSegment.initialFlags });
-        setVariables({ ...newVariables, ...nextSegment.initialVariables });
-        setCurrentSegmentId(nextSegment.segmentId);
-        setCurrentNodeId(nextSegment.startNodeId);
-        setHistory(prev => [...prev, nextSegment.startNodeId]);
-        
-        console.log(`[useQNCE] Hopped to segment: ${choice.nextSegmentId}`);
-        return;
-      } else {
-        console.error(`[useQNCE] Segment not found: ${choice.nextSegmentId}`);
-        return;
+    trackStoryEvent.choice(choice.nextNodeId);
+
+    if (currentNode.feedbackHook) {
+      try {
+        // This is a simplified representation of a feedback hook call
+        console.log(`Feedback hook triggered for milestone: ${currentNode.feedbackHook.milestone}`);
+      } catch (error) {
+        console.warn('Feedback hook error:', error);
       }
     }
 
-    // Handle normal choice progression
-    const { newFlags, newVariables } = applyFlagUpdates(choice.flagUpdates, flags, variables);
-    setFlags(newFlags);
-    setVariables(newVariables);
-
-    // Apply global decay if configured
-    const currentSegment = NARRATIVE_SEGMENTS.find(s => s.segmentId === currentSegmentId);
-    if (currentSegment?.globalFlagDecay) {
+    if (choice.flagUpdates) {
       setFlags(prevFlags => {
-        const decayedFlags = { ...prevFlags };
-        for (const [key, value] of Object.entries(decayedFlags)) {
-          if (typeof value === 'number') {
-            decayedFlags[key] = Math.max(0, value - currentSegment.globalFlagDecay!);
+        const newFlags = { ...prevFlags };
+        choice.flagUpdates!.forEach((update: FlagUpdate) => {
+          const currentVal = newFlags[update.flag];
+          switch (update.operation) {
+            case 'set':
+              newFlags[update.flag] = update.value;
+              break;
+            case 'increment':
+              if (typeof currentVal === 'number' && typeof update.value === 'number') {
+                newFlags[update.flag] = currentVal + update.value;
+              } else {
+                newFlags[update.flag] = update.value;
+              }
+              break;
+            case 'decrement':
+              if (typeof currentVal === 'number' && typeof update.value === 'number') {
+                newFlags[update.flag] = currentVal - update.value;
+              }
+              break;
           }
-        }
-        return decayedFlags;
+        });
+        return newFlags;
       });
     }
 
-    // Execute feedback hook if present
-    if (choice.feedbackHook) {
-      choice.feedbackHook({
-        nodeId: currentNode.nodeId,
-        choiceText: choice.choiceText,
-        nextNodeId: choice.nextNodeId,
-        currentFlags: flags,
-        currentVariables: variables,
-        timestamp: Date.now()
+    if (choice.variableUpdates) {
+      setVariables(prevVars => {
+        const newVars = { ...prevVars };
+        choice.variableUpdates!.forEach((update: VariableUpdate) => {
+            const currentVal = newVars[update.variable];
+            if (typeof currentVal !== 'number') return;
+
+            switch (update.operation) {
+                case 'set':
+                    newVars[update.variable] = update.value;
+                    break;
+                case 'add':
+                    newVars[update.variable] = currentVal + update.value;
+                    break;
+                case 'subtract':
+                    newVars[update.variable] = currentVal - update.value;
+                    break;
+            }
+        });
+        return newVars;
       });
     }
 
-    // Move to next node
     setCurrentNodeId(choice.nextNodeId);
-    setHistory(prev => [...prev, choice.nextNodeId]);
-  }, [currentNode, getAvailableChoices, flags, variables, currentSegmentId]);
+    setHistory(prevHistory => [...prevHistory, choice.nextNodeId]);
+  };
 
-  const initializeFromStartingPoint = useCallback((segmentId: string, initialVariables: QNCEVariables) => {
-    const segment = NARRATIVE_SEGMENTS.find(s => s.segmentId === segmentId);
-    if (!segment) {
-      console.error(`[useQNCE] Segment not found: ${segmentId}`);
-      return;
-    }
-
-    setCurrentSegmentId(segment.segmentId);
-    setCurrentNodeId(segment.startNodeId);
-    setFlags(segment.initialFlags);
-    setVariables({ ...segment.initialVariables, ...initialVariables });
-    setHistory([segment.startNodeId]);
-    
-    console.log(`[useQNCE] Initialized segment: ${segmentId}`);
-  }, []);
-
-  const reset = useCallback(() => {
-    const segment = getInitialSegment();
-    if (segment) {
-      setCurrentSegmentId(segment.segmentId);
-      setCurrentNodeId(segment.startNodeId);
-      setFlags(segment.initialFlags);
-      setVariables(segment.initialVariables);
-      setHistory([segment.startNodeId]);
-    } else {
-      setCurrentSegmentId(null);
-      setCurrentNodeId(null);
-      setFlags({});
-      setVariables({});
-      setHistory([]);
-    }
-  }, [initialSegmentId]);
+  const getAvailableChoices = useCallback(() => {
+    const currentNode = NODES.find(node => node.nodeId === currentNodeId);
+    if (!currentNode || !currentNode.choices) return [];
+    return currentNode.choices.filter(isChoiceAvailable);
+  }, [currentNodeId, isChoiceAvailable, NODES]);
 
   return {
-    currentNode,
+    currentNode: NODES.find(node => node.nodeId === currentNodeId)!,
     flags,
-    history,
     variables,
-    currentSegmentId,
-    makeChoice,
+    history,
     reset,
-    initializeFromStartingPoint,
-    getAvailableChoices,
+    makeChoice,
     isChoiceAvailable,
-    getCurrentNodeText
+    getAvailableChoices,
   };
 };

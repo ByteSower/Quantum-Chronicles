@@ -297,26 +297,6 @@ const VariableDashboard: React.FC<VariableDashboardProps> = ({
           <DashboardContent />
         </div>
       </div>
-      
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes fadeInOut {
-            0% { opacity: 0; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0; transform: scale(0.9); }
-          }
-          
-          @keyframes ripple {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(4); opacity: 0; }
-          }
-          
-          @keyframes quantumGlow {
-            0%, 100% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.8); }
-          }
-        `
-      }} />
     </div>
   );
 };

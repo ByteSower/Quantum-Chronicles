@@ -1,271 +1,233 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import NarrativeDisplay from './NarrativeDisplay';
 import ChoiceSelector from './ChoiceSelector';
-import StateDebugOverlay from './StateDebugOverlay';
-import IntroModal from './IntroModal';
-import TutorialOverlay from './TutorialOverlay';
-import VariableDashboard from './VariableDashboard/VariableDashboard';
+const StateDebugOverlay = lazy(() => import('./StateDebugOverlay'));
+const ConsolidatedFeedbackPrompt = lazy(() => import('./ConsolidatedFeedbackPrompt'));
+const StarRatingOverlay = lazy(() => import('./StarRatingOverlay'));
 import { useQNCE } from '../hooks/useQNCE';
-import LogArea from './LogArea';
-import type { LogEntry } from './LogArea';
-import type { StartingPoint } from './StartScreen';
+import { useConsolidatedFeedbackManager } from '../utils/ConsolidatedFeedbackManager';
+import { useStarRatingFeedback } from '../utils/StarRatingFeedbackManager';
+import type { Choice } from '../narratives/types';
+
+// Chapter entry point mapping
+const CHAPTER_ENTRY_POINTS: Record<string, string> = {
+  'partI': 'ft_journalDiscovery',    // Chapter 1: The Garden That Wasn't
+  'partII': 'partII:intro',          // Chapter 2: The Echo Protocol  
+  'partIII': 'partIII:intro',        // Chapter 3: The Keepers
+  'partIV': 'partIV:intro',          // Chapter 4: The Antarctic Discovery
+  'partV': 'partV:intro',            // Chapter 5: The Echo Awakens
+  'partVI': 'partVI:intro',          // Chapter 6: The Fractured Timeline
+  'partVII': 'partVII:intro',        // Chapter 7: The New Guardians
+  'partVIII': 'partVIII:intro',      // Chapter 8: The Ones Who Shaped
+};
 
 interface StoryFlowProps {
-  startingPoint: StartingPoint | null;
+  segmentId: string;
+  onComplete: () => void;
+  onBack: () => void;
   settings: {
     developerMode: boolean;
     showVariableDashboard: boolean;
     showDebugInfo: boolean;
-    animationSpeed: 'slow' | 'normal' | 'fast';
   };
-  devMode: boolean;
-  onReturnToStart: () => void;
-  onShowAbout: () => void;
-  onShowSettings: () => void;
-  onShowQNCEHelp?: () => void;
 }
 
-const StoryFlow: React.FC<StoryFlowProps> = ({ 
-  startingPoint, 
-  settings, 
-  devMode,
-  onReturnToStart, 
-  onShowAbout, 
-  onShowSettings,
-  onShowQNCEHelp
+const StoryFlow: React.FC<StoryFlowProps> = ({
+  segmentId,
+  onComplete,
+  onBack,
+  settings,
 }) => {
+  // Extract chapter from segmentId (format: "forgottenTruth_partII")
+  const chapterId = segmentId.split('_')[1] || 'partI';
+  const startNodeId = CHAPTER_ENTRY_POINTS[chapterId] || 'ft_journalDiscovery';
+  
+  console.log('StoryFlow loaded with segmentId:', segmentId, 'Starting at:', startNodeId);
+  
   const { 
     currentNode, 
-    flags, 
-    history, 
     variables, 
+    history, 
     makeChoice, 
-    reset, 
-    initializeFromStartingPoint, 
     getAvailableChoices,
-    isChoiceAvailable,
-    getCurrentNodeText
-  } = useQNCE();
+  } = useQNCE(undefined, startNodeId); // Pass startNodeId to useQNCE
   const [showDebug, setShowDebug] = useState(false);
-  const [showModal, setShowModal] = useState(true);
-  const [sheetOpen, setSheetOpen] = useState(true);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [initialized, setInitialized] = useState(false);
+  const [isFirstChoice, setIsFirstChoice] = useState(true);
 
-  // Initialize with starting point variables
+  const {
+    currentMilestone,
+    isVisible: isFeedbackVisible,
+    checkForFeedback,
+    handleFeedbackSubmit,
+    handleFeedbackDismiss,
+    updateSessionData,
+    sessionData,
+    forceReleasePopupLock
+  } = useConsolidatedFeedbackManager();
+
+  // Star rating feedback for story completion
+  const {
+    isVisible: isStarRatingVisible,
+    checkForFeedback: checkForStarRating,
+    handleSubmit: handleStarRatingSubmit,
+    handleSkip: handleStarRatingSkip
+  } = useStarRatingFeedback();
+
   useEffect(() => {
-    if (startingPoint && !initialized) {
-      initializeFromStartingPoint(startingPoint.id, startingPoint.initialVariables);
-      setInitialized(true);
-    }
-  }, [startingPoint, initializeFromStartingPoint, initialized]);
+    const sessionStartTime = Date.now();
+    const handleSessionEnd = () => {
+      const sessionDuration = Date.now() - sessionStartTime;
+      if (sessionDuration > 15 * 60 * 1000) { // 15 minutes
+        checkForFeedback('session_end');
+      }
+    };
+    window.addEventListener('beforeunload', handleSessionEnd);
+    return () => window.removeEventListener('beforeunload', handleSessionEnd);
+  }, [checkForFeedback]);
 
-  // Reset initialized flag when starting point changes
+  // Handle automatic completion for terminal nodes (no choices) only
   useEffect(() => {
-    setInitialized(false);
-  }, [startingPoint?.id]);
+    if (!currentNode.choices || currentNode.choices.length === 0) {
+      // Terminal nodes without choices should show a "Continue" button instead of auto-completing
+      // This prevents users from being redirected before they can read the ending
+      console.log('🎯 Terminal node detected:', currentNode.nodeId, '- will show Continue button');
+    }
+  }, [currentNode]);
 
-  // Show tutorial after intro modal is closed
-  function handleIntroClose() {
-    setShowModal(false);
-    setShowTutorial(true);
-  }
+  // Handle feedbackHook when entering a node (not just when making choices)
+  useEffect(() => {
+    if (currentNode.feedbackHook) {
+      console.log('🎯 FeedbackHook detected on node entry:', currentNode.feedbackHook, 'on node:', currentNode.nodeId);
+      checkForFeedback(currentNode.feedbackHook.milestone);
+      
+      // Only trigger star rating for story completion milestones
+      if (currentNode.feedbackHook.milestone === 'story_completion') {
+        console.log('⭐ Star rating feedback should trigger in', currentNode.feedbackHook.delay || 1000, 'ms');
+        setTimeout(() => {
+          console.log('⭐ Triggering star rating feedback now');
+          checkForStarRating(currentNode.feedbackHook!.milestone, currentNode.nodeId, history.length);
+        }, currentNode.feedbackHook.delay || 1000);
+      }
+    }
+  }, [currentNode, checkForFeedback, checkForStarRating, history.length]);
 
-  function handleReset() {
-    if (startingPoint) {
-      // Restart with the current starting point rather than going to default
-      initializeFromStartingPoint(startingPoint.id, startingPoint.initialVariables);
-    } else {
-      reset();
-    }
-    setInitialized(false);
-  }
+  // Cleanup feedback locks when component unmounts or navigates away
+  useEffect(() => {
+    return () => {
+      // Force release any feedback locks when StoryFlow unmounts
+      if (forceReleasePopupLock) {
+        forceReleasePopupLock();
+        console.log('🚨 StoryFlow cleanup: Released feedback popup lock');
+      }
+    };
+  }, [forceReleasePopupLock]);
 
-  // Enhanced decision logic for good/bad branches
-  function handleSelectChoice(choice: any) {
-    // Find the index of the choice in the available choices (filtered)
-    const availableChoices = getAvailableChoices();
-    const choiceIndex = availableChoices.findIndex(c => c === choice);
-    if (choiceIndex === -1) return;
-    
-    // Add consequence messages to logs
-    if (choice.consequences?.immediate) {
-      setLogs(logs => [
-        ...logs,
-        { message: choice.consequences.immediate, type: 'neutral' },
-      ]);
+  const handleChoice = (choice: Choice) => {
+    const choiceIndex = getAvailableChoices().indexOf(choice);
+    if (choiceIndex < 0) return;
+
+    // Check if this choice leads to completion
+    const nextNodeId = choice.nextNodeId;
+    const isCompletionChoice = nextNodeId && (
+      nextNodeId.includes('_finale') || 
+      nextNodeId.includes('_complete') ||
+      nextNodeId.includes('Return to the Core Story')
+    );
+
+    // useQNCE hook already tracks the choice via trackStoryEvent.choice
+    makeChoice(choiceIndex);
+
+    updateSessionData({ choiceCount: history.length });
+
+    // If this is a completion choice, trigger the onComplete callback
+    if (isCompletionChoice && onComplete) {
+      setTimeout(() => {
+        onComplete();
+      }, 1000); // Small delay to allow text to be read
     }
-    
-    // Classic crossroads narrative nodes
-    const goodNodes = ['campfire', 'merchant', 'signal', 'welcome', 'shortcut'];
-    const badNodes = ['lost'];
-    
-    // Origins Unveiled narrative nodes
-    const originsUnveiledGoodNodes = [
-      'ou_revelation'
-    ];
-    const originsUnveiledNeutralNodes = [
-      'ou_discovery', 'ou_examination'
-    ];
-    
-    // Use the original choice index from all choices for the actual makeChoice call
-    if (!currentNode || !currentNode.choices) return;
-    const originalChoiceIndex = currentNode.choices.findIndex(c => c === choice);
-    makeChoice(originalChoiceIndex);
-    
-    // Check for good outcomes
-    if (goodNodes.includes(choice.nextNodeId) || originsUnveiledGoodNodes.includes(choice.nextNodeId)) {
-      const message = originsUnveiledGoodNodes.includes(choice.nextNodeId) 
-        ? 'Quantum Discovery: Truth illuminated, knowledge expanded!'
-        : 'Branch Good: Favorable narrative shift achieved!';
-      setLogs(logs => [
-        ...logs,
-        { message, type: 'good' },
-      ]);
-    } 
-    // Check for bad outcomes
-    else if (badNodes.includes(choice.nextNodeId)) {
-      setLogs(logs => [
-        ...logs,
-        { message: 'Branch Bad: Narrative collapse warning triggered!', type: 'bad' },
-      ]);
+
+    if (isFirstChoice) {
+      setIsFirstChoice(false);
     }
-    // Check for neutral/complex outcomes
-    else if (originsUnveiledNeutralNodes.includes(choice.nextNodeId)) {
-      setLogs(logs => [
-        ...logs,
-        { message: 'Quantum Equilibrium: Discovery balanced with caution.', type: 'neutral' },
-      ]);
-    }
-  }
+  };
+
+  const availableChoices = getAvailableChoices();
 
   return (
-    <>
-      {showModal && <IntroModal onClose={handleIntroClose} onShowAbout={onShowQNCEHelp} />}
-      {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
-      
-      {/* Developer Mode Variable Dashboard */}
-      {devMode && settings.showVariableDashboard && (
-        <div className={`variable-dashboard ${sheetOpen ? 'open' : 'collapsed'}`}>
-          {/* Mobile bottom sheet header */}
-          <div 
-            className="sheet-header md:hidden" 
-            onClick={() => setSheetOpen(prev => !prev)}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 relative">
+      {/* Back button */}
+      {onBack && (
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            onClick={() => {
+              // Clean up any active feedback locks before navigating back
+              if (forceReleasePopupLock) {
+                forceReleasePopupLock();
+                console.log('🚨 Navigation back: Released feedback popup lock');
+              }
+              onBack();
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white rounded-lg transition-all duration-300 border border-slate-600/50"
           >
-            <div className="flex items-center justify-center gap-2">
-              <span>Developer Dashboard</span>
-              <span className="text-lg">{sheetOpen ? '▼' : '▲'}</span>
-            </div>
-          </div>
-          
-          {/* Dashboard content */}
-          <div className={`sheet-content ${sheetOpen || 'md:block' ? 'block' : 'hidden'}`}>
-            <VariableDashboard 
-              curiosity={Number(variables.curiosity || 0)}
-              coherence={Number(variables.coherence || 0)}
-              disruption={Number(variables.disruption || 0)}
-              synchrony={Number(variables.synchrony || 0)}
-            />
-          </div>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Chapters
+          </button>
         </div>
       )}
       
-      <div className="w-full flex flex-col items-center text-white">
-        <div className="w-full max-w-md mx-auto px-2 sm:px-4 text-center">
-          <div className="flex flex-col items-center w-full">
-            <div className="mb-4 w-full">
-              <NarrativeDisplay text={currentNode ? getCurrentNodeText() : "Loading..."} />
-            </div>
-            <div className="flex flex-col items-center mb-2 w-full">
-              <ChoiceSelector choices={getAvailableChoices()} onSelect={handleSelectChoice} />
-              
-              {/* Show locked choices in developer mode */}
-              {settings.developerMode && currentNode && currentNode.choices && currentNode.choices.length > getAvailableChoices().length && (
-                <div className="mt-2 p-2 bg-gray-800 bg-opacity-50 rounded text-xs text-gray-400 w-full">
-                  <details>
-                    <summary className="cursor-pointer text-yellow-400">
-                      🔒 {currentNode.choices ? currentNode.choices.length - getAvailableChoices().length : 0} Locked Choice(s)
-                    </summary>
-                    <div className="mt-2 space-y-1">
-                      {currentNode.choices?.filter(choice => !isChoiceAvailable(choice)).map((choice, index) => (
-                        <div key={index} className="text-gray-500 italic">
-                          "{choice.choiceText}" 
-                          {choice.conditions && (
-                            <div className="text-xs text-red-400 ml-2">
-                              Requirements not met
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                </div>
-              )}
-            </div>
-            
-            {/* Show logs only if developer mode and show logs is enabled */}
-            {settings.developerMode && settings.showDebugInfo && (
-              <div className="w-full mt-2 mb-4 px-2">
-                <LogArea logs={logs} />
-              </div>
-            )}
-            
-            <div className="flex flex-wrap items-center gap-3 mt-2 w-full max-w-md justify-center">
-              <button
-                className="text-xs text-blue-200 underline hover:text-blue-400 transition"
-                onClick={handleReset}
-              >
-                Restart Story
-              </button>
-              <button
-                className="text-xs text-cyan-200 underline hover:text-cyan-400 transition"
-                onClick={onReturnToStart}
-              >
-                Change Story
-              </button>
-              {settings.developerMode && (
-                <button
-                  className="text-xs text-gray-300 underline hover:text-blue-400 transition"
-                  onClick={() => setShowDebug((v) => !v)}
-                >
-                  {showDebug ? 'Hide Debug' : 'Show Debug'}
-                </button>
-              )}
-              <button
-                className="text-xs text-yellow-300 underline hover:text-yellow-500 transition"
-                onClick={() => setShowTutorial(true)}
-              >
-                Tutorial
-              </button>
-              <button
-                className="text-xs text-purple-300 underline hover:text-purple-500 transition"
-                onClick={onShowAbout}
-              >
-                About
-              </button>
-              <button
-                className="text-xs text-slate-300 underline hover:text-slate-500 transition"
-                onClick={onShowSettings}
-              >
-                Settings
-              </button>
-            </div>
-            
-            {showDebug && settings.developerMode && settings.showDebugInfo && currentNode && (
-              <StateDebugOverlay nodeId={currentNode.nodeId} flags={flags} history={history} />
-            )}
-          </div>
-        </div>
-        
-        {/* Visual Branch Tracker - disabled until getBranchNodes is reimplemented */}
-        {false && settings.developerMode && (
-          <div className="w-full max-w-4xl mx-auto mt-6 px-2">
-            <div className="text-gray-500 text-center">Visual Branch Tracker - Coming Soon</div>
-          </div>
-        )}
+      <div className="w-full max-w-3xl mx-auto flex-grow flex flex-col justify-center">
+        <NarrativeDisplay 
+          text={currentNode.dynTextFunction ? currentNode.dynTextFunction(variables) : (currentNode.text || 'Error: Node has no text')} 
+          variables={variables} 
+        />
+        <ChoiceSelector 
+          choices={availableChoices} 
+          onSelect={handleChoice} 
+          isFirstChoice={isFirstChoice}
+          isTerminalNode={(!currentNode.choices || currentNode.choices.length === 0)}
+          onComplete={onComplete}
+        />
       </div>
-    </>
+
+      {/* Developer-only debug toggle - kept separate from main menu */}
+      {settings.developerMode && (
+        <div className="absolute bottom-4 right-4">
+          <button onClick={() => setShowDebug(!showDebug)} className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+            {showDebug ? 'Hide' : 'Show'} Debug
+          </button>
+        </div>
+      )}
+
+      <Suspense fallback={<div>Loading...</div>}>
+        {settings.showDebugInfo && <StateDebugOverlay nodeId={currentNode.nodeId} variables={variables} history={history} className={showDebug ? 'opacity-100' : 'opacity-0'} />}
+      </Suspense>
+
+      <Suspense fallback={<div>Loading...</div>}>
+        {isFeedbackVisible && currentMilestone && (
+          <ConsolidatedFeedbackPrompt
+            isVisible={isFeedbackVisible}
+            milestone={currentMilestone}
+            sessionData={sessionData}
+            onSubmit={handleFeedbackSubmit}
+            onDismiss={handleFeedbackDismiss}
+          />
+        )}
+      </Suspense>
+
+      <Suspense fallback={<div>Loading...</div>}>
+        {isStarRatingVisible && (
+          <StarRatingOverlay
+            isVisible={isStarRatingVisible}
+            title="How was your story experience?"
+            description="Rate your quantum narrative journey!"
+            onSubmit={handleStarRatingSubmit}
+            onSkip={handleStarRatingSkip}
+          />
+        )}
+      </Suspense>
+    </div>
   );
 };
 
