@@ -75,20 +75,6 @@ internal-*.md
 !RELEASE_SUMMARY.md
 !RELEASE_NOTES_*.md
 
-# Microsoft/Platform specific documents
-MICROSOFT_*.md
-GOOGLE_*.md
-PLATFORM_*.md
-
-# Development and debugging
-*.local.md
-*.private.md
-*.secret.md
-debug-*.md
-test-*.md
-
-# Backup sensitive files
-*.backup.md
-*_backup.md
-.env*
-!.env.example
+# GitHub Copilot instructions - keep private
+.github/copilot-instructions.md
+*copilot-instructions*
