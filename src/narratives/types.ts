@@ -59,7 +59,7 @@ export interface NarrativeSegment {
   startNodeId: string;
   exitPoints: string[];
   initialFlags: Record<string, number | boolean>;
-  initialVariables: Record<string, any>;
+  initialVariables: QNCEVariables;
   globalFlagDecay: number;
   nodes: NarrativeNode[];
 }
@@ -88,7 +88,7 @@ export interface StoryMeta {
  */
 export function interpolateText(
   template: string, 
-  variables: Record<string, any>
+  variables: Record<string, number | boolean | string>
 ): string {
   return template.replace(/\{\{(\w+)\}\}/g, (match, varName) => {
     return variables[varName] !== undefined ? String(variables[varName]) : match;

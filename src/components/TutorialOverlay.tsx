@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { TUTORIAL_STEPS } from '../config/tutorialSteps';
 import { trackTutorialEvent } from '../utils/analytics';
 
@@ -17,6 +17,25 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
   const currentStep = TUTORIAL_STEPS[currentStepIndex];
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === TUTORIAL_STEPS.length - 1;
+
+  // Handler functions defined with useCallback for stable references
+  const handleNext = useCallback(() => {
+    if (!isLastStep) {
+      setCurrentStepIndex(prev => prev + 1);
+    }
+  }, [isLastStep]);
+
+  const handlePrevious = useCallback(() => {
+    if (!isFirstStep) {
+      setCurrentStepIndex(prev => prev - 1);
+    }
+  }, [isFirstStep]);
+
+  const handleSkipTutorial = useCallback(() => {
+    trackTutorialEvent.skip(currentStep.id, currentStepIndex);
+    setIsVisible(false);
+    setTimeout(onClose, 300);
+  }, [currentStep.id, currentStepIndex, onClose]);
 
   // Analytics tracking
   useEffect(() => {
@@ -71,7 +90,7 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keydown', handleTabKey);
     };
-  }, [currentStepIndex, isLastStep, isFirstStep]);
+  }, [currentStepIndex, isLastStep, isFirstStep, handleNext, handlePrevious, handleSkipTutorial]);
 
   // Highlight target elements
   useEffect(() => {
@@ -91,18 +110,6 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
     };
   }, [currentStep.highlight]);
 
-  const handleNext = () => {
-    if (!isLastStep) {
-      setCurrentStepIndex(prev => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (!isFirstStep) {
-      setCurrentStepIndex(prev => prev - 1);
-    }
-  };
-
   const handleComplete = () => {
     const completionTime = Date.now() - tutorialStartTime;
     trackTutorialEvent.complete(TUTORIAL_STEPS.length, completionTime);
@@ -114,12 +121,6 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onComplete }
       onComplete();
     }
     setTimeout(onClose, 300); // Allow fade out animation
-  };
-
-  const handleSkipTutorial = () => {
-    trackTutorialEvent.skip(currentStep.id, currentStepIndex);
-    setIsVisible(false);
-    setTimeout(onClose, 300);
   };
 
   const getPositionClasses = () => {

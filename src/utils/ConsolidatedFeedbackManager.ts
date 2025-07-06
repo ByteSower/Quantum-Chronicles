@@ -1,6 +1,20 @@
 import { useState, useCallback, useRef } from 'react';
 import { analyticsWrapper } from '../utils/AnalyticsWrapper';
 
+// Type definitions for better type safety
+export type FeedbackMetadata = Record<string, string | number | boolean>;
+
+export interface SessionMetadata {
+  choiceCount?: number;
+  currentSegment?: string;
+  qnceVariables?: {
+    curiosity: number;
+    coherence: number;
+    disruption: number;
+    synchrony: number;
+  };
+}
+
 // Quick star rating feedback data
 export interface StarRatingFeedbackData {
   rating: number;
@@ -230,7 +244,7 @@ class ConsolidatedFeedbackManager {
   /**
    * Debounced trigger checking to prevent rapid-fire feedback requests
    */
-  public checkForFeedback(milestone: string, metadata?: any): FeedbackMilestone | null {
+  public checkForFeedback(milestone: string, metadata?: FeedbackMetadata): FeedbackMilestone | null {
     // Debounce rapid triggers
     const now = Date.now();
     if (now - this.lastTriggerTime < this.DEBOUNCE_MS) {
@@ -284,7 +298,7 @@ class ConsolidatedFeedbackManager {
     return milestoneData;
   }
 
-  private updateSessionMetadata(metadata?: any) {
+  private updateSessionMetadata(metadata?: SessionMetadata) {
     if (metadata) {
       this.feedbackData.sessionDuration = Date.now() - this.sessionStartTime;
       
@@ -402,7 +416,7 @@ export function useConsolidatedFeedbackManager() {
   const choiceCountRef = useRef(0);
   const currentSegmentRef = useRef('');
 
-  const checkForFeedback = useCallback((milestone: string, metadata?: any) => {
+  const checkForFeedback = useCallback((milestone: string, metadata?: FeedbackMetadata) => {
     const milestoneData = manager.checkForFeedback(milestone, {
       ...metadata,
       choiceCount: choiceCountRef.current,

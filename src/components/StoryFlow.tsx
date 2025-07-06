@@ -7,6 +7,7 @@ const StarRatingOverlay = lazy(() => import('./StarRatingOverlay'));
 import { useQNCE } from '../hooks/useQNCE';
 import { useConsolidatedFeedbackManager } from '../utils/ConsolidatedFeedbackManager';
 import { useStarRatingFeedback } from '../utils/StarRatingFeedbackManager';
+import type { Choice } from '../narratives/types';
 
 // Chapter entry point mapping
 const CHAPTER_ENTRY_POINTS: Record<string, string> = {
@@ -86,12 +87,12 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
 
   // Handle automatic completion for terminal nodes (no choices) only
   useEffect(() => {
-    if ((!currentNode.choices || currentNode.choices.length === 0) && onComplete) {
+    if (!currentNode.choices || currentNode.choices.length === 0) {
       // Terminal nodes without choices should show a "Continue" button instead of auto-completing
       // This prevents users from being redirected before they can read the ending
       console.log('🎯 Terminal node detected:', currentNode.nodeId, '- will show Continue button');
     }
-  }, [currentNode, onComplete]);
+  }, [currentNode]);
 
   // Handle feedbackHook when entering a node (not just when making choices)
   useEffect(() => {
@@ -121,7 +122,7 @@ const StoryFlow: React.FC<StoryFlowProps> = ({
     };
   }, [forceReleasePopupLock]);
 
-  const handleChoice = (choice: any) => {
+  const handleChoice = (choice: Choice) => {
     const choiceIndex = getAvailableChoices().indexOf(choice);
     if (choiceIndex < 0) return;
 

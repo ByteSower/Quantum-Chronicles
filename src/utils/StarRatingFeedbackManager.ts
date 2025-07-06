@@ -1,6 +1,12 @@
 import { useState, useCallback } from 'react';
 import { analytics } from './analytics';
 
+export interface StarRatingSessionData {
+  nodeId: string;
+  choiceCount: number;
+  sessionDuration: number;
+}
+
 export interface StarRatingFeedbackData {
   rating: number;
   comment?: string;
@@ -61,7 +67,11 @@ export function useStarRatingFeedback() {
   const [manager] = useState(() => new StarRatingFeedbackManager());
   const [isVisible, setIsVisible] = useState(false);
   const [currentMilestone, setCurrentMilestone] = useState<string>('');
-  const [sessionData, setSessionData] = useState<any>({});
+  const [sessionData, setSessionData] = useState<StarRatingSessionData>({
+    nodeId: '',
+    choiceCount: 0,
+    sessionDuration: 0
+  });
 
   const checkForFeedback = useCallback((milestone: string, nodeId: string, choiceCount: number) => {
     console.log('⭐ checkForFeedback called:', { milestone, nodeId, choiceCount });

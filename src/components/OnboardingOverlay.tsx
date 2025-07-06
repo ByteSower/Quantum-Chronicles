@@ -270,10 +270,15 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({
           <div 
             id={`${overlayId}-content`}
             className="text-slate-300 mb-6 leading-relaxed"
-            dangerouslySetInnerHTML={{
-              __html: step.content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-300">$1</strong>')
-            }}
-          />
+          >
+            {step.content.split(/\*\*(.*?)\*\*/g).map((part, index) => 
+              index % 2 === 1 ? (
+                <strong key={index} className="text-indigo-300">{part}</strong>
+              ) : (
+                part
+              )
+            )}
+          </div>
 
           {/* Action buttons */}
           <div className="flex justify-between items-center">
